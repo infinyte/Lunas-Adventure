@@ -860,4 +860,367 @@ class SVGRenderer {
         sun.setAttribute("cy", "100");
         sun.setAttribute("r", "40");
         sun.setAttribute("fill", "#FFD700");
-        bgGroup.appendChild(
+        bgGroup.appendChild(sun);
+        
+        // Sun glow
+        const sunGlow = document.createElementNS(this.svgNS, "circle");
+        sunGlow.setAttribute("cx", "100");
+        sunGlow.setAttribute("cy", "100");
+        sunGlow.setAttribute("r", "60");
+        sunGlow.setAttribute("fill", "rgba(255, 215, 0, 0.3)");
+        bgGroup.appendChild(sunGlow);
+        
+        // Background mountains (far)
+        const farMountains = document.createElementNS(this.svgNS, "path");
+        farMountains.setAttribute("d", "M0,250 L100,150 L200,220 L300,120 L400,180 L500,140 L600,200 L700,130 L800,190 L900,150 L1000,230 L1000,250 Z");
+        farMountains.setAttribute("fill", "#8A9A5B");
+        farMountains.setAttribute("opacity", "0.7");
+        bgGroup.appendChild(farMountains);
+        
+        // Background mountains (middle)
+        const midMountains = document.createElementNS(this.svgNS, "path");
+        midMountains.setAttribute("d", "M-100,250 L0,180 L100,230 L200,150 L300,210 L400,160 L500,220 L600,170 L700,240 L800,160 L900,220 L1000,170 L1100,250 Z");
+        midMountains.setAttribute("fill", "#6B8E23");
+        midMountains.setAttribute("opacity", "0.8");
+        bgGroup.appendChild(midMountains);
+        
+        // Background clouds
+        this.createCloudSVG(bgGroup, 150, 80, 1.2);
+        this.createCloudSVG(bgGroup, 450, 60, 0.9);
+        this.createCloudSVG(bgGroup, 750, 90, 1.5);
+        this.createCloudSVG(bgGroup, 950, 40, 0.7);
+      }
+      
+      // Apply parallax effect based on camera position
+      const bgGroup = document.getElementById("game-background");
+      const farMountains = bgGroup.getElementsByTagName("path")[0];
+      const midMountains = bgGroup.getElementsByTagName("path")[1];
+      
+      // Move background elements at different speeds for parallax effect
+      farMountains.setAttribute("transform", `translate(${-cameraX * 0.1}, 0)`);
+      midMountains.setAttribute("transform", `translate(${-cameraX * 0.3}, 0)`);
+      
+      // Move clouds
+      const clouds = bgGroup.querySelectorAll(".cloud");
+      clouds.forEach((cloud, index) => {
+        // Combine camera parallax with continuous cloud movement
+        const cloudSpeed = 0.02 * (index % 3 + 1);
+        const parallaxOffset = -cameraX * 0.05 * (index % 2 + 1);
+        const timeOffset = (Date.now() * cloudSpeed) % this.width;
+        
+        cloud.setAttribute("transform", `translate(${parallaxOffset + timeOffset}, 0)`);
+      });
+    }
+    
+    /**
+     * Create cloud SVG for background
+     * @param {SVGElement} parent - Parent element to add cloud to
+     * @param {number} x - X position
+     * @param {number} y - Y position
+     * @param {number} scale - Size scale factor
+     */
+    createCloudSVG(parent, x, y, scale = 1) {
+      const cloudGroup = document.createElementNS(this.svgNS, "g");
+      cloudGroup.setAttribute("class", "cloud");
+      cloudGroup.setAttribute("transform", `translate(${x}, ${y}) scale(${scale})`);
+      
+      // Cloud parts
+      const part1 = document.createElementNS(this.svgNS, "ellipse");
+      part1.setAttribute("cx", "25");
+      part1.setAttribute("cy", "20");
+      part1.setAttribute("rx", "25");
+      part1.setAttribute("ry", "15");
+      part1.setAttribute("fill", "#FFFFFF");
+      cloudGroup.appendChild(part1);
+      
+      const part2 = document.createElementNS(this.svgNS, "ellipse");
+      part2.setAttribute("cx", "50");
+      part2.setAttribute("cy", "15");
+      part2.setAttribute("rx", "30");
+      part2.setAttribute("ry", "20");
+      part2.setAttribute("fill", "#FFFFFF");
+      cloudGroup.appendChild(part2);
+      
+      const part3 = document.createElementNS(this.svgNS, "ellipse");
+      part3.setAttribute("cx", "80");
+      part3.setAttribute("cy", "20");
+      part3.setAttribute("rx", "25");
+      part3.setAttribute("ry", "15");
+      part3.setAttribute("fill", "#FFFFFF");
+      cloudGroup.appendChild(part3);
+      
+      parent.appendChild(cloudGroup);
+    }
+    
+    /**
+     * Render in-game notification or message
+     * @param {string} message - Text message to display
+     * @param {string} type - Message type (info, success, warning, error)
+     * @param {number} duration - Display duration in milliseconds
+     */
+    renderNotification(message, type = "info", duration = 3000) {
+      const layer = document.getElementById("layer-ui");
+      
+      // Create notification group
+      const notificationGroup = document.createElementNS(this.svgNS, "g");
+      notificationGroup.setAttribute("id", "game-notification");
+      notificationGroup.setAttribute("opacity", "0");
+      
+      // Determine color based on type
+      let fillColor, strokeColor;
+      switch (type) {
+        case "success":
+          fillColor = "#4CAF50";
+          strokeColor = "#388E3C";
+          break;
+        case "warning":
+          fillColor = "#FF9800";
+          strokeColor = "#F57C00";
+          break;
+        case "error":
+          fillColor = "#F44336";
+          strokeColor = "#D32F2F";
+          break;
+        default: // info
+          fillColor = "#2196F3";
+          strokeColor = "#1976D2";
+      }
+      
+      // Notification background
+      const bg = document.createElementNS(this.svgNS, "rect");
+      bg.setAttribute("x", this.width / 2 - 150);
+      bg.setAttribute("y", "20");
+      bg.setAttribute("width", "300");
+      bg.setAttribute("height", "40");
+      bg.setAttribute("fill", fillColor);
+      bg.setAttribute("stroke", strokeColor);
+      bg.setAttribute("stroke-width", "2");
+      bg.setAttribute("rx", "10");
+      bg.setAttribute("ry", "10");
+      notificationGroup.appendChild(bg);
+      
+      // Notification text
+      const text = document.createElementNS(this.svgNS, "text");
+      text.setAttribute("x", this.width / 2);
+      text.setAttribute("y", "45");
+      text.setAttribute("fill", "#FFFFFF");
+      text.setAttribute("font-family", "Arial, sans-serif");
+      text.setAttribute("font-size", "18px");
+      text.setAttribute("font-weight", "bold");
+      text.setAttribute("text-anchor", "middle");
+      text.textContent = message;
+      notificationGroup.appendChild(text);
+      
+      // Add to UI layer
+      layer.appendChild(notificationGroup);
+      
+      // Animation - fade in
+      const fadeIn = document.createElementNS(this.svgNS, "animate");
+      fadeIn.setAttribute("attributeName", "opacity");
+      fadeIn.setAttribute("from", "0");
+      fadeIn.setAttribute("to", "1");
+      fadeIn.setAttribute("dur", "0.3s");
+      fadeIn.setAttribute("fill", "freeze");
+      notificationGroup.appendChild(fadeIn);
+      
+      // Remove after duration
+      setTimeout(() => {
+        // Animation - fade out
+        const fadeOut = document.createElementNS(this.svgNS, "animate");
+        fadeOut.setAttribute("attributeName", "opacity");
+        fadeOut.setAttribute("from", "1");
+        fadeOut.setAttribute("to", "0");
+        fadeOut.setAttribute("dur", "0.3s");
+        fadeOut.setAttribute("fill", "freeze");
+        notificationGroup.appendChild(fadeOut);
+        
+        // Remove notification after fade out
+        setTimeout(() => {
+          notificationGroup.remove();
+        }, 300);
+      }, duration);
+    }
+    
+    /**
+     * Render a level completion screen
+     * @param {Object} levelStats - Statistics for the completed level
+     * @param {Function} onContinue - Callback for continue button
+     */
+    renderLevelComplete(levelStats, onContinue) {
+      // Create semi-transparent overlay
+      const layer = document.getElementById("layer-ui");
+      
+      // Level complete container
+      const container = document.createElementNS(this.svgNS, "g");
+      container.setAttribute("id", "level-complete-screen");
+      
+      // Background overlay
+      const overlay = document.createElementNS(this.svgNS, "rect");
+      overlay.setAttribute("x", "0");
+      overlay.setAttribute("y", "0");
+      overlay.setAttribute("width", this.width);
+      overlay.setAttribute("height", this.height);
+      overlay.setAttribute("fill", "rgba(0, 0, 0, 0.7)");
+      container.appendChild(overlay);
+      
+      // Level complete banner
+      const banner = document.createElementNS(this.svgNS, "rect");
+      banner.setAttribute("x", this.width / 2 - 250);
+      banner.setAttribute("y", "100");
+      banner.setAttribute("width", "500");
+      banner.setAttribute("height", "300");
+      banner.setAttribute("fill", "#4CAF50");
+      banner.setAttribute("stroke", "#388E3C");
+      banner.setAttribute("stroke-width", "4");
+      banner.setAttribute("rx", "20");
+      banner.setAttribute("ry", "20");
+      container.appendChild(banner);
+      
+      // Level complete text
+      const titleText = document.createElementNS(this.svgNS, "text");
+      titleText.setAttribute("x", this.width / 2);
+      titleText.setAttribute("y", "150");
+      titleText.setAttribute("fill", "#FFFFFF");
+      titleText.setAttribute("font-family", "Arial, sans-serif");
+      titleText.setAttribute("font-size", "36px");
+      titleText.setAttribute("font-weight", "bold");
+      titleText.setAttribute("text-anchor", "middle");
+      titleText.textContent = "Level Complete!";
+      container.appendChild(titleText);
+      
+      // Stats text
+      const statsGroup = document.createElementNS(this.svgNS, "g");
+      statsGroup.setAttribute("transform", `translate(${this.width / 2 - 150}, 180)`);
+      
+      const createStatText = (label, value, yOffset) => {
+        const statLabel = document.createElementNS(this.svgNS, "text");
+        statLabel.setAttribute("x", "0");
+        statLabel.setAttribute("y", yOffset);
+        statLabel.setAttribute("fill", "#FFFFFF");
+        statLabel.setAttribute("font-family", "Arial, sans-serif");
+        statLabel.setAttribute("font-size", "20px");
+        statLabel.setAttribute("text-anchor", "start");
+        statLabel.textContent = label;
+        statsGroup.appendChild(statLabel);
+        
+        const statValue = document.createElementNS(this.svgNS, "text");
+        statValue.setAttribute("x", "300");
+        statValue.setAttribute("y", yOffset);
+        statValue.setAttribute("fill", "#FFFFFF");
+        statValue.setAttribute("font-family", "Arial, sans-serif");
+        statValue.setAttribute("font-size", "20px");
+        statValue.setAttribute("font-weight", "bold");
+        statValue.setAttribute("text-anchor", "end");
+        statValue.textContent = value;
+        statsGroup.appendChild(statValue);
+      };
+      
+      createStatText("Score:", levelStats.score, 0);
+      createStatText("Carrots Collected:", `${levelStats.carrotsCollected}/${levelStats.totalCarrots}`, 30);
+      createStatText("Enemies Defeated:", levelStats.enemiesDefeated, 60);
+      createStatText("Time:", `${Math.floor(levelStats.time / 60)}:${(levelStats.time % 60).toString().padStart(2, '0')}`, 90);
+      
+      container.appendChild(statsGroup);
+      
+      // Continue button
+      const buttonGroup = document.createElementNS(this.svgNS, "g");
+      buttonGroup.setAttribute("id", "continue-button");
+      buttonGroup.setAttribute("transform", `translate(${this.width / 2 - 100}, 320)`);
+      buttonGroup.style.cursor = "pointer";
+      
+      const buttonBg = document.createElementNS(this.svgNS, "rect");
+      buttonBg.setAttribute("width", "200");
+      buttonBg.setAttribute("height", "50");
+      buttonBg.setAttribute("fill", "#FFC107");
+      buttonBg.setAttribute("stroke", "#FFA000");
+      buttonBg.setAttribute("stroke-width", "2");
+      buttonBg.setAttribute("rx", "10");
+      buttonBg.setAttribute("ry", "10");
+      buttonGroup.appendChild(buttonBg);
+      
+      const buttonText = document.createElementNS(this.svgNS, "text");
+      buttonText.setAttribute("x", "100");
+      buttonText.setAttribute("y", "32");
+      buttonText.setAttribute("fill", "#000000");
+      buttonText.setAttribute("font-family", "Arial, sans-serif");
+      buttonText.setAttribute("font-size", "24px");
+      buttonText.setAttribute("font-weight", "bold");
+      buttonText.setAttribute("text-anchor", "middle");
+      buttonText.textContent = "Continue";
+      buttonGroup.appendChild(buttonText);
+      
+      // Add click event
+      buttonGroup.addEventListener("click", onContinue);
+      
+      container.appendChild(buttonGroup);
+      
+      // Animate stars around the banner
+      for (let i = 0; i < 20; i++) {
+        const star = document.createElementNS(this.svgNS, "polygon");
+        const x = Math.random() * this.width;
+        const y = Math.random() * this.height;
+        const size = 5 + Math.random() * 10;
+        
+        // Create 5-point star
+        let points = "";
+        for (let j = 0; j < 10; j++) {
+          const radius = j % 2 === 0 ? size : size / 2;
+          const angle = j * Math.PI / 5;
+          points += `${x + radius * Math.sin(angle)},${y - radius * Math.cos(angle)} `;
+        }
+        
+        star.setAttribute("points", points);
+        star.setAttribute("fill", "#FFD700");
+        
+        // Add twinkling animation
+        const animateOpacity = document.createElementNS(this.svgNS, "animate");
+        animateOpacity.setAttribute("attributeName", "opacity");
+        animateOpacity.setAttribute("values", "1;0.3;1");
+        animateOpacity.setAttribute("dur", `${1 + Math.random() * 2}s`);
+        animateOpacity.setAttribute("repeatCount", "indefinite");
+        star.appendChild(animateOpacity);
+        
+        container.appendChild(star);
+      }
+      
+      // Add to UI layer
+      layer.appendChild(container);
+    }
+    
+    /**
+     * Toggle debug mode
+     * @param {boolean} enabled - Whether debug mode should be enabled
+     */
+    setDebugMode(enabled) {
+      this.debug = enabled;
+      console.log(`Debug mode ${enabled ? 'enabled' : 'disabled'}`);
+      
+      // Update all existing entities with debug boxes
+      if (enabled) {
+        this.entities.forEach((element, id) => {
+          const entity = document.getElementById(`entity-${id}`);
+          if (entity) {
+            // Get entity type from class or id
+            let type = "unknown";
+            if (entity.classList.contains("player")) type = "player";
+            else if (entity.classList.contains("enemy")) type = "enemy";
+            else if (entity.classList.contains("platform")) type = "platform";
+            else if (entity.classList.contains("collectible")) type = "collectible";
+            
+            // Get entity dimensions
+            const width = entity.getAttribute("width") || 50;
+            const height = entity.getAttribute("height") || 50;
+            
+            this.renderDebugBox(entity, width, height, type);
+          }
+        });
+      } else {
+        // Remove all debug boxes
+        const debugBoxes = this.svg.querySelectorAll(".debug-box");
+        debugBoxes.forEach(box => box.remove());
+      }
+    }
+}
+
+// Export the renderer
+export default SVGRenderer;
