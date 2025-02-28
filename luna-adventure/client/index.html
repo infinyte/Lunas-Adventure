@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Luna's Adventure - A charming 2D platformer featuring Luna the Guinea Pig">
+    <title>Luna's Adventure</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    
+    <!-- Web App Manifest for PWA support -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#8B4513">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192x192.png">
+    
+    <!-- Preload key assets for better performance -->
+    <link rel="preload" href="assets/sprites/luna_idle.svg" as="image" type="image/svg+xml">
+    <link rel="preload" href="assets/sprites/luna_run.svg" as="image" type="image/svg+xml">
+    <link rel="preload" href="assets/sounds/jump.mp3" as="audio">
+    
+    <!-- Open Graph tags for social sharing -->
+    <meta property="og:title" content="Luna's Adventure">
+    <meta property="og:description" content="Help Luna the Guinea Pig find her way home in this charming 2D platformer!">
+    <meta property="og:image" content="assets/og-image.jpg">
+    <meta property="og:url" content="https://lunas-adventure.example.com">
+    <meta property="og:type" content="website">
+</head>
+<body>
+    <!-- Loading screen -->
+    <div id="loading-screen">
+        <div class="loading-container">
+            <h1 class="game-title">Luna's Adventure</h1>
+            <div class="loading-animation">
+                <div class="luna-loading"></div>
+                <div class="loading-text">Loading...</div>
+            </div>
+            <div class="loading-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <div class="progress-text">0%</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Offline notification -->
+    <div id="offline-notification" class="hidden">
+        <p>You're currently offline. Some features may be limited.</p>
+        <button id="dismiss-offline">Got it</button>
+    </div>
+    
+    <!-- Main game container -->
+    <main id="game-container">
+        <!-- SVG will be inserted here by the renderer -->
+    </main>
+    
+    <!-- Game UI overlays -->
+    <div id="ui-container">
+        <!-- Game menus will be dynamically inserted here -->
+    </div>
+    
+    <!-- Sound toggle button -->
+    <button id="sound-toggle" class="ui-button" aria-label="Toggle sound">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+        </svg>
+    </button>
+    
+    <!-- Fullscreen toggle button -->
+    <button id="fullscreen-toggle" class="ui-button" aria-label="Toggle fullscreen">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+            <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+        </svg>
+    </button>
+    
+    <!-- Install App button (only visible when installable) -->
+    <button id="install-app" class="ui-button hidden" aria-label="Install Luna's Adventure">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+        </svg>
+    </button>
+    
+    <!-- Mobile controls (visible only on touch devices) -->
+    <div id="mobile-controls">
+        <div id="d-pad">
+            <button id="btn-left" class="control-btn">←</button>
+            <button id="btn-right" class="control-btn">→</button>
+        </div>
+        <button id="btn-jump" class="control-btn">Jump</button>
+        <button id="btn-pause" class="control-btn">Pause</button>
+    </div>
+    
+    <!-- Debug panel (hidden by default) -->
+    <div id="debug-panel" class="hidden">
+        <h3>Debug Panel</h3>
+        <div id="fps-counter">FPS: 0</div>
+        <div id="player-pos">Position: (0, 0)</div>
+        <div id="entities-count">Entities: 0</div>
+        <div class="debug-controls">
+            <button id="btn-debug-collision">Toggle Collision Boxes</button>
+            <button id="btn-debug-godmode">Toggle God Mode</button>
+        </div>
+    </div>
+    
+    <!-- Socket.io library -->
+    <script src="/socket.io/socket.io.js"></script>
+    
+    <!-- Main game script (using type="module" for ES6 imports) -->
+    <script type="module" src="scripts/game.js"></script>
+    
+    <!-- PWA installation handler script -->
+    <script>
+        // PWA installation
+        let deferredPrompt;
+        const installButton = document.getElementById('install-app');
+        
+        // Listen for 'beforeinstallprompt' event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 76+ from automatically showing the prompt
+            e.preventDefault();
+            
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            
+            // Show the install button
+            if (installButton) {
+                installButton.classList.remove('hidden');
+                
+                installButton.addEventListener('click', () => {
+                    // Hide the install button
+                    installButton.classList.add('hidden');
+                    
+                    // Show the installation prompt
+                    deferredPrompt.prompt();
+                    
+                    // Wait for the user to respond to the prompt
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted the install prompt');
+                        } else {
+                            console.log('User dismissed the install prompt');
+                        }
+                        
+                        // We no longer need the prompt
+                        deferredPrompt = null;
+                    });
+                });
+            }
+        });
+        
+        // Hide the install button when the PWA is installed
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA was installed');
+            if (installButton) {
+                installButton.classList.add('hidden');
+            }
+            deferredPrompt = null;
+        });
+        
+        // Handle offline status
+        const offlineNotification = document.getElementById('offline-notification');
+        const dismissOfflineBtn = document.getElementById('dismiss-offline');
+        
+        if (dismissOfflineBtn) {
+            dismissOfflineBtn.addEventListener('click', () => {
+                if (offlineNotification) {
+                    offlineNotification.classList.add('hidden');
+                }
+            });
+        }
+        
+        window.addEventListener('online', () => {
+            if (offlineNotification) {
+                offlineNotification.classList.add('hidden');
+            }
+        });
+        
+        window.addEventListener('offline', () => {
+            if (offlineNotification) {
+                offlineNotification.classList.remove('hidden');
+            }
+        });
+        
+        // Service worker registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                        
+                        // Check for updates when service worker changes
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New content is available; we can notify the user
+                                    if (confirm('A new version of Luna\'s Adventure is available! Reload now?')) {
+                                        window.location.reload();
+                                    }
+                                }
+                            });
+                        });
+                    })
+                    .catch(err => {
+                        console.error('ServiceWorker registration failed: ', err);
+                    });
+                
+                // Handle controller changes (when a service worker takes over)
+                let refreshing = false;
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    if (!refreshing) {
+                        refreshing = true;
+                        window.location.reload();
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>
