@@ -1,0 +1,34 @@
+// Project Folder Structure
+/*
+luna-adventure/
+├── server/
+│   ├── index.js              // Main server file
+│   ├── services/             // Service-based architecture
+│   │   ├── gameEngine.js     // Game logic and physics
+│   │   ├── assetManager.js   // Asset loading and management
+│   │   └── stateManager.js   // Game state persistence
+│   ├── controllers/          // API controllers
+│   ├── routes/               // Express routes
+│   └── config/               // Configuration files
+├── client/
+│   ├── index.html
+│   ├── styles/
+│   │   └── main.css
+│   ├── scripts/
+│   │   ├── game.js           // Main game client
+│   │   ├── renderer.js       // SVG rendering service
+│   │   ├── inputHandler.js   // User inputs handling
+│   │   ├── physics.js        // Physics calculations
+│   │   └── entities/         // Game entities
+│   │       ├── player.js     // Luna player character
+│   │       ├── enemy.js      // Enemy entities
+│   │       └── platform.js   // Platforms and terrain
+│   └── assets/
+│       ├── sprites/          // SVG sprites
+│       └── levels/           // Level definitions
+├── shared/                   // Shared code between client and server
+│   └── constants.js
+├── package.json
+├── README.md
+└── docker-compose.yml        // For containerization
+*/
