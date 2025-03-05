@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 40" id="luna_jump">
+  <!-- Main body (slightly curved for jump) -->
+  <ellipse cx="30" cy="20" rx="22" ry="14" fill="#D2B48C" stroke="#8B4513" stroke-width="1.5" transform="rotate(-5, 30, 20)"/>
+  
+  <!-- Face (looking slightly up) -->
+  <ellipse cx="46" cy="18" rx="10" ry="8" fill="#E5C39E" stroke="#8B4513" stroke-width="1.5"/>
+  
+  <!-- Ears (swept back by jump) -->
+  <ellipse cx="50" cy="10" rx="4" ry="6" fill="#D2B48C" stroke="#8B4513" stroke-width="1" transform="rotate(-20, 50, 10)"/>
+  <ellipse cx="42" cy="10" rx="4" ry="6" fill="#D2B48C" stroke="#8B4513" stroke-width="1" transform="rotate(-10, 42, 10)"/>
+  
+  <!-- Eyes (wider in excitement) -->
+  <circle cx="49" cy="15" r="2.5" fill="#000000"/>
+  <circle cx="43" cy="15" r="2.5" fill="#000000"/>
+  
+  <!-- Nose -->
+  <ellipse cx="46" cy="20" rx="3" ry="2" fill="#FFC0CB"/>
+  
+  <!-- Mouth (slight smile) -->
+  <path d="M46 22 Q 47 24, 50 23" fill="none" stroke="#8B4513" stroke-width="0.75"/>
+  
+  <!-- Feet (tucked for jump) -->
+  <ellipse cx="15" cy="30" rx="5" ry="3" fill="#C19A6B" transform="rotate(-30, 15, 30)"/>
+  <ellipse cx="25" cy="32" rx="5" ry="3" fill="#C19A6B" transform="rotate(-15, 25, 32)"/>
+  <ellipse cx="40" cy="30" rx="5" ry="3" fill="#C19A6B" transform="rotate(-20, 40, 30)"/>
+  
+  <!-- Pattern on back -->
+  <ellipse cx="20" cy="10" rx="5" ry="7" fill="#E5C39E" transform="rotate(-20, 20, 10)"/>
+  <ellipse cx="10" cy="13" rx="4" ry="6" fill="#E5C39E" transform="rotate(-30, 10, 13)"/>
+</svg>

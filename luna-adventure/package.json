@@ -1,6 +1,7 @@
 {
     "name": "lunas-adventure",
     "version": "1.0.0",
+    "type": "module",
     "description": "A delightful 2D side-scrolling platformer featuring Luna the Guinea Pig, built with Node.js and SVG graphics",
     "main": "server/index.js",
     "private": true,

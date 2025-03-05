@@ -1,34 +1,44 @@
-// Project Folder Structure
-/*
 luna-adventure/
-├── server/
-│   ├── index.js              // Main server file
-│   ├── services/             // Service-based architecture
-│   │   ├── gameEngine.js     // Game logic and physics
-│   │   ├── assetManager.js   // Asset loading and management
-│   │   └── stateManager.js   // Game state persistence
-│   ├── controllers/          // API controllers
-│   ├── routes/               // Express routes
-│   └── config/               // Configuration files
 ├── client/
-│   ├── index.html
-│   ├── styles/
-│   │   └── main.css
+│   ├── index.html                 # Main HTML file
+│   ├── manifest.json              # PWA manifest 
+│   ├── assets/                    # (implied - for sprites, levels, etc.)
 │   ├── scripts/
-│   │   ├── game.js           // Main game client
-│   │   ├── renderer.js       // SVG rendering service
-│   │   ├── inputHandler.js   // User inputs handling
-│   │   ├── physics.js        // Physics calculations
-│   │   └── entities/         // Game entities
-│   │       ├── player.js     // Luna player character
-│   │       ├── enemy.js      // Enemy entities
-│   │       └── platform.js   // Platforms and terrain
-│   └── assets/
-│       ├── sprites/          // SVG sprites
-│       └── levels/           // Level definitions
-├── shared/                   // Shared code between client and server
-│   └── constants.js
-├── package.json
-├── README.md
-└── docker-compose.yml        // For containerization
-*/
+│   │   ├── game.js                # Main game client
+│   │   ├── renderer.js            # SVG rendering service
+│   │   ├── inputHandler.js        # User inputs handling (needs fixing)
+│   │   ├── physics.js             # Physics calculations (needs fixing)
+│   │   └── entities/
+│   │       ├── player.js          # Luna player character
+│   │       ├── enemy.js           # Enemy entities
+│   │       ├── platform.js        # Platforms and terrain
+│   │       ├── collectible.js     # Collectible items
+│   │       ├── entity.md          # Documentation for entity system
+│   │       └── index.js           # Export file for all entities
+│   ├── service-worker.js          # PWA service worker
+│   └── styles/
+│       └── main.css               # Main CSS styles
+│
+├── server/
+│   ├── index.js                   # Main server file (CommonJS)
+│   └── services/                  # Service-based architecture
+│       ├── gameEngine.js          # Game logic and physics (CommonJS)
+│       ├── assetManager.js        # Asset loading and management (CommonJS)
+│       ├── stateManager.js        # Game state persistence (CommonJS)
+│       └── inputHandler.js        # Server-side input handler (CommonJS)
+│
+├── shared/
+│   ├── constants.js               # Needs implementation (marked as TODO)
+│   └── constants.md               # Documentation for constants
+│
+├── scripts/                       # Build and utility scripts
+│   └── postinstall.js             # Empty file
+│
+├── .gitignore                     # Git ignore file
+├── LICENSE                        # MIT license
+├── docker-compose.yml             # Docker config (marked as TODO)
+├── package.json                   # Project dependencies
+├── README.md                      # Project documentation
+├── INSTALL.md                     # Installation guide
+├── Lunas-Adventure.md             # Project implementation details
+└── ProjectStructure.txt           # Project folder structure

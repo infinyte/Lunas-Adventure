@@ -13,7 +13,7 @@
 import SVGRenderer from './renderer.js';
 import InputHandler from './inputHandler.js';
 import Physics from './physics.js';
-import { Player } from './entities/player.js';
+import { Player } from './entities/player';
 import { Enemy } from './entities/enemy.js';
 import { Platform } from './entities/platform.js';
 import * as constants from '../../shared/constants.js';

@@ -1,14 +1,28 @@
 // server/index.js
-const express = require('express');
+// BEFORE (CommonJS):
+/* const express = require('express');
 const http = require('http');
 const path = require('path');
 const cors = require('cors');
 const { Server } = require('socket.io');
-
-// Import services
 const GameEngine = require('./services/gameEngine');
 const AssetManager = require('./services/assetManager');
-const StateManager = require('./services/stateManager');
+const StateManager = require('./services/stateManager'); */
+
+// AFTER (ES Modules):
+import express from 'express';
+import http from 'http';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import cors from 'cors';
+import { Server } from 'socket.io';
+import GameEngine from './services/gameEngine.js';
+import AssetManager from './services/assetManager.js';
+import StateManager from './services/stateManager.js';
+
+// Handle __dirname (not available in ES Modules)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Initialize Express app
 const app = express();

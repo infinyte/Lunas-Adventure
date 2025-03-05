@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 40" id="luna_idle">
+  <!-- Main body -->
+  <ellipse cx="30" cy="25" rx="22" ry="15" fill="#D2B48C" stroke="#8B4513" stroke-width="1.5"/>
+  
+  <!-- Face -->
+  <ellipse cx="46" cy="23" rx="10" ry="8" fill="#E5C39E" stroke="#8B4513" stroke-width="1.5"/>
+  
+  <!-- Ears -->
+  <ellipse cx="50" cy="15" rx="4" ry="6" fill="#D2B48C" stroke="#8B4513" stroke-width="1" transform="rotate(-10, 50, 15)"/>
+  <ellipse cx="42" cy="15" rx="4" ry="6" fill="#D2B48C" stroke="#8B4513" stroke-width="1" transform="rotate(10, 42, 15)"/>
+  
+  <!-- Eyes -->
+  <circle cx="49" cy="20" r="2" fill="#000000"/>
+  <circle cx="43" cy="20" r="2" fill="#000000"/>
+  
+  <!-- Nose -->
+  <ellipse cx="46" cy="25" rx="3" ry="2" fill="#FFC0CB"/>
+  
+  <!-- Mouth -->
+  <path d="M46 27 Q 46 29, 49 28" fill="none" stroke="#8B4513" stroke-width="0.75"/>
+  
+  <!-- Feet -->
+  <ellipse cx="15" cy="36" rx="5" ry="3" fill="#C19A6B"/>
+  <ellipse cx="30" cy="36" rx="5" ry="3" fill="#C19A6B"/>
+  <ellipse cx="45" cy="36" rx="5" ry="3" fill="#C19A6B"/>
+  
+  <!-- Cute pattern on back -->
+  <ellipse cx="20" cy="15" rx="5" ry="7" fill="#E5C39E" transform="rotate(-15, 20, 15)"/>
+  <ellipse cx="10" cy="18" rx="4" ry="6" fill="#E5C39E" transform="rotate(-25, 10, 18)"/>
+</svg>

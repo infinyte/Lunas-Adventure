@@ -19,11 +19,11 @@ class GameEngine extends EventEmitter {
     this.gameLoop = null;
     this.fps = 60;
     this.isRunning = false;
-    
+
     // Initialize game state
     this.initializeGame();
   }
-  
+
   /**
    * Initialize the game world and physics
    */
@@ -161,7 +161,7 @@ class GameEngine extends EventEmitter {
       }
     }
   }
-  
+
   /**
    * Check if two entities are colliding
    * @param {Object} entity1 - First entity
@@ -176,7 +176,7 @@ class GameEngine extends EventEmitter {
       entity1.y + entity1.height > entity2.y
     );
   }
-  
+
   /**
    * Add a new player to the game
    * @param {string} id - Player ID (socket ID)
@@ -198,12 +198,12 @@ class GameEngine extends EventEmitter {
       score: 0,
       health: 100
     };
-    
+
     this.players.set(id, newPlayer);
     this.emit('player:join', { playerId: id });
     return newPlayer;
   }
-  
+
   /**
    * Remove a player from the game
    * @param {string} id - Player ID to remove
@@ -211,13 +211,13 @@ class GameEngine extends EventEmitter {
   removePlayer(id) {
     this.players.delete(id);
     this.emit('player:leave', { playerId: id });
-    
+
     // If no players left, stop the game loop
     if (this.players.size === 0) {
       this.stopGame();
     }
   }
-  
+
   /**
    * Add a new enemy to the game
    * @param {string} id - Enemy ID
@@ -239,11 +239,11 @@ class GameEngine extends EventEmitter {
       direction: 'right',
       health: 1
     };
-    
+
     this.enemies.set(id, newEnemy);
     return newEnemy;
   }
-  
+
   /**
    * Remove an enemy from the game
    * @param {string} id - Enemy ID to remove
@@ -252,7 +252,7 @@ class GameEngine extends EventEmitter {
     this.enemies.delete(id);
     this.emit('enemy:defeat', { enemyId: id });
   }
-  
+
   /**
    * Update enemy AI behavior
    * @param {Object} enemy - Enemy object
@@ -270,7 +270,7 @@ class GameEngine extends EventEmitter {
     } else if (enemy.type === 'flying') {
       // Flying enemies move in a sine wave pattern
       enemy.y = enemy.y + Math.sin(Date.now() / 500) * 2;
-      
+
       if (enemy.direction === 'right') {
         enemy.velocityX = 2;
         if (enemy.x > 800) enemy.direction = 'left';
@@ -280,7 +280,7 @@ class GameEngine extends EventEmitter {
       }
     }
   }
-  
+
   /**
    * Apply physics to enemy entity
    * @param {Object} enemy - Enemy object
@@ -399,4 +399,4 @@ class GameEngine extends EventEmitter {
   }
 }
 
-module.exports = GameEngine;
+export default GameEngine;
