@@ -1,62 +1,43 @@
-Entity System Overview
-The entity system I've implemented follows object-oriented principles with four primary entity types that form the backbone of the game:
+# Entity System
 
-Player - Represents Luna the guinea pig, controlled by the player
-Enemy - Represents various adversaries with different behaviors
-Platform - Represents terrain and interactive surfaces
-Collectible - Represents items that can be collected for points or effects
+The client-side entity system provides four classes that manage visual state, animation, and client-side behavior. Server-side players and enemies are plain JS objects; these classes are used on the client only.
 
-Each entity type has been designed to be:
+## Classes
 
-Self-contained with all necessary state and behavior
-Flexible to support different variations through type properties
-Network-friendly with serialization methods
-Physics-ready with collision detection
+### Player (`player.js`)
+Represents Luna the Guinea Pig. Responsibilities:
+- Stores velocity, position, grounded/jumping state, direction
+- Tracks health, lives, score, carrots collected
+- Manages visual effects: animation frames, damage flashing (alternating visibility), invulnerability flag
+- Power-up system: `doubleJump`, `highJump`, `speedBoost` (timed via `setTimeout`); `health` (+25 HP); `extraLife`
+- `takeDamage(amount)`: Sets 1500ms invulnerability window via `setTimeout`, returns `false` if dead
+- `getNetworkState()`: Serializes position, velocity, direction, health, and animation state for sync
+- `getBoundingBox()`: Returns a slightly smaller box than visual size for forgiving collision feel
 
-The Player Class
-The Player class represents Luna, our guinea pig protagonist. It handles:
+### Enemy (`enemy.js`)
+Represents adversaries. Types: `basic`, `flying`, `shooter`, `boss`. Responsibilities:
+- Per-type default health, damage, attack range, and detection range
+- AI: `patrol()` moves back and forth within boundaries; `reactToPlayer()` switches to aggressive behavior when player is in detection range
+- `basic`: Chases directly, randomly jumps obstacles
+- `flying`: Chases in both axes with easing on Y
+- `shooter`: Maintains 150–250px standoff; attack logs the event (projectile creation is server-authoritative)
+- `boss`: Steady approach; increases speed below 30% health
+- `takeDamage()`: 200ms invulnerability to prevent multi-hit per frame; triggers `die()` at 0 HP
+- `getNetworkState()`: Includes position, velocity, direction, health, animation, aggressiveness
 
-Movement physics: Storing velocity, grounded state, and direction
-Game state: Tracking health, lives, score, and collectibles
-Visual effects: Managing animations, visibility, and damage flashing
-Power-up system: Supporting abilities like double jump and speed boost
+### Platform (`platform.js`)
+Represents terrain. Types: `ground`, `platform`, `moving`, `breaking`, `bouncy`. Responsibilities:
+- `updateMovingPlatform()`: Computes velocity toward waypoint, reverses at boundaries, applies to `x`/`y` each call
+- Breaking/bouncy behavior is enforced server-side; the client class tracks visual state
 
-The player can take damage, die and respawn, and collect power-ups that temporarily modify their abilities. The class also provides serialization for networking and proper collision detection.
-The Enemy Class
-The Enemy class defines adversaries with varying behaviors:
+### Collectible (`collectible.js`)
+Represents items. Types: `carrot`, `goldenCarrot`, `powerup`, `coin`, `key`, `gem`. Responsibilities:
+- Point values by type
+- Visual effects: bobbing animation, sparkle, collection animation
+- Power-up collectibles trigger `player.activatePowerUp()` when collected
 
-Enemy types: Supporting 'basic', 'flying', 'shooter', and 'boss' enemies
-AI behaviors: Patrolling, chasing, attacking based on enemy type
-Combat properties: Damage output, health, attack cooldowns
-Detection systems: Awareness of player proximity and aggressive state changes
-
-Enemies have sophisticated behaviors that change based on player distance. For example, flying enemies chase the player with a sine-wave pattern, while shooter enemies maintain distance and attack from afar.
-The Platform Class
-The Platform class creates the terrain and interactive surfaces:
-
-Platform types: Supporting 'ground', 'platform', 'moving', 'breaking', and 'bouncy' platforms
-Interactive behaviors: Platforms that move, break when stood on, or bounce the player
-Visual styling: Different appearance based on platform type
-Physics properties: Collision detection and player interaction adjustments
-
-The platform system is particularly flexible, allowing for dynamic level design with platforms that transform the gameplay experience. Moving platforms carry the player along, breaking platforms collapse after being stood on, and bouncy platforms propel the player higher.
-The Collectible Class
-The Collectible class handles items players can gather:
-
-Collectible types: 'carrot', 'goldenCarrot', 'powerup', 'coin', 'key', and 'gem'
-Value system: Different point values based on rarity
-Visual effects: Animations, bobbing, and sparkle effects
-Special behaviors: Power-ups that grant abilities, keys that unlock areas
-
-Collectibles create the reward system in the game, encouraging exploration and adding strategic elements with power-ups that change player capabilities.
-Integration Through index.js
-The index.js file provides a clean way to import all entities from a single source, making the codebase more maintainable and reducing import complexity throughout the project.
-How These Entities Work Together
-In the game loop we implemented earlier, these entities interact through:
-
-Collision detection: The physics system checks for intersections between entities
-Event handling: When entities collide, appropriate events fire (e.g., collecting items, taking damage)
-State updates: Each entity updates its state based on time and interactions
-Rendering: The SVG renderer displays each entity based on its current state
-
-This entity system provides a solid foundation for Luna's Adventure, enabling the core gameplay mechanics while remaining extensible for future enhancements. The separation of concerns between entities keeps the code organized and allows for easy additions of new enemy types, platform behaviors, or collectible effects.
+## Index (`index.js`)
+Re-exports all four classes for a single import point:
+```js
+import { Player, Enemy, Platform, Collectible } from './entities/index.js';
+```

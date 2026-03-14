@@ -151,6 +151,11 @@ class GameEngine extends EventEmitter {
             player.velocityY = 0;
             player.isJumping = false;
             player.isGrounded = true;
+
+            // Carry player with moving platform
+            if (platform.type === 'moving' && platform.velocityX) {
+              player.x += platform.velocityX;
+            }
           }
 
           // Start the crumble sequence when player first lands on a breaking platform
@@ -221,7 +226,8 @@ class GameEngine extends EventEmitter {
       direction: 'right',
       lives: 3,
       score: 0,
-      health: 100
+      health: 100,
+      invulnerableUntil: 0
     };
 
     this.players.set(id, newPlayer);
@@ -406,34 +412,74 @@ class GameEngine extends EventEmitter {
   }
   
   /**
-   * Update breaking-platform state machines each tick.
+   * Update platform state machines each tick (moving + breaking).
    */
   updatePlatforms() {
     const dt = 1 / this.fps;
     for (const platform of this.platforms) {
-      if (platform.type !== 'breaking') continue;
-
-      // Lazy-init state fields for platforms loaded from level JSON
-      if (platform.breakingState === undefined) {
-        platform.breakingState = 'stable';
-        platform.breakingTimer = 0;
-        platform.respawnTimer = 0;
-        platform.solid = true;
-      }
-
-      if (platform.breakingState === 'breaking') {
-        platform.breakingTimer += dt;
-        if (platform.breakingTimer >= 0.5) { // BREAKING_PLATFORM_DURATION
-          platform.breakingState = 'broken';
-          platform.solid = false;
-          platform.breakingTimer = 0;
+      if (platform.type === 'moving') {
+        // Lazy-init moving state
+        if (platform.moveStartX === undefined) {
+          platform.moveStartX = platform.x;
+          platform.moveStartY = platform.y;
+          platform.moveDirection = 1;
+          platform.moveSpeed = platform.moveSpeed || 1;
+          platform.moveDistance = platform.moveDistance || 100;
+          platform.movePauseTime = 0;
+          platform.movePauseDuration = 0.5;
+          platform.movingHorizontal = platform.movingHorizontal !== false;
+          platform.movingVertical = platform.movingVertical === true;
+          platform.velocityX = 0;
+          platform.velocityY = 0;
         }
-      } else if (platform.breakingState === 'broken') {
-        platform.respawnTimer += dt;
-        if (platform.respawnTimer >= 3.0) { // BREAKING_PLATFORM_RESPAWN
+
+        if (platform.movePauseTime > 0) {
+          platform.movePauseTime -= dt;
+          platform.velocityX = 0;
+          platform.velocityY = 0;
+        } else {
+          if (platform.movingHorizontal) {
+            const distX = Math.abs(platform.x - platform.moveStartX);
+            if (distX >= platform.moveDistance) {
+              platform.moveDirection *= -1;
+              platform.movePauseTime = platform.movePauseDuration;
+            }
+            platform.velocityX = platform.moveSpeed * platform.moveDirection;
+          }
+          if (platform.movingVertical) {
+            const distY = Math.abs(platform.y - platform.moveStartY);
+            if (distY >= platform.moveDistance) {
+              platform.moveDirection *= -1;
+              platform.movePauseTime = platform.movePauseDuration;
+            }
+            platform.velocityY = platform.moveSpeed * platform.moveDirection;
+          }
+          platform.x += platform.velocityX;
+          platform.y += platform.velocityY;
+        }
+      } else if (platform.type === 'breaking') {
+        // Lazy-init state fields for platforms loaded from level JSON
+        if (platform.breakingState === undefined) {
           platform.breakingState = 'stable';
-          platform.solid = true;
+          platform.breakingTimer = 0;
           platform.respawnTimer = 0;
+          platform.solid = true;
+        }
+
+        if (platform.breakingState === 'breaking') {
+          platform.breakingTimer += dt;
+          if (platform.breakingTimer >= 0.5) { // BREAKING_PLATFORM_DURATION
+            platform.breakingState = 'broken';
+            platform.solid = false;
+            platform.breakingTimer = 0;
+          }
+        } else if (platform.breakingState === 'broken') {
+          platform.respawnTimer += dt;
+          if (platform.respawnTimer >= 3.0) { // BREAKING_PLATFORM_RESPAWN
+            platform.breakingState = 'stable';
+            platform.solid = true;
+            platform.respawnTimer = 0;
+          }
         }
       }
     }
@@ -536,7 +582,11 @@ class GameEngine extends EventEmitter {
   playerDamage(playerId) {
     const player = this.players.get(playerId);
     if (!player) return;
-    
+
+    // Invulnerability guard — prevents per-frame damage spam
+    if (Date.now() < player.invulnerableUntil) return;
+    player.invulnerableUntil = Date.now() + 1500;
+
     player.health -= 20;
     
     if (player.health <= 0) {
@@ -568,6 +618,7 @@ class GameEngine extends EventEmitter {
       player.velocityX = 0;
       player.velocityY = 0;
       player.health = 100;
+      player.invulnerableUntil = Date.now() + 1500; // spawn grace period
       this.emit('player:respawn', { playerId, lives: player.lives });
     }
   }

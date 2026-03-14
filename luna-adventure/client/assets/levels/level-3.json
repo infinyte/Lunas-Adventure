@@ -1,0 +1,194 @@
+{
+  "id": "level-3",
+  "name": "Crystal Cave",
+  "width": 2600,
+  "height": 600,
+  "gravity": 0.5,
+  "platforms": [
+    {
+      "id": "ground-3a",
+      "x": 0,
+      "y": 500,
+      "width": 700,
+      "height": 100,
+      "type": "ground"
+    },
+    {
+      "id": "ground-3b",
+      "x": 860,
+      "y": 500,
+      "width": 680,
+      "height": 100,
+      "type": "ground"
+    },
+    {
+      "id": "ground-3c",
+      "x": 1700,
+      "y": 500,
+      "width": 900,
+      "height": 100,
+      "type": "ground"
+    },
+    {
+      "id": "platform-3a",
+      "x": 180,
+      "y": 420,
+      "width": 150,
+      "height": 20,
+      "type": "platform"
+    },
+    {
+      "id": "platform-3b",
+      "x": 410,
+      "y": 360,
+      "width": 140,
+      "height": 20,
+      "type": "breaking"
+    },
+    {
+      "id": "platform-3c",
+      "x": 640,
+      "y": 310,
+      "width": 140,
+      "height": 20,
+      "type": "moving"
+    },
+    {
+      "id": "platform-3d",
+      "x": 930,
+      "y": 290,
+      "width": 140,
+      "height": 20,
+      "type": "bouncy"
+    },
+    {
+      "id": "platform-3e",
+      "x": 1180,
+      "y": 240,
+      "width": 150,
+      "height": 20,
+      "type": "breaking"
+    },
+    {
+      "id": "platform-3f",
+      "x": 1430,
+      "y": 320,
+      "width": 150,
+      "height": 20,
+      "type": "moving"
+    },
+    {
+      "id": "platform-3g",
+      "x": 1810,
+      "y": 280,
+      "width": 150,
+      "height": 20,
+      "type": "platform"
+    },
+    {
+      "id": "platform-3h",
+      "x": 2050,
+      "y": 230,
+      "width": 150,
+      "height": 20,
+      "type": "bouncy"
+    }
+  ],
+  "collectibles": [
+    {
+      "id": "carrot-3-1",
+      "x": 220,
+      "y": 385,
+      "width": 30,
+      "height": 30,
+      "type": "carrot"
+    },
+    {
+      "id": "carrot-3-2",
+      "x": 450,
+      "y": 325,
+      "width": 30,
+      "height": 30,
+      "type": "carrot"
+    },
+    {
+      "id": "carrot-3-3",
+      "x": 970,
+      "y": 255,
+      "width": 30,
+      "height": 30,
+      "type": "carrot"
+    },
+    {
+      "id": "carrot-3-4",
+      "x": 1210,
+      "y": 205,
+      "width": 30,
+      "height": 30,
+      "type": "carrot"
+    },
+    {
+      "id": "carrot-3-5",
+      "x": 1860,
+      "y": 245,
+      "width": 30,
+      "height": 30,
+      "type": "carrot"
+    },
+    {
+      "id": "carrot-3-6",
+      "x": 2100,
+      "y": 195,
+      "width": 30,
+      "height": 30,
+      "type": "carrot"
+    }
+  ],
+  "enemies": [
+    {
+      "id": "enemy-3-1",
+      "x": 520,
+      "y": 460,
+      "width": 40,
+      "height": 40,
+      "type": "basic",
+      "patrolStart": 380,
+      "patrolEnd": 660
+    },
+    {
+      "id": "enemy-3-2",
+      "x": 1110,
+      "y": 460,
+      "width": 40,
+      "height": 40,
+      "type": "shooter",
+      "patrolStart": 930,
+      "patrolEnd": 1320
+    },
+    {
+      "id": "enemy-3-3",
+      "x": 1900,
+      "y": 240,
+      "width": 40,
+      "height": 40,
+      "type": "flying",
+      "patrolStart": 1760,
+      "patrolEnd": 2160,
+      "startY": 240
+    },
+    {
+      "id": "enemy-3-4",
+      "x": 2270,
+      "y": 460,
+      "width": 40,
+      "height": 40,
+      "type": "shooter",
+      "patrolStart": 2100,
+      "patrolEnd": 2460
+    }
+  ],
+  "spawnPoint": {
+    "x": 70,
+    "y": 420
+  }
+}

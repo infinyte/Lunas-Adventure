@@ -1,244 +1,88 @@
-Luna's Adventure: Complete Implementation
+# Luna's Adventure — Architecture and Implementation
 
-Luna's Adventure, a 2D platformer game featuring Luna the guinea pig.
+Luna's Adventure is a 2D side-scrolling platformer featuring Luna the Guinea Pig. It uses a server-authoritative multiplayer architecture with SVG-based rendering.
 
-HTML, CSS, and PWA Features
-The HTML Structure (index.html)
-I've created a comprehensive HTML document that serves as the foundation for the game. This file includes:
+## Architecture Overview
 
-Responsive meta tags to ensure the game works well on various devices
-Structured DOM elements for the game container, UI, loading screen, and mobile controls
-PWA (Progressive Web App) support with appropriate manifest links
-Service worker registration for offline functionality
-UI controls for sound, fullscreen, and mobile device input
+### Server-Authoritative Model
 
-The updated HTML file includes additional features for better PWA support:
+The game server (`server/services/gameEngine.js`) runs the authoritative game loop at 60 FPS using `setInterval`. All physics, collision detection, enemy AI, damage resolution, and projectile movement happen server-side. Clients receive full game state via Socket.IO `game:state` broadcasts and render it locally.
 
-App installation prompt that appears when the game can be installed on devices
-Offline notification system that alerts users when they lose internet connection
-Service worker update handling that notifies users when a new version is available
+The server entry point (`server/index.mjs`) bridges `gameEngine` EventEmitter events to Socket.IO broadcasts. Events include: `player:join`, `player:leave`, `player:damage`, `player:respawn`, `player:gameover`, `collectible:collected`, `enemy:defeated`, `projectile:fired`.
 
-Styling with CSS (main.css)
-The CSS file provides a cohesive visual style for the game with:
+### Client Rendering
 
-CSS variables for consistent theming and easy customization
-Responsive layouts that adapt to different screen sizes
-Animations and transitions for a polished feel
-Mobile-specific styling for touch controls
-Accessibility enhancements (high contrast, focus styles, reduced motion support)
-Organized structure with clear comments and logical grouping
+The client uses a layered SVG approach (`SVGRenderer` in `renderer.js`). Layers are stacked in z-order: background → platforms → collectibles → enemies → projectiles → players → UI. SVG elements are created once and repositioned each frame via `transform`, avoiding excessive DOM churn.
 
-Progressive Web App Features
-I've implemented two crucial files for PWA functionality:
+The client game loop runs via `requestAnimationFrame` in `game.js`, which reads the latest state received from the server and calls the renderer.
 
-Web App Manifest (manifest.json):
+### Entity System
 
-Defines how the app appears when installed on devices
-Specifies icons, colors, orientation, and other display properties
-Provides shortcuts for quick actions
-Sets up the appropriate app categorization
+Server-side players and enemies are plain JavaScript objects (not class instances). Client-side entity classes (`Player`, `Enemy`, `Platform`, `Collectible`) manage visual state, animations, and client-side prediction only.
 
+## Implemented Systems
 
-Service Worker (service-worker.js):
+### Platform Types
+- **ground / standard**: Static, solid collision surfaces
+- **moving**: Position updated each frame by velocity; reverses at patrol boundaries
+- **breaking**: State machine: `stable → breaking (0.5s) → broken (3s respawn) → stable`; non-solid while broken
+- **bouncy**: On player landing, reflects `velocityY` with 1.5× multiplier
 
-Enables offline gameplay through strategic caching
-Implements background sync for high scores and saved games
-Handles updates and installation lifecycle events
-Provides fallbacks for network failures
+### Enemy Types
+All enemies patrol when idle and react when the player enters detection range:
+- **basic** (detection: 150px): Chases directly, jumps to overcome obstacles
+- **flying** (detection: 200px): Chases in both axes; adjusts Y with easing
+- **shooter** (detection: 350px): Maintains 150–250px standoff distance; fires projectiles every 2 seconds
+- **boss** (detection: 400px): Steady approach; becomes more aggressive below 30% health
 
+### Projectile System
+Shooter enemies fire server-authoritative projectiles via `fireProjectile()`. Each projectile has a velocity vector toward the target, 3-second lifetime, and is removed on player hit or boundary exit. The client syncs projectiles from game state and renders them as SVG orbs.
 
+### Damage and Invulnerability
+Server players have `invulnerableUntil` (timestamp). `playerDamage()` checks `Date.now() < player.invulnerableUntil` before dealing damage, then sets a 1500ms immunity window. A matching grace period applies on respawn.
 
-JavaScript Game Components
-InputHandler (inputHandler.js)
-The input handler manages all user interactions through:
+### Level Completion
+`checkLevelComplete()` in `game.js` fires after every carrot collection and enemy defeat. It checks `carrotsCollected >= totalCarrots` AND `enemies.size === 0`. A `levelComplete` flag prevents double-triggering.
 
-Keyboard controls with support for arrow keys, WASD, and spacebar
-Mobile touch controls with on-screen buttons
-Event dispatching to notify other components of user actions
-State management to track which keys/buttons are currently pressed
-Device detection to show/hide mobile controls appropriately
+### Power-Up System
+Power-ups activate via `Player.activatePowerUp(type, duration)`. Supported types: `doubleJump`, `highJump`, `speedBoost` (timed), `health` (+25 HP), `extraLife`.
 
-Physics Engine (physics.js)
-The physics engine handles all movement and collisions with:
+## File Reference
 
-Gravity and friction calculations for realistic movement
-Collision detection between game entities
-Spatial partitioning for efficient collision checks in larger levels
-Ray casting for line-of-sight calculations and projectiles
-Debug visualization options for development
+| File | Purpose |
+|------|---------|
+| `server/index.mjs` | Express + Socket.IO entry point |
+| `server/services/gameEngine.js` | Authoritative game loop, physics, AI, projectiles |
+| `server/services/assetManager.js` | Level JSON loading |
+| `server/services/stateManager.js` | SQLite high score persistence |
+| `client/scripts/game.js` | Client orchestrator, socket event handling |
+| `client/scripts/renderer.js` | Layered SVG renderer |
+| `client/scripts/physics.js` | Client-side physics prediction |
+| `client/scripts/inputHandler.js` | Keyboard and touch input |
+| `client/scripts/entities/player.js` | Player class (visual state, power-ups) |
+| `client/scripts/entities/enemy.js` | Enemy class (AI behaviors, attack logic) |
+| `client/scripts/entities/platform.js` | Platform class (moving platform logic) |
+| `client/scripts/entities/collectible.js` | Collectible class (types, values) |
+| `shared/constants.js` | All shared constants (physics, events, dimensions) |
+| `graphics/` | All SVG spritesheets and asset files |
+| `client/assets/levels/` | Level JSON files (currently: `level-1.json`) |
 
-How These Components Work Together
-These files complete the Luna's Adventure game architecture, working alongside the previously implemented entity system and game logic:
+## Graphics Assets
 
-Start Sequence:
+All SVG assets are in `graphics/`. Spritesheets use horizontal strips where each frame is a fixed width slice. Naming conventions:
+- `luna_spritesheet.svg` — player animations
+- `enemy_{type}_spritesheet.svg` — per-enemy-type animations
+- `platform_{type}_spritesheet.svg` — animated platforms
+- `collectible_{type}.svg` — static collectible icons
+- `powerup_{type}.svg` — power-up icons
+- `projectile_shooter.svg` — shooter enemy projectile
+- `background_{name}.svg` — level backgrounds
+- `ui_{name}.svg` — HUD elements
 
-HTML loads and shows loading screen
-Service worker registers and caches assets
-Game initializes and loads resources
-Player sees the start screen
+## Known Limitations
 
-
-Gameplay Loop:
-
-InputHandler captures user input
-Game logic processes player actions
-Physics engine updates positions and resolves collisions
-Renderer draws everything to the screen
-Loop repeats for smooth animation
-
-
-PWA Features:
-
-Game works offline thanks to the service worker
-Players can install it on their devices
-Scores and progress sync when online
-
-
-
-Technical Highlights
-Some of the advanced techniques used in these implementations include:
-
-Event-driven architecture for loose coupling between components
-Spatial partitioning for efficient collision detection
-IndexedDB integration for persistent offline data storage
-Background sync capabilities for when connection is restored
-Modern ES6+ JavaScript features like classes and promises
-Responsive design principles for cross-device compatibility
-
-The implementation is also structured to be maintainable and extensible, with clear separation of concerns, comprehensive commenting, and consistent coding patterns.
-
-## Issues
-
-Architecture & Design Issues
-1. Missing Asset Loading System
-The game assumes assets will be available but lacks a formal loading system to fetch and manage them. This could lead to errors if assets aren't loaded before they're needed.
-Solution: Implement an AssetManager class that:
-
-Tracks loading progress for the loading screen
-Provides a central repository for all game assets
-Handles loading errors gracefully
-
-2. Interaction Between Components
-While we have an event-driven architecture, some component interactions aren't fully defined. For example:
-
-The game.js file references direct interactions with the physics system, but doesn't clearly document how the physics system communicates back.
-The entity system and renderer don't have clearly defined interfaces for synchronizing state.
-
-Solution: Formalize the public APIs for each component and document how they should interact.
-Implementation Issues
-3. Physics Engine Limitations
-The physics engine has several issues:
-
-The collision resolution doesn't handle multiple simultaneous collisions correctly, which could lead to the player getting stuck between objects.
-No handling for one-way platforms (platforms you can jump through from below).
-
-Solution: Improve the collision resolution algorithm to handle multiple collisions and implement one-way platform detection.
-4. Incomplete Input Handling
-The input handler doesn't fully address:
-
-Gamepad support, which would enhance the gaming experience
-Touch gestures like swipe-to-jump, which would be more intuitive on mobile
-Handling for when a user taps multiple controls simultaneously on touch devices
-
-Solution: Extend the InputHandler class to support additional input methods and improve multi-touch handling.
-5. Networking Issues
-The Socket.io implementation has flaws:
-
-No handling for reconnection timeouts or attempts
-No message queuing for offline state
-Lack of delta compression for state updates
-
-Solution: Implement more robust network error handling and optimize network traffic.
-Performance Concerns
-6. Render Performance
-The SVG-based renderer could face performance issues on mobile devices with:
-
-Too many SVG elements in complex scenes
-No object pooling for frequently created entities
-No level chunking for large levels
-
-Solution: Implement object pooling for entities and add level chunking to only render what's visible.
-7. Memory Management
-Missing memory management could lead to leaks:
-
-Entities aren't properly disposed when removed
-Event listeners aren't always cleaned up
-The spatial partitioning grid isn't optimized for large worlds
-
-Solution: Add proper disposal methods to all classes and implement entity lifecycle management.
-Compatibility & Standards Issues
-8. Browser Compatibility Gaps
-The code assumes modern browser features without fallbacks:
-
-No polyfills for older browsers
-Reliance on modern JavaScript features without transpilation setup
-Potential SVG rendering inconsistencies across browsers
-
-Solution: Add a compilation step with Babel and implement feature detection with fallbacks.
-9. Accessibility Limitations
-The game has accessibility shortcomings:
-
-Keyboard controls can't be remapped
-No high-contrast mode for visually impaired users
-Missing alternative text for game elements
-
-Solution: Implement control remapping, high-contrast mode, and better screen reader support.
-Missing Features
-10. Save System Implementation
-The service worker references a save system that's not fully implemented in the game logic:
-
-No clear mechanism for saving game state
-Missing UI for load/save operations
-Incomplete IndexedDB integration in the game logic
-
-Solution: Complete the save/load system with proper UI integration.
-11. Sound System
-While there are references to sound in the code, we don't have:
-
-A complete sound management system
-Volume controls
-Music stream handling
-
-Solution: Implement a comprehensive SoundManager class that handles both sound effects and music.
-Security Concerns
-12. Client Authority
-The game design gives too much authority to the client:
-
-Player movement and position are client-authoritative
-No server-side validation for collectible acquisition
-Potential for cheating in multiplayer scenarios
-
-Solution: Implement server validation for critical game events and move more logic server-side.
-13. Data Storage Security
-The local storage and IndexedDB usage lacks:
-
-Data sanitization before storage
-Encryption for sensitive data
-Size limits to prevent storage quota issues
-
-Solution: Add data validation, consider encryption for user data, and implement storage limits.
-Testing Gaps
-14. Missing Test Suite
-The project lacks:
-
-Unit tests for core game components
-Integration tests for component interactions
-Performance benchmarks
-
-Solution: Implement a testing framework covering unit, integration, and performance tests.
-Documentation Needs
-15. Incomplete Documentation
-While the code is well-commented, the project would benefit from:
-
-A formal API documentation using JSDoc
-A development guide for contributors
-User documentation explaining game mechanics
-
-Solution: Generate comprehensive documentation and create contribution guidelines.
-Conclusion
-Luna's Adventure has a strong foundation with well-structured code and thoughtful architecture. Addressing these issues would significantly improve the game's reliability, performance, and user experience. The most critical areas to address first are:
-
-The asset loading system
-Physics engine collision improvements
-The save/load system completion
-Security concerns for multiplayer scenarios
+- Only one level exists (`level-1.json`). Additional levels need to be authored.
+- Sound and music systems are not implemented.
+- No online leaderboards; high scores are local SQLite only.
+- Test coverage is low (~10% statements). Coverage thresholds in `package.json` are set conservatively.
+- The client `physics.js` prediction does not fully reconcile with server state on every tick.

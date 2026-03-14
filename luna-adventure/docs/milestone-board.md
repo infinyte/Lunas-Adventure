@@ -2,101 +2,85 @@
 
 This checklist tracks implementation progress in actionable phases.
 
-## Now
+## Completed
 
 ### [x] Lock stable baseline build and test gate
-- [x] Run `Set-Location c:/work/Lunas-Adventure/luna-adventure`
-- [x] Run `npm run build`
-- [x] Run `npm run test`
-- [x] Run `npm run validate`
+- [x] Build exits with code 0
+- [x] Test suite passes
+- [x] Validate reports required files found
 
-Acceptance criteria:
-- [x] Build exits with code 0.
-- [x] Test exits with code 0 with 5 suites and 12 tests passing.
-- [x] No duplicated `dist` test suites are discovered.
-- [x] Validate reports required files found.
+### [x] Add core game orchestration tests
+- [x] `client/__tests__/game.orchestration.test.js` — start/pause/resume/socket state tests
+- [x] `server/__tests__/gameEngine.test.js`
+- [x] `server/__tests__/assetManager.test.js`
+- [x] `server/__tests__/stateManager.test.js`
+- [x] `client/__tests__/inputHandler.test.js`
+- [x] `client/__tests__/physics.test.js`
+- [x] 6 suites, 16 tests passing
 
-### [x] Add core game orchestration tests to improve practical coverage
-- [x] Create `client/__tests__/game.orchestration.test.js`
-- [x] Add at least 4 tests for start/pause/resume/socket-driven state updates
-- [x] Run `npm run client:test`
-- [x] Run `npm run test`
+### [x] Fix moving platform positions never updating
+- [x] `platform.js` `updateMovingPlatform()` now applies velocity to `x`/`y`
 
-Acceptance criteria:
-- [x] New orchestration tests pass.
-- [x] Full suite remains green.
+### [x] Fix bouncy platforms not bouncing
+- [x] Server `checkCollisions()` reflects `velocityY` with 1.5× multiplier for `bouncy` type
 
-### [ ] Raise thresholds one step after additional tests land
-- [ ] Update `package.json` coverage thresholds to:
-- [ ] `statements: 8`
-- [ ] `branches: 5`
-- [ ] `functions: 8`
-- [ ] `lines: 8`
-- [ ] Run `npm run test`
+### [x] Fix breaking platforms not progressing on server
+- [x] `updatePlatforms()` implements `stable → breaking → broken → stable` state machine
+- [x] `solid === false` guard skips collision while broken
 
-Acceptance criteria:
-- [ ] Thresholds pass without rollback.
+### [x] Implement shooter enemy projectile system end-to-end
+- [x] Server `fireProjectile()`, `updateProjectiles()` methods
+- [x] `projectile:fired` event forwarded via Socket.IO
+- [x] Client renders projectiles from game state as SVG orbs
+- [x] Projectile hits deal damage via `playerDamage()`
+
+### [x] Fix player invulnerability never resetting
+- [x] Client `Player.takeDamage()` sets 1500ms `setTimeout` to clear flags
+- [x] Server `playerDamage()` checks/sets `invulnerableUntil` timestamp
+- [x] Respawn grace period (1500ms) added in `playerDeath()`
+
+### [x] Fix level completion detection
+- [x] `checkLevelComplete()` checks all carrots + all enemies defeated
+- [x] `levelComplete` flag prevents double-trigger
+- [x] `carrotsCollected` resets on level load
+
+### [x] Fix enemy melee attack dealing no effective damage
+- [x] Server `playerDamage()` invulnerability cooldown prevents per-frame spam
+
+### [x] Graphics remediation
+- [x] `projectile_shooter.svg` created
+- [x] `enemy_flying_spritesheet.svg` trimmed to correct dimensions
+- [x] Duplicate `SPRITE_REQUIREMENTS.md` removed
+
+## Now
+
+### [x] Raise coverage thresholds
+- [x] Update `package.json` coverage thresholds: statements 8, branches 5, functions 8, lines 8
+- [x] Add targeted tests to cover new gameplay logic (projectiles, platform states, level completion)
 
 ## Next
 
-### [ ] Implement remaining gameplay TODOs with tests
-- [ ] Implement audio hook points and level completion logic in `client/scripts/game.js`
-- [ ] Implement shooter projectile behavior in `client/scripts/entities/enemy.js`
-- [ ] Add focused tests for each behavior in `client/__tests__/`
-- [ ] Run `npm run test`
+### [x] Add server integration tests for API and socket flows
+- [x] `GET /api/levels` and `GET /api/highscores` via supertest
+- [x] At least one socket flow test (`player:move` → `game:state`)
 
-Acceptance criteria:
-- [ ] Previously flagged gameplay TODO behavior is implemented.
-- [ ] New behavior-specific tests pass.
+### [x] Author additional levels
+- [x] level-2.json (Forest)
+- [x] level-3.json (Cave)
+- [x] level-4.json (Final)
 
-### [ ] Add server integration tests for API and socket flows
-- [ ] Add tests for `GET /api/levels` and `GET /api/highscores` using `supertest`
-- [ ] Add at least one socket flow test (`player:move` -> `game:state`)
-- [ ] Run `npm run server:test`
-- [ ] Run `npm run test`
-
-Acceptance criteria:
-- [ ] API endpoint tests pass for core success path.
-- [ ] Socket flow test verifies event propagation.
-- [ ] Full suite remains green.
-
-### [ ] Tighten quality bar after integration tests
-- [ ] Update `package.json` coverage thresholds to:
-- [ ] `statements: 12`
-- [ ] `branches: 8`
-- [ ] `functions: 12`
-- [ ] `lines: 12`
-- [ ] Run `npm run test`
-
-Acceptance criteria:
-- [ ] Increased thresholds pass with no skipped suites.
+### [x] Implement sound and music system
+- [x] `SoundManager` class for effects and music
+- [x] Hook into game events (jump, collect, damage, level complete)
 
 ## Later
 
-### [ ] Add CI pipeline for repeatable checks
-- [ ] Configure CI command sequence:
-- [ ] `npm ci`
-- [ ] `npm run build`
-- [ ] `npm run test`
-- [ ] `npm run validate`
+### [ ] Add CI pipeline
+- [ ] `npm ci` → `npm run build` → `npm test` → `npm run validate`
 
-Acceptance criteria:
-- [ ] CI reproduces local pass/fail outcomes on clean install.
-- [ ] Pull requests fail fast on build or test regressions.
-
-### [ ] Complete deployment readiness and container parity
+### [ ] Container deployment readiness
 - [ ] Finalize `Dockerfile` and `docker-compose.yml`
-- [ ] Run `docker compose up --build`
-- [ ] Verify app endpoint and socket connectivity
+- [ ] Verify socket connectivity in containerized environment
 
-Acceptance criteria:
-- [ ] Containerized app starts reliably.
-- [ ] Runtime behavior matches documented setup.
-
-### [ ] Align docs with current scripts and workflow
-- [ ] Reconcile command examples in `README.md`, `INSTALL.md`, and `ProjectStructure.txt`
-- [ ] Verify commands by running `npm run build` and `npm run test`
-
-Acceptance criteria:
-- [ ] Documentation commands work exactly as written.
-- [ ] No stale script/path references remain.
+### [ ] Online leaderboards
+- [ ] Replace SQLite-only high scores with server-side API

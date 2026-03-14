@@ -1,0 +1,236 @@
+{
+  "id": "level-4",
+  "name": "Final Ascent",
+  "width": 3000,
+  "height": 600,
+  "gravity": 0.5,
+  "platforms": [
+    {
+      "id": "ground-4a",
+      "x": 0,
+      "y": 500,
+      "width": 580,
+      "height": 100,
+      "type": "ground"
+    },
+    {
+      "id": "ground-4b",
+      "x": 760,
+      "y": 500,
+      "width": 640,
+      "height": 100,
+      "type": "ground"
+    },
+    {
+      "id": "ground-4c",
+      "x": 1650,
+      "y": 500,
+      "width": 520,
+      "height": 100,
+      "type": "ground"
+    },
+    {
+      "id": "ground-4d",
+      "x": 2360,
+      "y": 500,
+      "width": 640,
+      "height": 100,
+      "type": "ground"
+    },
+    {
+      "id": "platform-4a",
+      "x": 150,
+      "y": 420,
+      "width": 150,
+      "height": 20,
+      "type": "moving"
+    },
+    {
+      "id": "platform-4b",
+      "x": 360,
+      "y": 360,
+      "width": 140,
+      "height": 20,
+      "type": "breaking"
+    },
+    {
+      "id": "platform-4c",
+      "x": 580,
+      "y": 300,
+      "width": 140,
+      "height": 20,
+      "type": "bouncy"
+    },
+    {
+      "id": "platform-4d",
+      "x": 910,
+      "y": 300,
+      "width": 140,
+      "height": 20,
+      "type": "moving"
+    },
+    {
+      "id": "platform-4e",
+      "x": 1170,
+      "y": 240,
+      "width": 150,
+      "height": 20,
+      "type": "breaking"
+    },
+    {
+      "id": "platform-4f",
+      "x": 1470,
+      "y": 320,
+      "width": 150,
+      "height": 20,
+      "type": "bouncy"
+    },
+    {
+      "id": "platform-4g",
+      "x": 1740,
+      "y": 260,
+      "width": 150,
+      "height": 20,
+      "type": "moving"
+    },
+    {
+      "id": "platform-4h",
+      "x": 1990,
+      "y": 220,
+      "width": 150,
+      "height": 20,
+      "type": "breaking"
+    },
+    {
+      "id": "platform-4i",
+      "x": 2280,
+      "y": 280,
+      "width": 150,
+      "height": 20,
+      "type": "platform"
+    },
+    {
+      "id": "platform-4j",
+      "x": 2550,
+      "y": 220,
+      "width": 180,
+      "height": 20,
+      "type": "platform"
+    }
+  ],
+  "collectibles": [
+    {
+      "id": "carrot-4-1",
+      "x": 180,
+      "y": 385,
+      "width": 30,
+      "height": 30,
+      "type": "carrot"
+    },
+    {
+      "id": "carrot-4-2",
+      "x": 390,
+      "y": 325,
+      "width": 30,
+      "height": 30,
+      "type": "carrot"
+    },
+    {
+      "id": "carrot-4-3",
+      "x": 610,
+      "y": 265,
+      "width": 30,
+      "height": 30,
+      "type": "carrot"
+    },
+    {
+      "id": "carrot-4-4",
+      "x": 1200,
+      "y": 205,
+      "width": 30,
+      "height": 30,
+      "type": "carrot"
+    },
+    {
+      "id": "carrot-4-5",
+      "x": 1770,
+      "y": 225,
+      "width": 30,
+      "height": 30,
+      "type": "carrot"
+    },
+    {
+      "id": "carrot-4-6",
+      "x": 2020,
+      "y": 185,
+      "width": 30,
+      "height": 30,
+      "type": "carrot"
+    },
+    {
+      "id": "carrot-4-7",
+      "x": 2590,
+      "y": 185,
+      "width": 30,
+      "height": 30,
+      "type": "carrot"
+    }
+  ],
+  "enemies": [
+    {
+      "id": "enemy-4-1",
+      "x": 430,
+      "y": 460,
+      "width": 40,
+      "height": 40,
+      "type": "basic",
+      "patrolStart": 290,
+      "patrolEnd": 560
+    },
+    {
+      "id": "enemy-4-2",
+      "x": 980,
+      "y": 460,
+      "width": 40,
+      "height": 40,
+      "type": "shooter",
+      "patrolStart": 810,
+      "patrolEnd": 1220
+    },
+    {
+      "id": "enemy-4-3",
+      "x": 1620,
+      "y": 460,
+      "width": 40,
+      "height": 40,
+      "type": "shooter",
+      "patrolStart": 1460,
+      "patrolEnd": 1860
+    },
+    {
+      "id": "enemy-4-4",
+      "x": 2120,
+      "y": 180,
+      "width": 40,
+      "height": 40,
+      "type": "flying",
+      "patrolStart": 1940,
+      "patrolEnd": 2320,
+      "startY": 180
+    },
+    {
+      "id": "enemy-4-boss",
+      "x": 2700,
+      "y": 460,
+      "width": 60,
+      "height": 60,
+      "type": "boss",
+      "patrolStart": 2520,
+      "patrolEnd": 2920
+    }
+  ],
+  "spawnPoint": {
+    "x": 80,
+    "y": 420
+  }
+}

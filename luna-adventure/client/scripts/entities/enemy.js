@@ -52,6 +52,7 @@ class Enemy {
     this.attackRange = this.getAttackRange();
     this.detectionRange = this.getDetectionRange();
     this.isAggressive = false;
+    this.pendingProjectile = null;
 
     console.log(`Enemy (${id}) of type ${type} created at position (${x}, ${y})`);
   }
@@ -333,6 +334,8 @@ class Enemy {
             return false;
         }
 
+        this.pendingProjectile = null;
+
         // Set attack animation
         this.animations.current = 'attack';
         this.animations.frame = 0;
@@ -341,9 +344,11 @@ class Enemy {
         switch (this.type) {
             case 'shooter':
                 this.attackCooldown = 2.0; // Shooters attack less often
-                // Projectile creation is authoritative on the server (gameEngine.fireProjectile).
-                // The client receives projectiles via game state and renders them via renderProjectile.
-                break;
+                this.pendingProjectile = this.createShooterProjectile(player);
+                if (typeof this.onProjectileFired === 'function') {
+                    this.onProjectileFired(this.pendingProjectile);
+                }
+                return this.pendingProjectile;
 
             case 'boss':
                 this.attackCooldown = 1.5; // Bosses have moderate cooldown
@@ -359,6 +364,37 @@ class Enemy {
         }
 
         return true;
+    }
+
+    /**
+     * Build a projectile payload for shooter enemies.
+     * @param {Object} player - Player target
+     * @returns {Object} Projectile metadata
+     */
+    createShooterProjectile(player) {
+        const originX = this.x + this.width / 2;
+        const originY = this.y + this.height / 2;
+        const targetX = player.x + ((player.width || 0) / 2);
+        const targetY = player.y + ((player.height || 0) / 2);
+
+        const dx = targetX - originX;
+        const dy = targetY - originY;
+        const distance = Math.sqrt((dx * dx) + (dy * dy)) || 1;
+        const speed = 8;
+
+        return {
+            id: `${this.id}-proj-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+            enemyId: this.id,
+            type: 'shooter',
+            x: originX,
+            y: originY,
+            width: 12,
+            height: 12,
+            velocityX: (dx / distance) * speed,
+            velocityY: (dy / distance) * speed,
+            damage: this.damage,
+            ttl: 3000
+        };
     }
 
     /**

@@ -1,0 +1,160 @@
+{
+  "id": "level-2",
+  "name": "Forest Run",
+  "width": 2400,
+  "height": 600,
+  "gravity": 0.5,
+  "platforms": [
+    {
+      "id": "ground-2a",
+      "x": 0,
+      "y": 500,
+      "width": 900,
+      "height": 100,
+      "type": "ground"
+    },
+    {
+      "id": "ground-2b",
+      "x": 1020,
+      "y": 500,
+      "width": 1380,
+      "height": 100,
+      "type": "ground"
+    },
+    {
+      "id": "platform-2a",
+      "x": 220,
+      "y": 410,
+      "width": 180,
+      "height": 20,
+      "type": "platform"
+    },
+    {
+      "id": "platform-2b",
+      "x": 520,
+      "y": 350,
+      "width": 160,
+      "height": 20,
+      "type": "moving"
+    },
+    {
+      "id": "platform-2c",
+      "x": 760,
+      "y": 300,
+      "width": 160,
+      "height": 20,
+      "type": "bouncy"
+    },
+    {
+      "id": "platform-2d",
+      "x": 980,
+      "y": 260,
+      "width": 160,
+      "height": 20,
+      "type": "breaking"
+    },
+    {
+      "id": "platform-2e",
+      "x": 1250,
+      "y": 330,
+      "width": 180,
+      "height": 20,
+      "type": "platform"
+    },
+    {
+      "id": "platform-2f",
+      "x": 1540,
+      "y": 280,
+      "width": 180,
+      "height": 20,
+      "type": "moving"
+    },
+    {
+      "id": "platform-2g",
+      "x": 1820,
+      "y": 240,
+      "width": 160,
+      "height": 20,
+      "type": "platform"
+    }
+  ],
+  "collectibles": [
+    {
+      "id": "carrot-2-1",
+      "x": 280,
+      "y": 375,
+      "width": 30,
+      "height": 30,
+      "type": "carrot"
+    },
+    {
+      "id": "carrot-2-2",
+      "x": 570,
+      "y": 315,
+      "width": 30,
+      "height": 30,
+      "type": "carrot"
+    },
+    {
+      "id": "carrot-2-3",
+      "x": 1020,
+      "y": 225,
+      "width": 30,
+      "height": 30,
+      "type": "carrot"
+    },
+    {
+      "id": "carrot-2-4",
+      "x": 1600,
+      "y": 245,
+      "width": 30,
+      "height": 30,
+      "type": "carrot"
+    },
+    {
+      "id": "carrot-2-5",
+      "x": 1880,
+      "y": 205,
+      "width": 30,
+      "height": 30,
+      "type": "carrot"
+    }
+  ],
+  "enemies": [
+    {
+      "id": "enemy-2-1",
+      "x": 460,
+      "y": 460,
+      "width": 40,
+      "height": 40,
+      "type": "basic",
+      "patrolStart": 320,
+      "patrolEnd": 620
+    },
+    {
+      "id": "enemy-2-2",
+      "x": 980,
+      "y": 220,
+      "width": 40,
+      "height": 40,
+      "type": "flying",
+      "patrolStart": 900,
+      "patrolEnd": 1140,
+      "startY": 220
+    },
+    {
+      "id": "enemy-2-3",
+      "x": 1700,
+      "y": 460,
+      "width": 40,
+      "height": 40,
+      "type": "shooter",
+      "patrolStart": 1560,
+      "patrolEnd": 1880
+    }
+  ],
+  "spawnPoint": {
+    "x": 60,
+    "y": 420
+  }
+}

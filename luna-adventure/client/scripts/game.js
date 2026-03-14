@@ -13,6 +13,7 @@
 import SVGRenderer from './renderer.js';
 import InputHandler from './inputHandler.js';
 import Physics from './physics.js';
+import SoundManager from './soundManager.js';
 import { Player } from './entities/player.js';
 import { Enemy } from './entities/enemy.js';
 import { Platform } from './entities/platform.js';
@@ -34,12 +35,14 @@ class Game {
       currentLevel: null,
       isRunning: false,
       isPaused: false,
+      levelComplete: false,
       gameTime: 0,
       score: 0,
       playerLives: 3,
       playerHealth: 100,
       carrotsCollected: 0,
-      totalCarrots: 0
+      totalCarrots: 0,
+      totalEnemies: 0
     };
 
     // Game settings
@@ -70,6 +73,7 @@ class Game {
     this.renderer = null;
     this.inputHandler = null;
     this.physics = null;
+    this.soundManager = null;
     this.socket = null;
     
     // Player information
@@ -112,6 +116,13 @@ class Game {
         gravity: 0.5,
         friction: 0.8,
         debug: this.settings.debug
+      });
+
+      // Initialize sound manager
+      this.soundManager = new SoundManager({
+        enabled: this.settings.sound,
+        musicEnabled: this.settings.music,
+        basePath: 'assets'
       });
       
       // Connect to server
@@ -671,6 +682,54 @@ class Game {
       console.log(`Notification (${type}): ${message}`);
     }
   }
+
+  /**
+   * Trigger an audio hook for external sound systems.
+   * @param {string} hookName - Logical audio event name
+   * @param {Object} metadata - Additional hook payload
+   * @returns {boolean} True when at least one audio hook target was notified
+   */
+  playAudioHook(hookName, metadata = {}) {
+    if (!this.settings.sound) return false;
+
+    const payload = {
+      hook: hookName,
+      levelId: this.state.currentLevel,
+      score: this.state.score,
+      ...metadata
+    };
+
+    let notified = false;
+
+    if (typeof this.onAudioHook === 'function') {
+      this.onAudioHook(payload);
+      notified = true;
+    }
+
+    if (this.soundManager) {
+      if (typeof this.soundManager.playEffect === 'function') {
+        this.soundManager.playEffect(hookName, payload);
+        notified = true;
+      } else if (typeof this.soundManager.playSound === 'function') {
+        this.soundManager.playSound(hookName, payload);
+        notified = true;
+      } else if (typeof this.soundManager.play === 'function') {
+        this.soundManager.play(hookName, payload);
+        notified = true;
+      }
+    }
+
+    if (
+      typeof document !== 'undefined' &&
+      typeof document.dispatchEvent === 'function' &&
+      typeof CustomEvent === 'function'
+    ) {
+      document.dispatchEvent(new CustomEvent('game:audio', { detail: payload }));
+      notified = true;
+    }
+
+    return notified;
+  }
   
   /**
    * Start the game
@@ -701,6 +760,10 @@ class Game {
     if (this.socket) {
       this.socket.emit('game:start');
     }
+
+    if (this.soundManager && this.settings.music) {
+      this.soundManager.playMusic('gameplay_theme');
+    }
     
     console.log('Game started!');
     this.showNotification('Game started!', 'success');
@@ -726,6 +789,10 @@ class Game {
     // Update state
     this.state.isRunning = false;
     this.state.isPaused = false;
+
+    if (this.soundManager) {
+      this.soundManager.stopMusic();
+    }
     
     console.log('Game stopped');
   }
@@ -746,6 +813,10 @@ class Game {
     
     // Update state
     this.state.isPaused = true;
+
+    if (this.soundManager) {
+      this.soundManager.pauseMusic();
+    }
     
     // Show pause screen
     this.showPauseScreen();
@@ -766,6 +837,10 @@ class Game {
     
     // Update state
     this.state.isPaused = false;
+
+    if (this.soundManager) {
+      this.soundManager.resumeMusic();
+    }
     
     // Resume game loop
     this.lastFrameTime = performance.now();
@@ -1341,6 +1416,12 @@ class Game {
       this.state.platforms.set(platform.id, platform);
     }
     
+    // Reset per-level progress counters
+    this.state.carrotsCollected = 0;
+    this.state.totalCarrots = 0;
+    this.state.totalEnemies = levelData.enemies ? levelData.enemies.length : 0;
+    this.state.levelComplete = false;
+
     // Create collectibles
     this.state.totalCarrots = 0;
     for (const collectibleData of levelData.collectibles) {
@@ -1498,6 +1579,11 @@ class Game {
     this.localPlayer.velocityY = -this.constants.JUMP_FORCE;
     this.localPlayer.isJumping = true;
     this.localPlayer.isGrounded = false;
+
+    this.playAudioHook('player:jump', {
+      jumpForce: this.constants.JUMP_FORCE,
+      playerId: this.playerId
+    });
     
     // Send jump event to server
     if (this.socket) {
@@ -1516,6 +1602,11 @@ class Game {
     
     // Reduce health
     this.state.playerHealth -= 20;
+
+    this.playAudioHook('player:damage', {
+      remainingHealth: this.state.playerHealth,
+      playerId: this.playerId
+    });
     
     // Make player temporarily invulnerable
     this.localPlayer.invulnerable = true;
@@ -1593,7 +1684,10 @@ class Game {
     
     // Play sound effect
     if (this.settings.sound) {
-      // TODO: Play sound
+      this.playAudioHook('collectible:carrot', {
+        collectibleId: carrotId,
+        points: 100
+      });
     }
     
     // Show score popup
@@ -1604,12 +1698,8 @@ class Game {
       this.socket.emit('collectible:collected', { id: carrotId });
     }
     
-    // Check if all carrots are collected
-    if (this.state.carrotsCollected >= this.state.totalCarrots) {
-      this.showNotification('All carrots collected!', 'success');
-      
-      // TODO: Complete level if all objectives met
-    }
+    // Check level objectives after every collection
+    this.checkLevelComplete();
   }
   
   /**
@@ -1627,7 +1717,10 @@ class Game {
     
     // Play sound effect
     if (this.settings.sound) {
-      // TODO: Play sound
+      this.playAudioHook('enemy:defeated', {
+        enemyId,
+        points: 200
+      });
     }
     
     // Show score popup
@@ -1637,6 +1730,9 @@ class Game {
     if (this.socket) {
       this.socket.emit('enemy:defeated', { id: enemyId });
     }
+
+    // Check level objectives after every enemy defeat
+    this.checkLevelComplete();
   }
   
   /**
@@ -1738,20 +1834,60 @@ class Game {
   }
   
   /**
+   * Check whether all level objectives are satisfied and trigger completion.
+   * Called after every carrot collection and every enemy defeat.
+   */
+  checkLevelComplete() {
+    // Guard: only fire once, and only while the level is actively running
+    if (this.state.levelComplete || !this.state.isRunning) return;
+
+    const collectedCarrots = Array
+      .from(this.state.collectibles.values())
+      .filter((collectible) => collectible.type === 'carrot' && collectible.collected)
+      .length;
+
+    const carrotProgress = Math.max(this.state.carrotsCollected, collectedCarrots);
+
+    const allCarrotsCollected =
+      this.state.totalCarrots === 0 ||
+      carrotProgress >= this.state.totalCarrots;
+
+    const allEnemiesDefeated =
+      this.state.totalEnemies === 0 ||
+      this.state.enemies.size === 0;
+
+    if (allCarrotsCollected && allEnemiesDefeated) {
+      if (this.state.totalCarrots > 0) {
+        this.showNotification('All carrots collected!', 'success');
+      }
+      this.completeLevel();
+    }
+  }
+
+  /**
    * Complete the current level
    */
   completeLevel() {
     console.log('Level completed!');
-    
-    // Stop the game
+
+    // Mark complete before stopping so checkLevelComplete guard works
+    this.state.levelComplete = true;
+
+    this.playAudioHook('level:complete', {
+      carrotsCollected: this.state.carrotsCollected,
+      totalCarrots: this.state.totalCarrots,
+      enemiesRemaining: this.state.enemies.size
+    });
+
+    // Stop the game loop
     this.stop();
-    
+
     // Calculate level statistics
     const levelStats = {
       score: this.state.score,
       carrotsCollected: this.state.carrotsCollected,
       totalCarrots: this.state.totalCarrots,
-      enemiesDefeated: this.constants.TOTAL_ENEMIES - this.state.enemies.size,
+      enemiesDefeated: this.state.totalEnemies - this.state.enemies.size,
       time: Math.floor(this.state.gameTime)
     };
     
@@ -2108,13 +2244,19 @@ class Game {
     const collectible = this.state.collectibles.get(data.collectibleId);
     
     if (collectible) {
+      const wasCollected = collectible.collected;
       collectible.collected = true;
+
+      if (!wasCollected && collectible.type === 'carrot') {
+        this.state.carrotsCollected++;
+      }
       
       if (data.playerId === this.playerId) {
         // Update local state
-        this.state.carrotsCollected++;
         this.state.score += 100;
       }
+
+      this.checkLevelComplete();
     }
   }
   
@@ -2129,6 +2271,8 @@ class Game {
       // Update score
       this.state.score += 200;
     }
+
+    this.checkLevelComplete();
   }
   
   /**

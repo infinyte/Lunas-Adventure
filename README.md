@@ -1,94 +1,98 @@
-# Luna's Adventure 🐹
+# Luna's Adventure
 
-A delightful 2D side-scrolling platformer featuring Luna the Guinea Pig, built with Node.js and SVG graphics.
-
-![Luna the Guinea Pig](docs/images/luna-preview.png)
+A 2D side-scrolling platformer featuring Luna the Guinea Pig, built with Node.js and SVG graphics.
 
 ## Overview
 
-Luna's Adventure is a charming platformer game where you guide Luna the Guinea Pig through various levels, collecting carrots, avoiding enemies, and finding your way home. The game features:
+Luna's Adventure is a platformer where you guide Luna the Guinea Pig through levels, collecting carrots, avoiding enemies, and finding your way home. The game features:
 
-- Smooth SVG-based graphics and animations
-- Responsive controls for running and jumping
-- Multiple levels with increasing difficulty
-- Collectible items and power-ups
-- Various enemy types with different behaviors
-- Local high score tracking
-
-## Game Story
-
-Luna is a curious little guinea pig who has wandered away from her cozy home. Help her navigate through gardens, forests, and other environments while collecting carrots and avoiding dangers along the way. Each level brings Luna one step closer to finding her way back home.
-
-## Technical Features
-
-- **Event-driven architecture** for responsive gameplay
-- **SVG-based graphics** for crisp visuals at any resolution
-- **Service-based backend** for game logic and state management
-- **Real-time multiplayer support** via Socket.IO
-- **Responsive design** that works across devices
-- **Open source** and easily extensible codebase
+- SVG-based graphics and animations (no canvas/WebGL)
+- Keyboard and mobile touch controls
+- Multiple platform types: ground, standard, moving, breaking, and bouncy
+- Four enemy types: basic, flying, shooter, and boss — each with distinct AI
+- Projectile system: shooter enemies fire server-authoritative projectiles at players
+- Collectibles: carrots, golden carrots, coins, gems, keys, and power-ups
+- Power-ups: double jump, high jump, speed boost, health restore, extra life
+- Level completion detection (collect all carrots + defeat all enemies)
+- Real-time multiplayer via Socket.IO with server-authoritative physics
+- PWA support with service worker for offline play
+- Local high score tracking via SQLite
 
 ## Project Structure
 
-The project follows a structured organization:
-
-- `server/`: Backend Node.js server code
-  - `services/`: Core game services (game engine, asset manager, etc.)
-  - `controllers/`: API endpoints
-  - `routes/`: Express routes
-- `client/`: Frontend game client
-  - `scripts/`: Game client JavaScript
-  - `styles/`: CSS styling
-  - `assets/`: Game assets (SVG sprites, levels)
-- `shared/`: Code shared between client and server
-- `docs/`: Documentation and guides
+```
+luna-adventure/
+├── server/
+│   ├── index.mjs              # Entry point (Express + Socket.IO)
+│   └── services/
+│       ├── gameEngine.js      # Authoritative game loop, physics, AI
+│       ├── assetManager.js    # Level loading
+│       └── stateManager.js    # High score persistence (SQLite)
+├── client/
+│   ├── index.html
+│   ├── scripts/
+│   │   ├── game.js            # Client orchestrator
+│   │   ├── renderer.js        # SVGRenderer (layered SVG)
+│   │   ├── physics.js         # Client-side prediction
+│   │   ├── inputHandler.js    # Keyboard + touch input
+│   │   └── entities/          # Player, Enemy, Platform, Collectible classes
+│   ├── assets/
+│   │   └── levels/            # level-1.json (Garden Adventure)
+│   └── styles/
+├── graphics/                  # All SVG sprites and spritesheets
+├── shared/
+│   └── constants.js           # Shared constants (physics, entity sizes, events)
+├── docs/                      # CLAUDE.md, INSTALL.md, milestone-board.md
+├── babel.config.cjs           # Babel config for Jest
+├── server/jest.config.cjs
+└── client/jest.config.cjs
+```
 
 ## Technology Stack
 
-- **Backend**: Node.js, Express, Socket.IO
-- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
-- **Graphics**: SVG for all game assets
-- **Deployment**: Docker containers (Azure-ready)
-- **Testing**: Jest for unit and integration tests
+- **Backend**: Node.js (ES Modules), Express, Socket.IO
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript (ES6+)
+- **Graphics**: SVG for all game assets and spritesheets
+- **Database**: SQLite (via sqlite3) for high scores
+- **Testing**: Jest + Babel (6 suites, 16 tests)
+- **Linting**: ESLint (airbnb-base)
 
-## Screenshots
+## Quick Start
 
-![Gameplay Screenshot 1](docs/images/gameplay-1.png)
-*Luna navigating through the garden level*
+```bash
+cd luna-adventure
+HUSKY=0 npm install    # HUSKY=0 needed because .git is in the parent directory
+npm run dev            # Starts server (port 3000) + client dev server (port 8080)
+```
 
-![Gameplay Screenshot 2](docs/images/gameplay-2.png)
-*Luna collecting carrots and avoiding flying enemies*
+Open `http://localhost:3000` to play.
+
+See [docs/INSTALL.md](luna-adventure/docs/INSTALL.md) for full setup instructions.
 
 ## Development Roadmap
 
-- [x] Core game engine and physics
-- [x] Basic SVG rendering and animations
+- [x] Core game engine and physics (server-authoritative, 60 FPS)
+- [x] SVG rendering with layered SVG
 - [x] Player controls and collision detection
-- [x] Enemy AI and behavior patterns
-- [ ] Additional levels beyond the initial set
-- [ ] Power-up system with special abilities
-- [ ] Boss battles at the end of each world
+- [x] Enemy AI (patrol, chase, attack) for all 4 enemy types
+- [x] Projectile system (shooter enemies, server-authoritative)
+- [x] Moving platforms (velocity-driven position updates)
+- [x] Breaking platforms (stable → breaking → broken → stable state machine)
+- [x] Bouncy platforms (velocity reflection with 1.5× multiplier)
+- [x] Level completion detection (all carrots + all enemies)
+- [x] Player invulnerability after taking damage (1500ms cooldown)
+- [x] Test suite (Jest + Babel, 6 suites, 16 tests)
+- [x] PWA support (service worker, manifest)
+- [ ] Additional levels (currently only level-1)
+- [ ] Sound and music system
 - [ ] Online leaderboards
-- [ ] Customizable character skins
-
-## Contributing
-
-We welcome contributions to Luna's Adventure! Whether you're fixing bugs, improving documentation, or proposing new features, please see our [Contributing Guidelines](CONTRIBUTING.md).
+- [ ] CI pipeline
 
 ## License
 
-Luna's Adventure is released under the MIT License. See the [LICENSE](LICENSE) file for more details.
+MIT License — see [LICENSE](luna-adventure/LICENSE) for details.
 
 ## Credits
 
-- Game concept and development: [Kurt Mitchell]
-- Character design: Luna is inspired by real guinea pigs and their adorable behaviors
-- Special thanks to the open-source community for the wonderful tools and libraries that made this game possible
-
-## Contact
-
-For questions, feedback, or suggestions, please open an issue on our GitHub repository or contact us at [your-email@example.com].
-
----
-
-Happy gaming, and help Luna find her way home! 🐹🥕
+- Game concept and development: Kurt Mitchell
+- Character: Luna is inspired by real guinea pigs

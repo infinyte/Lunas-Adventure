@@ -1,54 +1,70 @@
-client/assets/sprites/
-├── luna_idle.svg          // Luna's idle animation
-├── luna_run.svg           // Luna's running animation
-├── luna_jump.svg          // Luna's jumping animation
-├── enemy_basic.svg        // Basic enemy sprite
-├── enemy_flying.svg       // Flying enemy sprite
-├── enemy_shooter.svg      // Shooter enemy sprite
-├── enemy_boss.svg         // Boss enemy sprite
-├── platform_ground.svg    // Ground platform sprite
-├── platform_platform.svg  // Regular platform sprite
-├── platform_moving.svg    // Moving platform sprite
-├── platform_breaking.svg  // Breaking platform sprite
-├── platform_bouncy.svg    // Bouncy platform sprite
-├── collectible_carrot.svg        // Carrot collectible
-├── collectible_goldenCarrot.svg  // Golden carrot collectible
-├── collectible_coin.svg          // Coin collectible
-├── collectible_gem.svg           // Gem collectible
-├── collectible_key.svg           // Key collectible
-├── collectible_powerup.svg       // Power-up collectible
-├── background_sky.svg            // Sky background element
-├── background_forest_elements.svg // Forest background elements
-├── effect_jump.svg               // Jump effect
-├── effect_collect.svg            // Collection effect
-├── effect_hit.svg                // Hit effect
-├── ui_healthbar.svg              // Health bar UI element
-├── ui_heart.svg                  // Life icon UI element
-└── ui_pause.svg                  // Pause button UI element
+# Asset Folder Structure
 
+## SVG Graphics (`graphics/`)
+
+All SVG sprites and spritesheets are stored in `graphics/` at the project root (not inside `client/`).
+
+```
+graphics/
+├── luna_spritesheet.svg              # Luna player animations (idle, run, jump, fall)
+├── enemy_basic_spritesheet_A.svg     # Basic enemy animation variant A
+├── enemy_basic_spritesheet_B.svg     # Basic enemy animation variant B
+├── enemy_basic_spritesheet_C.svg     # Basic enemy animation variant C
+├── enemy_flying_spritesheet.svg      # Flying enemy animations (17 frames × 40px)
+├── enemy_shooter_spritesheet.svg     # Shooter enemy animations
+├── enemy_boss_spritesheet.svg        # Boss enemy animations
+├── platform_ground_tile.svg          # Ground platform tile
+├── platform_standard_tile.svg        # Standard platform tile
+├── platform_moving_tile.svg          # Moving platform tile
+├── platform_breaking_spritesheet.svg # Breaking platform states
+├── platform_bouncy_spritesheet.svg   # Bouncy platform animation
+├── collectible_carrot.svg
+├── collectible_coin.svg
+├── collectible_gem.svg
+├── collectible_golden_carrot.svg
+├── collectible_key.svg
+├── powerup_doublejump.svg
+├── powerup_extralife.svg
+├── powerup_health.svg
+├── powerup_highjump.svg
+├── powerup_invulnerability.svg
+├── powerup_speed.svg
+├── projectile_shooter.svg            # Shooter enemy projectile (12×12px orb)
+├── background_cave.svg
+├── background_final.svg
+├── background_forest.svg
+├── background_garden.svg
+├── decoration_clouds.svg
+├── decoration_forest.svg
+├── decoration_garden.svg
+├── effect_collect.svg
+├── effect_hit.svg
+├── effect_jump.svg
+├── effect_powerup.svg
+├── interactable_door.svg
+├── ui_healthbar.svg
+├── ui_heart.svg
+├── ui_mobile_controls.svg
+├── ui_pause.svg
+└── ui_score_popup.svg
+```
+
+## Level Data (`client/assets/levels/`)
+
+```
 client/assets/levels/
-├── level-1.json         // Garden level
-├── level-2.json         // Forest level
-├── level-3.json         // Cave level
-└── level-4.json         // Final level
+└── level-1.json     # Garden Adventure (width: 2000, height: 600)
+```
 
-client/assets/sounds/
-├── jump.mp3             // Jump sound effect
-├── collect.mp3          // Collectible pickup effect
-├── hurt.mp3             // Damage sound
-└── defeat_enemy.mp3     // Enemy defeat sound
+Levels 2–4 are not yet authored.
 
-client/assets/music/
-├── menu.mp3             // Menu screen music
-├── level1.mp3           // Garden level music
-├── level2.mp3           // Forest level music
-└── victory.mp3          // Victory music
+## Audio (`client/assets/sounds/`, `client/assets/music/`)
 
-client/assets/backgrounds/
-├── garden_background.png
-├── forest_background.png
-└── cave_background.png
+Sound and music files are not yet implemented. The sound system is planned for a future milestone.
 
-client/assets/configs/
-├── game-settings.json    // Default game settings
-└── controls.json         // Default control mappings
+## Other Asset Directories
+
+```
+client/assets/configs/    # Game settings JSON (planned)
+client/assets/sprites/    # Reserved for rasterized sprites if needed (currently empty)
+```

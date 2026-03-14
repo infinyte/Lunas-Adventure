@@ -103,16 +103,21 @@ class Player {
       // Apply damage
       this.health -= amount;
       
-      // Make invulnerable temporarily
+      // Make invulnerable temporarily (1500 ms = PLAYER_DAMAGE_INVULNERABILITY)
       this.invulnerable = true;
       this.flashing = true;
-      
+      setTimeout(() => {
+        this.invulnerable = false;
+        this.flashing = false;
+        this.visible = true;
+      }, 1500);
+
       // Check if player died
       if (this.health <= 0) {
         this.die();
         return false;
       }
-      
+
       // Player survived
       return true;
     }
