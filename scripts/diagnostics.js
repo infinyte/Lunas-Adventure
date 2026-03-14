@@ -2,10 +2,10 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 const checks = [
-  'server/index.mjs',
+  'server/index.js',
   'client/index.html',
   'client/scripts/game.js',
-  'shared/constants.js'
+  'client/shared/constants.js'
 ];
 
 console.log('Diagnostics');

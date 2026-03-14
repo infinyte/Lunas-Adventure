@@ -27,11 +27,11 @@ const PRECACHE_RESOURCES = [
   '/assets/sprites/luna_idle.svg',
   '/assets/sprites/luna_run.svg',
   '/assets/sprites/luna_jump.svg',
-  '/assets/sounds/jump.mp3',
-  '/assets/sounds/collect.mp3',
-  '/assets/sounds/hurt.mp3',
-  '/assets/music/gameplay.mp3',
-  '/assets/favicon.ico'
+  '/assets/sounds/effects/jump.ogg',
+  '/assets/sounds/effects/collect_carrot.ogg',
+  '/assets/sounds/effects/player_damage.ogg',
+  '/assets/music/tracks/gameplay_theme.ogg',
+  '/assets/favicon.svg'
 ];
 
 // Install event - Precache resources

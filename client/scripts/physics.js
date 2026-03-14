@@ -1,5 +1,5 @@
 // client/scripts/physics.js
-import { GRAVITY, FRICTION, TERMINAL_VELOCITY } from '../../shared/constants.js';
+import { GRAVITY, FRICTION, TERMINAL_VELOCITY } from '../shared/constants.js';
 
 /**
  * Physics Engine Class

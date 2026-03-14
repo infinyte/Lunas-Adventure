@@ -10,7 +10,7 @@
 - **Disk**: 200MB free space
 
 ### Recommended
-- **Node.js**: v18.x or higher
+- **Node.js**: v18.x or higher (CI uses Node 20)
 - **Browser**: Chrome 90+, Firefox 90+, Safari 15+, Edge 90+
 
 ## Installation
@@ -19,7 +19,7 @@
 
 ```bash
 git clone https://github.com/yourusername/lunas-adventure.git
-cd lunas-adventure/luna-adventure
+cd lunas-adventure
 ```
 
 ### Step 2: Install Dependencies
@@ -28,11 +28,11 @@ cd lunas-adventure/luna-adventure
 HUSKY=0 npm install
 ```
 
-> **Note**: `HUSKY=0` is required because the `.git` directory is in the parent folder (`lunas-adventure/`), not in `luna-adventure/`. Without it, the husky `prepare` hook will fail with a "not a git repository" error.
+> **Note**: `HUSKY=0` is required because the `.git` directory is in the parent folder, not in the project root. Without it, the husky `prepare` hook will fail with a "not a git repository" error.
 
 ### Step 3: Configure Environment (Optional)
 
-Create a `.env` file in the `luna-adventure/` directory:
+Create a `.env` file in the project root:
 
 ```
 PORT=3000
@@ -58,10 +58,10 @@ npm run dev
 ```
 
 This starts:
-- Backend server on `http://localhost:3000` (with nodemon)
+- Backend server on `http://localhost:3000` (with nodemon, auto-restart)
 - Frontend dev server on `http://localhost:8080` (with light-server + hot-reload)
 
-Open `http://localhost:3000` in your browser to play.
+Open `http://localhost:8080` in your browser to play.
 
 ## Available Scripts
 
@@ -76,10 +76,11 @@ Open `http://localhost:3000` in your browser to play.
 | `npm run client:test` | Run client tests only |
 | `npm run lint` | Run ESLint |
 | `npm run lint:fix` | Run ESLint with auto-fix |
+| `npm run build` | Build client to `dist/` and optimize assets |
 | `npm run db:init` | Initialize SQLite database |
 | `npm run build:assets` | Rebuild SVG assets |
 | `npm run validate` | Validate required game files are present |
-| `npm run diagnostics` | Check system compatibility |
+| `npm run diagnostics` | Check file presence and system info |
 
 ## Configuration Options
 

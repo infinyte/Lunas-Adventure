@@ -29,6 +29,7 @@ class Player {
       this.isGrounded = false;
       this.isJumping = false;
       this.direction = 'right';
+      this.jumpsUsed = 0;        // Tracks jumps in current airborne sequence
       
       // Game state properties
       this.health = 100;
@@ -134,10 +135,11 @@ class Player {
         this.health = 100;
       }
       
-      // Reset power-ups
+      // Reset power-ups and jump state
       this.abilities.doubleJump = false;
       this.abilities.highJump = false;
       this.abilities.speedBoost = false;
+      this.jumpsUsed = 0;
       
       console.log(`Player ${this.id} died. Lives remaining: ${this.lives}`);
     }

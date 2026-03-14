@@ -17,7 +17,7 @@ import SoundManager from './soundManager.js';
 import { Player } from './entities/player.js';
 import { Enemy } from './entities/enemy.js';
 import { Platform } from './entities/platform.js';
-import * as constants from '../../shared/constants.js';
+import * as constants from '../shared/constants.js';
 
 class Game {
   /**
@@ -1064,17 +1064,7 @@ class Game {
         this.localPlayer.velocityX *= this.physics.friction;
       }
       
-      // Handle jumping
-      if (this.inputHandler.keys.jump && this.localPlayer.isGrounded) {
-        this.localPlayer.velocityY = -this.constants.JUMP_FORCE;
-        this.localPlayer.isJumping = true;
-        this.localPlayer.isGrounded = false;
-        
-        // Emit jump event to server
-        if (this.socket) {
-          this.socket.emit('player:jump');
-        }
-      }
+      // Jumping is handled via the 'jump' keydown event → handlePlayerJump()
       
       // Update player state
       this.localPlayer.isGrounded = false; // Will be set to true during collision detection if on ground
@@ -1147,6 +1137,7 @@ class Game {
           player.velocityY = 0;
           player.isGrounded = true;
           player.isJumping = false;
+          player.jumpsUsed = 0;
           isOnGround = true;
         } else if (collisionSide === 'bottom' && player.velocityY < 0) {
           // Hitting platform from below
@@ -1573,18 +1564,32 @@ class Game {
    * Handle player jump input
    */
   handlePlayerJump() {
-    if (!this.localPlayer || !this.localPlayer.isGrounded) return;
-    
-    // Apply jump force
-    this.localPlayer.velocityY = -this.constants.JUMP_FORCE;
-    this.localPlayer.isJumping = true;
-    this.localPlayer.isGrounded = false;
+    if (!this.localPlayer) return;
+
+    const player = this.localPlayer;
+    const canDoubleJump = player.abilities.doubleJump && player.jumpsUsed === 1;
+
+    // Allow jump only from ground (first jump) or in-air with double jump ability
+    if (!player.isGrounded && !canDoubleJump) return;
+
+    // Determine jump force — highJump multiplies the base force
+    const jumpMultiplier = player.abilities.highJump
+      ? (this.constants.POWERUP_STRENGTH?.HIGH_JUMP ?? 1.3)
+      : 1;
+    const force = canDoubleJump
+      ? -(this.constants.DOUBLE_JUMP_FORCE ?? 10) * jumpMultiplier
+      : -this.constants.JUMP_FORCE * jumpMultiplier;
+
+    player.velocityY = force;
+    player.isJumping = true;
+    player.isGrounded = false;
+    player.jumpsUsed = (player.jumpsUsed ?? 0) + 1;
 
     this.playAudioHook('player:jump', {
-      jumpForce: this.constants.JUMP_FORCE,
+      jumpForce: Math.abs(force),
       playerId: this.playerId
     });
-    
+
     // Send jump event to server
     if (this.socket) {
       this.socket.emit('player:jump');
@@ -1795,17 +1800,38 @@ class Game {
    */
   gameOver() {
     console.log('Game over!');
-    
+
     // Stop the game
     this.stop();
-    
+
     // Show game over screen
     this.renderer.renderGameOver(this.state.score);
-    
+
+    // Submit score to leaderboard
+    this.submitHighScore(this.state.score, this.state.currentLevel);
+
     // Send game over event to server
     if (this.socket) {
       this.socket.emit('player:gameover', { score: this.state.score });
     }
+  }
+
+  /**
+   * Submit a high score to the server.
+   * Silently ignores network failures so it never disrupts gameplay.
+   * @param {number} score
+   * @param {string} level
+   */
+  submitHighScore(score, level) {
+    if (!score || score <= 0) return;
+    const playerName = this.playerName || 'Luna';
+    fetch('/api/highscores', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ playerName, score, level })
+    }).catch(() => {
+      // Score submission is best-effort; network errors are non-fatal
+    });
   }
   
   /**
@@ -1939,6 +1965,9 @@ class Game {
    */
   showVictoryScreen() {
     console.log('Game completed!');
+
+    // Submit final score to leaderboard
+    this.submitHighScore(this.state.score, this.state.currentLevel);
     
     // Create victory screen
     const svgNS = "http://www.w3.org/2000/svg";

@@ -122,8 +122,8 @@ async function setupProject() {
       await ensureDir(dir);
     }
 
-    // Create shared/constants.js if it doesn't exist
-    const constantsPath = path.join(rootDir, 'shared/constants.js');
+    // Create client/shared/constants.js if it doesn't exist
+    const constantsPath = path.join(rootDir, 'client/shared/constants.js');
     if (!(await fileExists(constantsPath))) {
       // Create a basic constants file (can be expanded later)
       const constantsContent = `// shared/constants.js

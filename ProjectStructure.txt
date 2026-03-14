@@ -1,4 +1,4 @@
-luna-adventure/
+lunas-adventure/
 ├── client/
 │   ├── index.html                 # Main HTML file
 │   ├── manifest.json              # PWA manifest 

@@ -115,7 +115,9 @@ describe('Game gameplay behavior', () => {
     game.localPlayer = {
       isGrounded: true,
       isJumping: false,
-      velocityY: 0
+      velocityY: 0,
+      jumpsUsed: 0,
+      abilities: { doubleJump: false, highJump: false }
     };
     game.socket = {
       emit: emitSpy

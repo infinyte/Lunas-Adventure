@@ -141,6 +141,20 @@ export function createServer(options = {}) {
     }
   });
 
+  app.post('/api/highscores', async (req, res) => {
+    try {
+      const { playerName, score, level } = req.body;
+      if (typeof score !== 'number' || !Number.isFinite(score)) {
+        return res.status(400).json({ error: 'score must be a finite number' });
+      }
+      const entry = await stateManager.addHighScore({ playerName, score, level });
+      res.status(201).json(entry);
+    } catch (error) {
+      console.error('Failed to save high score:', error);
+      res.status(500).json({ error: 'Failed to save high score' });
+    }
+  });
+
   function start(port = (process.env.PORT || 3000)) {
     return new Promise((resolve) => {
       server.listen(port, () => {

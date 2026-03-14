@@ -1,6 +1,6 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
-import createServer, { createServer as createServerFactory } from './appFactory.js';
+import createServerFactory from './appFactory.js';
 
 // Handle __dirname (not available in ES Modules)
 const __filename = fileURLToPath(import.meta.url);

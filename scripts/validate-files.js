@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 const requiredFiles = [
-  'server/index.mjs',
+  'server/index.js',
   'server/services/gameEngine.js',
   'server/services/assetManager.js',
   'server/services/stateManager.js',
@@ -10,7 +10,7 @@ const requiredFiles = [
   'client/scripts/game.js',
   'client/scripts/renderer.js',
   'client/scripts/inputHandler.js',
-  'shared/constants.js'
+  'client/shared/constants.js'
 ];
 
 const missing = [];
