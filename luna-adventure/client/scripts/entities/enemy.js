@@ -441,5 +441,6 @@ class Enemy {
   }
 }
 
+export { Enemy };
 export default Enemy;
 // client/scripts/entities/index.js

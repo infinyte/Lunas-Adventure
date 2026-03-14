@@ -1,11 +1,43 @@
 // client/scripts/inputHandler.js
-import { EventEmitter } from 'events';
+
+class SimpleEmitter {
+  constructor() {
+    this.listeners = new Map();
+  }
+
+  on(eventName, callback) {
+    if (!this.listeners.has(eventName)) {
+      this.listeners.set(eventName, new Set());
+    }
+
+    this.listeners.get(eventName).add(callback);
+    return this;
+  }
+
+  off(eventName, callback) {
+    const callbacks = this.listeners.get(eventName);
+    if (callbacks) {
+      callbacks.delete(callback);
+    }
+    return this;
+  }
+
+  emit(eventName, ...args) {
+    const callbacks = this.listeners.get(eventName);
+    if (!callbacks) {
+      return false;
+    }
+
+    callbacks.forEach((callback) => callback(...args));
+    return true;
+  }
+}
 
 /**
  * Input Handler Class
  * Manages keyboard, gamepad, and touch input for the game
  */
-class InputHandler extends EventEmitter {
+class InputHandler extends SimpleEmitter {
   constructor() {
     super();
     
@@ -31,6 +63,8 @@ class InputHandler extends EventEmitter {
     
     // Initialize input listeners
     this.enabled = false;
+    this.boundHandleKeyDown = this.handleKeyDown.bind(this);
+    this.boundHandleKeyUp = this.handleKeyUp.bind(this);
   }
   
   /**
@@ -40,8 +74,8 @@ class InputHandler extends EventEmitter {
     if (this.enabled) return;
     
     // Add event listeners
-    window.addEventListener('keydown', this.handleKeyDown.bind(this));
-    window.addEventListener('keyup', this.handleKeyUp.bind(this));
+    window.addEventListener('keydown', this.boundHandleKeyDown);
+    window.addEventListener('keyup', this.boundHandleKeyUp);
     
     // Setup touch controls if on mobile
     this.setupTouchControls();
@@ -57,8 +91,8 @@ class InputHandler extends EventEmitter {
     if (!this.enabled) return;
     
     // Remove event listeners
-    window.removeEventListener('keydown', this.handleKeyDown.bind(this));
-    window.removeEventListener('keyup', this.handleKeyUp.bind(this));
+    window.removeEventListener('keydown', this.boundHandleKeyDown);
+    window.removeEventListener('keyup', this.boundHandleKeyUp);
     
     // Clean up touch listeners
     this.cleanupTouchControls();

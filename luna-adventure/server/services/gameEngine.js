@@ -1,7 +1,5 @@
 
-// server/services/gameEngine.js
-const EventEmitter = require('events');
-const { v4: uuidv4 } = require('uuid');
+import { EventEmitter } from 'node:events';
 
 /**
  * Game Engine Service
@@ -249,8 +247,30 @@ class GameEngine extends EventEmitter {
    * @param {string} id - Enemy ID to remove
    */
   defeatEnemy(id) {
+    if (!this.enemies.has(id)) {
+      return;
+    }
+
     this.enemies.delete(id);
-    this.emit('enemy:defeat', { enemyId: id });
+    this.emit('enemy:defeated', { enemyId: id });
+  }
+
+  /**
+   * Mark a collectible as collected by a player.
+   * @param {string} playerId - Player ID
+   * @param {string} collectibleId - Collectible ID
+   */
+  collectCollectible(playerId, collectibleId) {
+    const player = this.players.get(playerId);
+    const collectible = this.collectibles.find((item) => item.id === collectibleId && !item.collected);
+
+    if (!player || !collectible) {
+      return;
+    }
+
+    collectible.collected = true;
+    player.score += 100;
+    this.emit('collectible:collected', { playerId, collectibleId });
   }
 
   /**

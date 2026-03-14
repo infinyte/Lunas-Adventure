@@ -81,7 +81,7 @@ Luna's Adventure is released under the MIT License. See the [LICENSE](LICENSE) f
 
 ## Credits
 
-- Game concept and development: [Your Name/Team]
+- Game concept and development: [Kurt Mitchell]
 - Character design: Luna is inspired by real guinea pigs and their adorable behaviors
 - Special thanks to the open-source community for the wonderful tools and libraries that made this game possible
 

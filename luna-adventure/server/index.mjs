@@ -1,15 +1,3 @@
-// server/index.js
-// BEFORE (CommonJS):
-/* const express = require('express');
-const http = require('http');
-const path = require('path');
-const cors = require('cors');
-const { Server } = require('socket.io');
-const GameEngine = require('./services/gameEngine');
-const AssetManager = require('./services/assetManager');
-const StateManager = require('./services/stateManager'); */
-
-// AFTER (ES Modules):
 import express from 'express';
 import http from 'http';
 import path from 'path';
@@ -39,34 +27,98 @@ const gameEngine = new GameEngine();
 const assetManager = new AssetManager();
 const stateManager = new StateManager();
 
+function broadcastState() {
+  io.emit('game:state', gameEngine.getGameState());
+}
+
+// Forward authoritative engine events to clients.
+gameEngine.on('game:update', (gameState) => {
+  io.emit('game:state', gameState);
+});
+
+gameEngine.on('player:join', (payload) => {
+  io.emit('player:join', payload);
+});
+
+gameEngine.on('player:leave', (payload) => {
+  io.emit('player:leave', payload.playerId);
+});
+
+gameEngine.on('player:damage', (payload) => {
+  io.emit('player:damage', payload);
+});
+
+gameEngine.on('player:respawn', (payload) => {
+  io.emit('player:respawn', payload);
+});
+
+gameEngine.on('player:gameover', (payload) => {
+  io.emit('player:gameover', payload);
+});
+
+gameEngine.on('collectible:collected', (payload) => {
+  io.emit('collectible:collected', payload);
+});
+
+gameEngine.on('enemy:defeated', (payload) => {
+  io.emit('enemy:defeated', payload);
+});
+
 // Socket.IO connection handling
 io.on('connection', (socket) => {
   console.log('Player connected:', socket.id);
+
+  gameEngine.addPlayer(socket.id);
+  socket.emit('game:state', gameEngine.getGameState());
   
   // Event-driven architecture for game events
   socket.on('player:move', (data) => {
-    // Handle player movement
     gameEngine.updatePlayerPosition(socket.id, data);
-    // Broadcast updated state to all clients
-    io.emit('game:state', gameEngine.getGameState());
+    broadcastState();
   });
   
   socket.on('player:jump', () => {
-    // Handle player jump
     gameEngine.playerJump(socket.id);
-    io.emit('game:state', gameEngine.getGameState());
+    broadcastState();
+  });
+
+  socket.on('player:damage', () => {
+    gameEngine.playerDamage(socket.id);
+    broadcastState();
+  });
+
+  socket.on('player:death', () => {
+    gameEngine.playerDeath(socket.id);
+    broadcastState();
+  });
+
+  socket.on('collectible:collected', (data) => {
+    gameEngine.collectCollectible(socket.id, data?.id);
+    broadcastState();
+  });
+
+  socket.on('enemy:defeated', (data) => {
+    if (data?.id) {
+      gameEngine.defeatEnemy(data.id);
+      broadcastState();
+    }
+  });
+
+  socket.on('level:request', async (data) => {
+    const levelId = data?.levelId || 'level-1';
+    const level = await assetManager.getLevel(levelId);
+    socket.emit('level:data', level);
   });
   
   socket.on('game:start', () => {
-    // Start new game
-    gameEngine.startGame(socket.id);
-    io.emit('game:state', gameEngine.getGameState());
+    gameEngine.startGame();
+    broadcastState();
   });
   
   socket.on('disconnect', () => {
     console.log('Player disconnected:', socket.id);
     gameEngine.removePlayer(socket.id);
-    io.emit('game:state', gameEngine.getGameState());
+    broadcastState();
   });
 });
 
@@ -75,16 +127,24 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/index.html'));
 });
 
-app.get('/api/levels', (req, res) => {
-  // Get available levels
-  const levels = assetManager.getLevels();
-  res.json(levels);
+app.get('/api/levels', async (req, res) => {
+  try {
+    const levels = await assetManager.getLevels();
+    res.json(levels);
+  } catch (error) {
+    console.error('Failed to load levels:', error);
+    res.status(500).json({ error: 'Failed to load levels' });
+  }
 });
 
-app.get('/api/highscores', (req, res) => {
-  // Get high scores
-  const highScores = stateManager.getHighScores();
-  res.json(highScores);
+app.get('/api/highscores', async (req, res) => {
+  try {
+    const highScores = await stateManager.getHighScores();
+    res.json(highScores);
+  } catch (error) {
+    console.error('Failed to load high scores:', error);
+    res.status(500).json({ error: 'Failed to load high scores' });
+  }
 });
 
 // Start server
@@ -92,5 +152,3 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Luna's Adventure server running on port ${PORT}`);
 });
-
-module.exports = server;

@@ -13,7 +13,7 @@
 import SVGRenderer from './renderer.js';
 import InputHandler from './inputHandler.js';
 import Physics from './physics.js';
-import { Player } from './entities/player';
+import { Player } from './entities/player.js';
 import { Enemy } from './entities/enemy.js';
 import { Platform } from './entities/platform.js';
 import * as constants from '../../shared/constants.js';
@@ -163,14 +163,22 @@ class Game {
   async connectToServer() {
     return new Promise((resolve, reject) => {
       try {
+        if (typeof window.io !== 'function') {
+          reject(new Error('Socket.IO client not available. Ensure /socket.io/socket.io.js is loaded.'));
+          return;
+        }
+
         // Determine server URL based on environment
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const host = window.location.hostname;
-        const port = process.env.NODE_ENV === 'production' ? window.location.port : '3000';
-        const serverUrl = `${protocol}//${host}:${port}`;
+        const currentPort = window.location.port;
+        const isLocalHost = host === 'localhost' || host === '127.0.0.1';
+        const socketPort = currentPort === '8080' && isLocalHost ? '3000' : currentPort;
+        const portSegment = socketPort ? `:${socketPort}` : '';
+        const serverUrl = `${protocol}//${host}${portSegment}`;
         
         // Connect to socket.io server
-        this.socket = io(serverUrl);
+        this.socket = window.io(serverUrl);
         
         // Socket connection event
         this.socket.on('connect', () => {
@@ -1957,6 +1965,11 @@ class Game {
               60, // width
               40  // height
             );
+            player.velocityX = playerData.velocityX;
+            player.velocityY = playerData.velocityY;
+            player.direction = playerData.direction;
+            player.isJumping = playerData.isJumping;
+            player.isGrounded = playerData.isGrounded;
             this.state.players.set(playerData.id, player);
           } else {
             // Update existing player
@@ -2118,6 +2131,8 @@ class Game {
   }
 }
 
+export { Game };
+
 // Create and export the game instance
-const game = new Game('game-container');
+const game = typeof document !== 'undefined' ? new Game('game-container') : null;
 export default game;
