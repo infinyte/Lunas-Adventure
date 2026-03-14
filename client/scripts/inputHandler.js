@@ -40,7 +40,7 @@ class SimpleEmitter {
 class InputHandler extends SimpleEmitter {
   constructor() {
     super();
-    
+
     // Track key states
     this.keys = {
       left: false,
@@ -48,7 +48,7 @@ class InputHandler extends SimpleEmitter {
       jump: false,
       action: false
     };
-    
+
     // Key mappings
     this.keyMappings = {
       'ArrowLeft': 'left',
@@ -60,11 +60,14 @@ class InputHandler extends SimpleEmitter {
       'KeyW': 'jump',
       'KeyP': 'pause'
     };
-    
+
     // Initialize input listeners
     this.enabled = false;
     this.boundHandleKeyDown = this.handleKeyDown.bind(this);
     this.boundHandleKeyUp = this.handleKeyUp.bind(this);
+
+    // Stored touch listeners for cleanup: [{ el, type, fn }, ...]
+    this.touchListeners = [];
   }
   
   /**
@@ -130,71 +133,101 @@ class InputHandler extends SimpleEmitter {
   }
   
   /**
-   * Setup touch controls for mobile devices
+   * Register a touch listener and store it for later cleanup.
+   * @param {Element} el
+   * @param {string} type - e.g. 'touchstart'
+   * @param {Function} fn
+   */
+  _addTouchListener(el, type, fn) {
+    el.addEventListener(type, fn, { passive: false });
+    this.touchListeners.push({ el, type, fn });
+  }
+
+  /**
+   * Setup touch controls for mobile devices.
+   * Shows the on-screen d-pad and wires up all buttons.
    */
   setupTouchControls() {
     if (!this.isTouchDevice()) return;
-    
+
     const mobileControls = document.getElementById('mobile-controls');
-    if (mobileControls) {
-      mobileControls.style.display = 'block';
-      
-      // Left button
-      const leftBtn = document.getElementById('btn-left');
-      if (leftBtn) {
-        leftBtn.addEventListener('touchstart', () => {
-          this.keys.left = true;
-          this.emit('move', 'left');
-        });
-        
-        leftBtn.addEventListener('touchend', () => {
-          this.keys.left = false;
-          this.emit('move', 'stop');
-        });
-      }
-      
-      // Right button
-      const rightBtn = document.getElementById('btn-right');
-      if (rightBtn) {
-        rightBtn.addEventListener('touchstart', () => {
-          this.keys.right = true;
-          this.emit('move', 'right');
-        });
-        
-        rightBtn.addEventListener('touchend', () => {
-          this.keys.right = false;
-          this.emit('move', 'stop');
-        });
-      }
-      
-      // Jump button
-      const jumpBtn = document.getElementById('btn-jump');
-      if (jumpBtn) {
-        jumpBtn.addEventListener('touchstart', () => {
-          this.keys.jump = true;
-          this.emit('jump');
-        });
-        
-        jumpBtn.addEventListener('touchend', () => {
-          this.keys.jump = false;
-        });
-      }
-      
-      // Pause button
-      const pauseBtn = document.getElementById('btn-pause');
-      if (pauseBtn) {
-        pauseBtn.addEventListener('touchstart', () => {
-          this.emit('pause');
-        });
-      }
+    if (!mobileControls) return;
+
+    mobileControls.style.display = 'block';
+
+    // ── Left button ──────────────────────────────────────────────
+    const leftBtn = document.getElementById('btn-left');
+    if (leftBtn) {
+      this._addTouchListener(leftBtn, 'touchstart', (e) => {
+        e.preventDefault();
+        this.keys.left = true;
+        this.emit('left', true);
+      });
+      const stopLeft = (e) => {
+        e.preventDefault();
+        this.keys.left = false;
+        this.emit('left', false);
+      };
+      this._addTouchListener(leftBtn, 'touchend', stopLeft);
+      this._addTouchListener(leftBtn, 'touchcancel', stopLeft);
+    }
+
+    // ── Right button ─────────────────────────────────────────────
+    const rightBtn = document.getElementById('btn-right');
+    if (rightBtn) {
+      this._addTouchListener(rightBtn, 'touchstart', (e) => {
+        e.preventDefault();
+        this.keys.right = true;
+        this.emit('right', true);
+      });
+      const stopRight = (e) => {
+        e.preventDefault();
+        this.keys.right = false;
+        this.emit('right', false);
+      };
+      this._addTouchListener(rightBtn, 'touchend', stopRight);
+      this._addTouchListener(rightBtn, 'touchcancel', stopRight);
+    }
+
+    // ── Jump button ──────────────────────────────────────────────
+    const jumpBtn = document.getElementById('btn-jump');
+    if (jumpBtn) {
+      this._addTouchListener(jumpBtn, 'touchstart', (e) => {
+        e.preventDefault();
+        this.keys.jump = true;
+        this.emit('jump');
+      });
+      const stopJump = (e) => {
+        e.preventDefault();
+        this.keys.jump = false;
+      };
+      this._addTouchListener(jumpBtn, 'touchend', stopJump);
+      this._addTouchListener(jumpBtn, 'touchcancel', stopJump);
+    }
+
+    // ── Pause button ─────────────────────────────────────────────
+    const pauseBtn = document.getElementById('btn-pause');
+    if (pauseBtn) {
+      this._addTouchListener(pauseBtn, 'touchstart', (e) => {
+        e.preventDefault();
+        this.emit('pause');
+      });
     }
   }
-  
+
   /**
-   * Clean up touch controls
+   * Remove all registered touch listeners and reset touch key states.
    */
   cleanupTouchControls() {
-    // Implementation for touch controls cleanup...
+    for (const { el, type, fn } of this.touchListeners) {
+      el.removeEventListener(type, fn);
+    }
+    this.touchListeners = [];
+
+    // Reset any keys that may have been held when controls were removed
+    this.keys.left = false;
+    this.keys.right = false;
+    this.keys.jump = false;
   }
   
   /**

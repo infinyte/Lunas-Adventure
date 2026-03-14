@@ -18,7 +18,10 @@ class SVGRenderer {
       this.height = height;
       this.entities = new Map();
       this.debug = false;
-      
+
+      // Per-entity animation state: Map<entityKey, { animKey, frame, lastTime }>
+      this.animState = new Map();
+
       this.initialize();
     }
     
@@ -33,9 +36,10 @@ class SVGRenderer {
       this.svg.setAttribute("viewBox", `0 0 ${this.width} ${this.height}`);
       this.svg.id = "game-svg";
       
-      // Create layers for different game elements
+      // Create layers for different game elements (z-order: back → front)
       this.createLayer("background");
       this.createLayer("platforms");
+      this.createLayer("doors");
       this.createLayer("collectibles");
       this.createLayer("enemies");
       this.createLayer("projectiles");
@@ -71,6 +75,137 @@ class SVGRenderer {
       }
     }
     
+    // ── Sprite sheet helpers ─────────────────────────────────────────────────
+
+    /**
+     * Ensure a <defs> element exists at the top of the SVG.
+     * @returns {SVGDefsElement}
+     */
+    _ensureDefs() {
+      let defs = this.svg.querySelector('defs');
+      if (!defs) {
+        defs = document.createElementNS(this.svgNS, 'defs');
+        this.svg.insertBefore(defs, this.svg.firstChild);
+      }
+      return defs;
+    }
+
+    /**
+     * Create an SVG group that clips a spritesheet image to one frame.
+     * @param {string} entityKey  - Unique key used to name the clipPath id
+     * @param {string} href       - URL of the spritesheet SVG/PNG
+     * @param {number} frameW     - Width of one frame in pixels
+     * @param {number} frameH     - Height of one frame in pixels
+     * @param {number} sheetW     - Total width of the spritesheet
+     * @returns {SVGGElement} wrapper group – pass to _setSpriteFrame()
+     */
+    _createSprite(entityKey, href, frameW, frameH, sheetW) {
+      const defs = this._ensureDefs();
+      const clipId = `clip-${entityKey}`;
+
+      const clip = document.createElementNS(this.svgNS, 'clipPath');
+      clip.setAttribute('id', clipId);
+      const clipRect = document.createElementNS(this.svgNS, 'rect');
+      clipRect.setAttribute('width', frameW);
+      clipRect.setAttribute('height', frameH);
+      clip.appendChild(clipRect);
+      defs.appendChild(clip);
+
+      const wrapper = document.createElementNS(this.svgNS, 'g');
+      wrapper.setAttribute('clip-path', `url(#${clipId})`);
+      wrapper.setAttribute('class', 'sprite-wrapper');
+
+      const img = document.createElementNS(this.svgNS, 'image');
+      img.setAttribute('href', href);
+      img.setAttribute('width', sheetW);
+      img.setAttribute('height', frameH);
+      img.setAttribute('x', '0');
+      img.setAttribute('y', '0');
+      img.setAttribute('preserveAspectRatio', 'xMinYMin slice');
+      img.setAttribute('class', 'sprite-img');
+      wrapper.appendChild(img);
+
+      return wrapper;
+    }
+
+    /**
+     * Update the visible frame of a sprite created by _createSprite.
+     * @param {SVGGElement} wrapper - The wrapper returned by _createSprite
+     * @param {number} frame        - Absolute frame index in the spritesheet
+     * @param {number} frameW       - Width of one frame in pixels
+     */
+    _setSpriteFrame(wrapper, frame, frameW) {
+      const img = wrapper.querySelector('.sprite-img');
+      if (img) img.setAttribute('x', -(frame * frameW));
+    }
+
+    /**
+     * Advance and return the current local frame index for an animated entity.
+     * Resets to frame 0 whenever the animation key changes.
+     *
+     * @param {string} entityKey  - Unique entity identifier
+     * @param {string} animKey    - Name of the current animation (e.g. 'run')
+     * @param {number} frameCount - Total frames in this animation cycle
+     * @param {number} fps        - Desired playback speed (frames per second)
+     * @returns {number} Frame index within [0, frameCount)
+     */
+    _getAnimFrame(entityKey, animKey, frameCount, fps = 8) {
+      const now = Date.now();
+      let s = this.animState.get(entityKey);
+
+      if (!s || s.animKey !== animKey) {
+        s = { animKey, frame: 0, lastTime: now };
+        this.animState.set(entityKey, s);
+        return 0;
+      }
+
+      const elapsed = now - s.lastTime;
+      const frameDur = 1000 / fps;
+      if (elapsed >= frameDur) {
+        s.frame = (s.frame + 1) % frameCount;
+        s.lastTime = now - (elapsed % frameDur); // keep remainder for smooth timing
+      }
+
+      return s.frame;
+    }
+
+    // ── Sprite frame-range definitions ───────────────────────────────────────
+
+    /** Map an animation state name → { start, count } for the Luna spritesheet */
+    _lunaFrames(state) {
+      switch (state) {
+        case 'run':  return { start: 4,  count: 6 };
+        case 'jump': return { start: 10, count: 2 };
+        case 'fall': return { start: 12, count: 2 };
+        default:     return { start: 0,  count: 4 }; // idle
+      }
+    }
+
+    /**
+     * Map an animation state name → { start, count } for standard enemy
+     * spritesheets (40 px-wide frames: 3 idle + 4 move + 3 attack + 2 hit + 5 die).
+     */
+    _enemyFrames(state) {
+      switch (state) {
+        case 'move':   return { start: 3,  count: 4 };
+        case 'attack': return { start: 7,  count: 3 };
+        case 'hit':    return { start: 10, count: 2 };
+        case 'die':    return { start: 12, count: 5 };
+        default:       return { start: 0,  count: 3 }; // idle
+      }
+    }
+
+    /** Derive animation state string from enemy data */
+    _enemyAnimState(enemy) {
+      if (enemy.state === 'attack' || enemy.isAttacking) return 'attack';
+      if (enemy.state === 'die'    || enemy.isDead)      return 'die';
+      if (Math.abs(enemy.velocityX || 0) > 0.3 ||
+          Math.abs(enemy.velocityY || 0) > 0.3)          return 'move';
+      return 'idle';
+    }
+
+    // ── End sprite helpers ───────────────────────────────────────────────────
+
     /**
      * Create or update the player character (Luna)
      * @param {Object} player - Player data object
@@ -79,18 +214,23 @@ class SVGRenderer {
     renderPlayer(player, isLocalPlayer = false) {
       let playerElement = document.getElementById(`entity-${player.id}`);
       const layer = document.getElementById("layer-players");
-      
+      const spriteKey = `player-${player.id}`;
+
       if (!playerElement) {
-        // Create new player SVG group
         playerElement = document.createElementNS(this.svgNS, "g");
         playerElement.setAttribute("id", `entity-${player.id}`);
         layer.appendChild(playerElement);
-        
-        // Create Luna's body parts
-        this.createLunaSVG(playerElement);
-        
+
+        // Sprite sheet (1200×40, 60px frames)
+        const sprite = this._createSprite(
+          spriteKey,
+          '/assets/sprites/luna_spritesheet.svg',
+          60, 40, 1200
+        );
+        sprite.setAttribute('class', 'luna-sprite');
+        playerElement.appendChild(sprite);
+
         if (isLocalPlayer) {
-          // Highlight local player
           const highlight = document.createElementNS(this.svgNS, "circle");
           highlight.setAttribute("cx", "30");
           highlight.setAttribute("cy", "20");
@@ -102,37 +242,39 @@ class SVGRenderer {
           highlight.setAttribute("class", "player-highlight");
           playerElement.appendChild(highlight);
         }
-        
-        // Add to entities map
+
         this.entities.set(player.id, playerElement);
       }
-      
-      // Update player position and state
-      playerElement.setAttribute("transform", `translate(${player.x}, ${player.y})`);
-      
-      // Flip the SVG based on direction
+
+      // Determine animation state from physics data
+      let animState;
+      if ((player.velocityY || 0) < -1)                         animState = 'jump';
+      else if (!player.isGrounded && (player.velocityY || 0) > 1) animState = 'fall';
+      else if (Math.abs(player.velocityX || 0) > 0.5)           animState = 'run';
+      else                                                        animState = 'idle';
+
+      const { start, count } = this._lunaFrames(animState);
+      const fps = animState === 'run' ? 10 : 6;
+      const localFrame = this._getAnimFrame(spriteKey, animState, count, fps);
+
+      const sprite = playerElement.querySelector('.luna-sprite');
+      if (sprite) this._setSpriteFrame(sprite, start + localFrame, 60);
+
+      // Position and direction flip
       if (player.direction === "left") {
-        playerElement.setAttribute("transform", `translate(${player.x + player.width}, ${player.y}) scale(-1, 1)`);
+        playerElement.setAttribute("transform",
+          `translate(${player.x + player.width}, ${player.y}) scale(-1, 1)`);
       } else {
         playerElement.setAttribute("transform", `translate(${player.x}, ${player.y})`);
       }
-      
-      // Add jumping animation
-      if (player.isJumping) {
-        playerElement.classList.add("jumping");
+
+      // Damage flash
+      if (player.flashing || (player.invulnerable && Math.floor(Date.now() / 100) % 2)) {
+        playerElement.setAttribute("opacity", "0.4");
       } else {
-        playerElement.classList.remove("jumping");
+        playerElement.setAttribute("opacity", "1");
       }
-      
-      // Show damage animation
-      if (player.health < 100) {
-        playerElement.classList.add("damaged");
-        setTimeout(() => {
-          playerElement.classList.remove("damaged");
-        }, 200);
-      }
-      
-      // Add debug bounding box if debug mode is on
+
       if (this.debug) {
         this.renderDebugBox(playerElement, player.width, player.height, "player");
       }
@@ -378,6 +520,91 @@ class SVGRenderer {
     }
     
     /**
+     * Render a door entity (locked or unlocked).
+     * Procedurally reproduces the graphics/interactable_door.svg design.
+     * @param {Object} door - Door data: { id, x, y, width, height, locked }
+     */
+    renderDoor(door) {
+      const entityId = `door-${door.id}`;
+      let el = document.getElementById(entityId);
+      const layer = document.getElementById('layer-doors');
+
+      if (!el) {
+        el = document.createElementNS(this.svgNS, 'g');
+        el.setAttribute('id', entityId);
+        layer.appendChild(el);
+        this.entities.set(door.id, el);
+      }
+
+      // Rebuild visuals when lock state changes
+      const currentState = el.getAttribute('data-locked');
+      const newState = door.locked ? 'locked' : 'unlocked';
+      if (currentState !== newState) {
+        el.setAttribute('data-locked', newState);
+        while (el.firstChild) el.removeChild(el.firstChild);
+
+        const ns = this.svgNS;
+        const mk = (tag, attrs) => {
+          const e = document.createElementNS(ns, tag);
+          for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+          return e;
+        };
+
+        if (door.locked) {
+          // Door frame
+          el.appendChild(mk('rect', { x:2, y:6, width:56, height:68, rx:6, ry:6,
+            fill:'#5A3B2A', stroke:'#000', 'stroke-width':2 }));
+          // Wood panel
+          el.appendChild(mk('rect', { x:8, y:12, width:44, height:56, rx:4, ry:4,
+            fill:'#A0522D', stroke:'#000', 'stroke-width':1.5 }));
+          // Planks
+          for (const px of [20, 30, 40]) {
+            el.appendChild(mk('line', { x1:px, y1:12, x2:px, y2:68,
+              stroke:'#7A3F1F', 'stroke-width':1.6 }));
+          }
+          // Keyhole
+          const kh = document.createElementNS(ns, 'g');
+          kh.setAttribute('transform', 'translate(36,40)');
+          kh.appendChild(mk('circle', { cx:0, cy:-6, r:4, fill:'#111' }));
+          kh.appendChild(mk('rect',   { x:-2, y:-6, width:4, height:10, rx:1, fill:'#111' }));
+          el.appendChild(kh);
+          // Handle
+          el.appendChild(mk('circle', { cx:14, cy:40, r:4, fill:'#4A4E52', stroke:'#000', 'stroke-width':1 }));
+        } else {
+          // Frame (same)
+          el.appendChild(mk('rect', { x:2, y:6, width:56, height:68, rx:6, ry:6,
+            fill:'#5A3B2A', stroke:'#000', 'stroke-width':2 }));
+          // Ajar door panel
+          const panel = document.createElementNS(ns, 'g');
+          panel.setAttribute('transform', 'translate(30,40) rotate(-12)');
+          panel.appendChild(mk('rect', { x:-22, y:-28, width:44, height:56,
+            rx:4, ry:4, fill:'#A0522D', stroke:'#000', 'stroke-width':1.5 }));
+          for (const px of [-10, 0, 10]) {
+            panel.appendChild(mk('line', { x1:px, y1:-28, x2:px, y2:28,
+              stroke:'#7A3F1F', 'stroke-width':1.6 }));
+          }
+          el.appendChild(panel);
+          // Golden light spilling through gap
+          el.appendChild(mk('path', {
+            d:'M42 12 C68 30 68 50 42 68 L36 68 L36 12 Z',
+            fill:'#FFD36A', opacity:0.8
+          }));
+          // Star accent
+          el.appendChild(mk('polygon', {
+            points:'48,20 50,14 52,20 58,20 53,24 55,30 50,26 45,30 47,24 42,20',
+            fill:'#FFD24D', stroke:'#000', 'stroke-width':0.6
+          }));
+        }
+      }
+
+      el.setAttribute('transform', `translate(${door.x}, ${door.y})`);
+
+      if (this.debug) {
+        this.renderDebugBox(el, door.width || 60, door.height || 80, 'door');
+      }
+    }
+
+    /**
      * Create SVG elements for a carrot collectible
      * @param {SVGElement} group - Group element to add carrot parts to
      */
@@ -401,47 +628,66 @@ class SVGRenderer {
     }
     
     /**
-     * Render an enemy
+     * Render an enemy using its spritesheet.
+     * Handles basic, flying, shooter, and boss types.
      * @param {Object} enemy - Enemy data object
      */
     renderEnemy(enemy) {
       let enemyElement = document.getElementById(`entity-${enemy.id}`);
       const layer = document.getElementById("layer-enemies");
-      
+      const spriteKey = `enemy-${enemy.id}`;
+
       if (!enemyElement) {
-        // Create new enemy SVG group
         enemyElement = document.createElementNS(this.svgNS, "g");
         enemyElement.setAttribute("id", `entity-${enemy.id}`);
         layer.appendChild(enemyElement);
-        
-        // Create different enemy types
-        if (enemy.type === "basic") {
-          this.createBasicEnemySVG(enemyElement);
-        } else if (enemy.type === "flying") {
-          this.createFlyingEnemySVG(enemyElement);
+
+        // Choose spritesheet and frame dimensions per enemy type
+        let href, frameW, frameH, sheetW;
+        if (enemy.type === 'boss') {
+          href = '/assets/sprites/enemy_boss_spritesheet.svg';
+          frameW = 100; frameH = 100; sheetW = 2900;
+        } else if (enemy.type === 'flying') {
+          href = '/assets/sprites/enemy_flying_spritesheet.svg';
+          frameW = 40; frameH = 40; sheetW = 680;
+        } else if (enemy.type === 'shooter') {
+          href = '/assets/sprites/enemy_shooter_spritesheet.svg';
+          frameW = 40; frameH = 40; sheetW = 680;
+        } else {
+          // basic (and any unrecognised type)
+          href = '/assets/sprites/enemy_basic_spritesheet.svg';
+          frameW = 40; frameH = 40; sheetW = 720;
         }
-        
-        // Add to entities map
+
+        const sprite = this._createSprite(spriteKey, href, frameW, frameH, sheetW);
+        sprite.setAttribute('class', 'enemy-sprite');
+        enemyElement.appendChild(sprite);
+
         this.entities.set(enemy.id, enemyElement);
       }
-      
-      // Update enemy position and direction
+
+      // Frame dimensions (read from stored metadata or re-derive)
+      const isBoss = enemy.type === 'boss';
+      const frameW = isBoss ? 100 : 40;
+
+      // Advance animation
+      const animState = this._enemyAnimState(enemy);
+      const { start, count } = this._enemyFrames(animState);
+      const fps = animState === 'move' ? 8 : 6;
+      const localFrame = this._getAnimFrame(spriteKey, animState, count, fps);
+
+      const sprite = enemyElement.querySelector('.enemy-sprite');
+      if (sprite) this._setSpriteFrame(sprite, start + localFrame, frameW);
+
+      // Position and direction flip
+      const w = enemy.width || (isBoss ? 100 : 40);
       if (enemy.direction === "left") {
-        enemyElement.setAttribute("transform", `translate(${enemy.x + enemy.width}, ${enemy.y}) scale(-1, 1)`);
+        enemyElement.setAttribute("transform",
+          `translate(${enemy.x + w}, ${enemy.y}) scale(-1, 1)`);
       } else {
         enemyElement.setAttribute("transform", `translate(${enemy.x}, ${enemy.y})`);
       }
-      
-      // Add animation based on enemy type
-      if (enemy.type === "flying") {
-        // Add wing flapping animation
-        const wings = enemyElement.querySelector(".enemy-wings");
-        if (wings) {
-          wings.setAttribute("transform", `rotate(${Math.sin(Date.now() / 200) * 15})`);
-        }
-      }
-      
-      // Add debug bounding box if debug mode is on
+
       if (this.debug) {
         this.renderDebugBox(enemyElement, enemy.width, enemy.height, "enemy");
       }

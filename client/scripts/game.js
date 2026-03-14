@@ -32,6 +32,7 @@ class Game {
       platforms: new Map(),
       collectibles: new Map(),
       projectiles: new Map(),
+      doors: new Map(),
       currentLevel: null,
       isRunning: false,
       isPaused: false,
@@ -254,6 +255,12 @@ class Game {
         // Enemy defeated event
         this.socket.on('enemy:defeated', (data) => {
           this.handleEnemyDefeated(data);
+        });
+
+        // Door unlocked event
+        this.socket.on('door:unlocked', (data) => {
+          const door = this.state.doors.get(data.doorId);
+          if (door) door.locked = false;
         });
         
       } catch (error) {
@@ -1212,6 +1219,11 @@ class Game {
       this.renderer.renderPlatform(platform);
     }
     
+    // Render doors
+    for (const door of this.state.doors.values()) {
+      this.renderer.renderDoor(door);
+    }
+
     // Render collectibles
     for (const collectible of this.state.collectibles.values()) {
       if (!collectible.collected) {
@@ -1393,6 +1405,7 @@ class Game {
     this.state.platforms.clear();
     this.state.collectibles.clear();
     this.state.enemies.clear();
+    this.state.doors.clear();
     
     // Create platforms
     for (const platformData of levelData.platforms) {
@@ -1451,6 +1464,20 @@ class Game {
       this.state.enemies.set(enemy.id, enemy);
     }
     
+    // Load doors
+    if (levelData.doors) {
+      for (const doorData of levelData.doors) {
+        this.state.doors.set(doorData.id, {
+          id: doorData.id,
+          x: doorData.x,
+          y: doorData.y,
+          width: doorData.width || 60,
+          height: doorData.height || 80,
+          locked: doorData.locked !== false
+        });
+      }
+    }
+
     // Set spawn point
     if (levelData.spawnPoint) {
       this.spawnPoint = levelData.spawnPoint;
@@ -2197,6 +2224,14 @@ class Game {
       }
     }
 
+    // Sync door lock states from server
+    if (gameState.doors) {
+      for (const doorData of gameState.doors) {
+        const door = this.state.doors.get(doorData.id);
+        if (door) door.locked = doorData.locked;
+      }
+    }
+
     // Sync projectiles — replace map with latest server snapshot
     if (gameState.projectiles) {
       const activeIds = new Set(gameState.projectiles.map((p) => p.id));
@@ -2278,6 +2313,12 @@ class Game {
 
       if (!wasCollected && collectible.type === 'carrot') {
         this.state.carrotsCollected++;
+      }
+
+      // Key: unlock the door it targets
+      if (!wasCollected && collectible.type === 'key' && collectible.target) {
+        const door = this.state.doors.get(collectible.target);
+        if (door) door.locked = false;
       }
       
       if (data.playerId === this.playerId) {

@@ -12,6 +12,7 @@ class GameEngine extends EventEmitter {
     this.enemies = new Map();
     this.platforms = [];
     this.collectibles = [];
+    this.doors = [];
     this.gravity = 0.5;
     this.friction = 0.8;
     this.gameLoop = null;
@@ -304,6 +305,16 @@ class GameEngine extends EventEmitter {
 
     collectible.collected = true;
     player.score += 100;
+
+    // If a key was collected, unlock the door it targets
+    if (collectible.type === 'key' && collectible.target) {
+      const door = this.doors.find((d) => d.id === collectible.target);
+      if (door && door.locked) {
+        door.locked = false;
+        this.emit('door:unlocked', { doorId: door.id, playerId });
+      }
+    }
+
     this.emit('collectible:collected', { playerId, collectibleId });
   }
 
@@ -633,7 +644,8 @@ class GameEngine extends EventEmitter {
       enemies: Array.from(this.enemies.values()),
       platforms: this.platforms,
       collectibles: this.collectibles,
-      projectiles: this.projectiles
+      projectiles: this.projectiles,
+      doors: this.doors
     };
   }
 }

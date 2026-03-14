@@ -56,7 +56,7 @@ client/assets/levels/
 └── level-1.json     # Garden Adventure (width: 2000, height: 600)
 ```
 
-Levels 2–4 are not yet authored.
+Levels 2–5 implemented //TODO Document me!
 
 ## Audio (`client/assets/sounds/`, `client/assets/music/`)
 

@@ -61,6 +61,10 @@ export function createServer(options = {}) {
     io.emit('projectile:fired', payload);
   });
 
+  gameEngine.on('door:unlocked', (payload) => {
+    io.emit('door:unlocked', payload);
+  });
+
   io.on('connection', (socket) => {
     console.log('Player connected:', socket.id);
 
