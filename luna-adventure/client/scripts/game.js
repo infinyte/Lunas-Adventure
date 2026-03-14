@@ -30,6 +30,7 @@ class Game {
       enemies: new Map(),
       platforms: new Map(),
       collectibles: new Map(),
+      projectiles: new Map(),
       currentLevel: null,
       isRunning: false,
       isPaused: false,
@@ -1156,7 +1157,12 @@ class Game {
     for (const enemy of this.state.enemies.values()) {
       this.renderer.renderEnemy(enemy);
     }
-    
+
+    // Render projectiles
+    for (const proj of this.state.projectiles.values()) {
+      this.renderer.renderProjectile(proj);
+    }
+
     // Render players
     for (const [id, player] of this.state.players) {
       this.renderer.renderPlayer(player, id === this.playerId);
@@ -2018,11 +2024,30 @@ class Game {
     if (gameState.collectibles) {
       for (const collectibleData of gameState.collectibles) {
         const collectible = this.state.collectibles.get(collectibleData.id);
-        
+
         if (collectible) {
           // Update existing collectible
           collectible.collected = collectibleData.collected;
         }
+      }
+    }
+
+    // Sync projectiles — replace map with latest server snapshot
+    if (gameState.projectiles) {
+      const activeIds = new Set(gameState.projectiles.map((p) => p.id));
+
+      // Remove projectiles that are no longer active on the server
+      for (const [id] of this.state.projectiles) {
+        if (!activeIds.has(id)) {
+          this.state.projectiles.delete(id);
+          const staleEl = document.getElementById(`proj-${id}`);
+          if (staleEl) staleEl.remove();
+        }
+      }
+
+      // Upsert current projectiles
+      for (const projData of gameState.projectiles) {
+        this.state.projectiles.set(projData.id, projData);
       }
     }
   }

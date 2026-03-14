@@ -45,6 +45,10 @@ class GameEngine extends EventEmitter {
     this.enemies = new Map();
     this.addEnemy('enemy-1', 400, 470, 'basic');
     this.addEnemy('enemy-2', 600, 320, 'flying');
+
+    // Projectiles (created by shooter enemies)
+    this.projectiles = [];
+    this.projectileId = 0;
   }
   
   /**
@@ -79,17 +83,23 @@ class GameEngine extends EventEmitter {
    * Update all game entities and physics
    */
   update() {
+    // Update platform states (breaking timers, etc.)
+    this.updatePlatforms();
+
     // Update all players
     for (const [id, player] of this.players.entries()) {
       this.updatePlayerPhysics(player);
       this.checkCollisions(player);
     }
-    
+
     // Update all enemies
     for (const [id, enemy] of this.enemies.entries()) {
       this.updateEnemyAI(enemy);
       this.updateEnemyPhysics(enemy);
     }
+
+    // Move projectiles and check hits
+    this.updateProjectiles();
   }
   
   /**
@@ -124,13 +134,30 @@ class GameEngine extends EventEmitter {
   checkCollisions(player) {
     // Check platform collisions
     for (const platform of this.platforms) {
+      // Skip non-solid (broken) platforms
+      if (platform.solid === false) continue;
+
       if (this.isColliding(player, platform)) {
         // Only collide from above (basic platformer physics)
         if (player.velocityY > 0 && player.y + player.height - player.velocityY <= platform.y) {
           player.y = platform.y - player.height;
-          player.velocityY = 0;
-          player.isJumping = false;
-          player.isGrounded = true;
+
+          if (platform.type === 'bouncy') {
+            // Reflect velocity upward with the bounce force multiplier (1.5x)
+            player.velocityY = -Math.abs(player.velocityY) * 1.5;
+            player.isJumping = true;
+            player.isGrounded = false;
+          } else {
+            player.velocityY = 0;
+            player.isJumping = false;
+            player.isGrounded = true;
+          }
+
+          // Start the crumble sequence when player first lands on a breaking platform
+          if (platform.type === 'breaking' && platform.breakingState === 'stable') {
+            platform.breakingState = 'breaking';
+            platform.breakingTimer = 0;
+          }
         }
       }
     }
@@ -235,7 +262,8 @@ class GameEngine extends EventEmitter {
       velocityY: 0,
       type,
       direction: 'right',
-      health: 1
+      health: 1,
+      attackCooldown: 0
     };
 
     this.enemies.set(id, newEnemy);
@@ -298,6 +326,55 @@ class GameEngine extends EventEmitter {
         enemy.velocityX = -2;
         if (enemy.x < 500) enemy.direction = 'right';
       }
+    } else if (enemy.type === 'shooter') {
+      // Shooter enemies find the nearest player and fire projectiles
+      let nearestPlayer = null;
+      let nearestDist = Infinity;
+      for (const [, player] of this.players.entries()) {
+        const dx = player.x - enemy.x;
+        const dy = player.y - enemy.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < nearestDist) {
+          nearestDist = dist;
+          nearestPlayer = player;
+        }
+      }
+
+      if (nearestPlayer && nearestDist <= 350) {
+        // Face the player
+        enemy.direction = nearestPlayer.x > enemy.x ? 'right' : 'left';
+
+        // Maintain a comfortable shooting distance
+        const dx = nearestPlayer.x - enemy.x;
+        if (Math.abs(dx) < 150) {
+          enemy.velocityX = dx > 0 ? -0.5 : 0.5; // too close — back away
+        } else if (Math.abs(dx) > 250) {
+          enemy.velocityX = dx > 0 ? 0.5 : -0.5; // too far — approach
+        } else {
+          enemy.velocityX = 0; // good range — stand and shoot
+        }
+
+        // Fire on cooldown
+        if (enemy.attackCooldown <= 0) {
+          this.fireProjectile(
+            enemy,
+            nearestPlayer.x + nearestPlayer.width / 2,
+            nearestPlayer.y + nearestPlayer.height / 2
+          );
+          enemy.attackCooldown = 2.0;
+        } else {
+          enemy.attackCooldown -= 1 / this.fps;
+        }
+      } else {
+        // No player in range — slow patrol
+        if (enemy.direction === 'right') {
+          enemy.velocityX = 0.5;
+          if (enemy.x > 600) enemy.direction = 'left';
+        } else {
+          enemy.velocityX = -0.5;
+          if (enemy.x < 300) enemy.direction = 'right';
+        }
+      }
     }
   }
 
@@ -328,6 +405,96 @@ class GameEngine extends EventEmitter {
     }
   }
   
+  /**
+   * Update breaking-platform state machines each tick.
+   */
+  updatePlatforms() {
+    const dt = 1 / this.fps;
+    for (const platform of this.platforms) {
+      if (platform.type !== 'breaking') continue;
+
+      // Lazy-init state fields for platforms loaded from level JSON
+      if (platform.breakingState === undefined) {
+        platform.breakingState = 'stable';
+        platform.breakingTimer = 0;
+        platform.respawnTimer = 0;
+        platform.solid = true;
+      }
+
+      if (platform.breakingState === 'breaking') {
+        platform.breakingTimer += dt;
+        if (platform.breakingTimer >= 0.5) { // BREAKING_PLATFORM_DURATION
+          platform.breakingState = 'broken';
+          platform.solid = false;
+          platform.breakingTimer = 0;
+        }
+      } else if (platform.breakingState === 'broken') {
+        platform.respawnTimer += dt;
+        if (platform.respawnTimer >= 3.0) { // BREAKING_PLATFORM_RESPAWN
+          platform.breakingState = 'stable';
+          platform.solid = true;
+          platform.respawnTimer = 0;
+        }
+      }
+    }
+  }
+
+  /**
+   * Fire a projectile from a shooter enemy toward a target point.
+   * @param {Object} enemy - The enemy firing the projectile
+   * @param {number} targetX - Target X coordinate
+   * @param {number} targetY - Target Y coordinate
+   */
+  fireProjectile(enemy, targetX, targetY) {
+    const id = `proj-${++this.projectileId}`;
+    const startX = enemy.x + enemy.width / 2 - 6;
+    const startY = enemy.y + enemy.height / 2 - 6;
+    const dx = targetX - startX;
+    const dy = targetY - startY;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+    const speed = 5;
+
+    const projectile = {
+      id,
+      x: startX,
+      y: startY,
+      width: 12,
+      height: 12,
+      velocityX: (dx / dist) * speed,
+      velocityY: (dy / dist) * speed,
+      ownerId: enemy.id,
+      damage: 15,
+      lifetime: 3.0
+    };
+
+    this.projectiles.push(projectile);
+    this.emit('projectile:fired', { id: projectile.id });
+  }
+
+  /**
+   * Move all active projectiles, expire old ones, and check player hits.
+   */
+  updateProjectiles() {
+    const dt = 1 / this.fps;
+    this.projectiles = this.projectiles.filter((proj) => {
+      proj.x += proj.velocityX;
+      proj.y += proj.velocityY;
+      proj.lifetime -= dt;
+
+      if (proj.lifetime <= 0) return false;
+      if (proj.x < -50 || proj.x > 1100 || proj.y < -50 || proj.y > 700) return false;
+
+      for (const [playerId, player] of this.players.entries()) {
+        if (this.isColliding(proj, player)) {
+          this.playerDamage(playerId);
+          return false; // projectile consumed on hit
+        }
+      }
+
+      return true;
+    });
+  }
+
   /**
    * Handle player jump event
    * @param {string} playerId - Player ID
@@ -414,7 +581,8 @@ class GameEngine extends EventEmitter {
       players: Array.from(this.players.values()),
       enemies: Array.from(this.enemies.values()),
       platforms: this.platforms,
-      collectibles: this.collectibles
+      collectibles: this.collectibles,
+      projectiles: this.projectiles
     };
   }
 }

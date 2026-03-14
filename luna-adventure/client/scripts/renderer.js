@@ -38,6 +38,7 @@ class SVGRenderer {
       this.createLayer("platforms");
       this.createLayer("collectibles");
       this.createLayer("enemies");
+      this.createLayer("projectiles");
       this.createLayer("players");
       this.createLayer("ui");
       
@@ -446,6 +447,57 @@ class SVGRenderer {
       }
     }
     
+    /**
+     * Render a shooter-enemy projectile (green glowing orb).
+     * Elements are created once per projectile ID and repositioned each frame.
+     * Stale elements are removed by game.js when the server drops the projectile.
+     * @param {Object} proj - Projectile data from server game state
+     */
+    renderProjectile(proj) {
+      const entityKey = `proj-${proj.id}`;
+      let el = document.getElementById(entityKey);
+      const layer = document.getElementById('layer-projectiles');
+
+      if (!el) {
+        el = document.createElementNS(this.svgNS, 'g');
+        el.setAttribute('id', entityKey);
+
+        // Outer glow
+        const glow = document.createElementNS(this.svgNS, 'circle');
+        glow.setAttribute('cx', '6');
+        glow.setAttribute('cy', '6');
+        glow.setAttribute('r', '7');
+        glow.setAttribute('fill', '#9AFF30');
+        glow.setAttribute('opacity', '0.4');
+        el.appendChild(glow);
+
+        // Main orb
+        const orb = document.createElementNS(this.svgNS, 'circle');
+        orb.setAttribute('cx', '6');
+        orb.setAttribute('cy', '6');
+        orb.setAttribute('r', '5');
+        orb.setAttribute('fill', '#7AE600');
+        orb.setAttribute('stroke', '#1A6000');
+        orb.setAttribute('stroke-width', '0.8');
+        el.appendChild(orb);
+
+        // Specular highlight
+        const hl = document.createElementNS(this.svgNS, 'ellipse');
+        hl.setAttribute('cx', '4.5');
+        hl.setAttribute('cy', '4');
+        hl.setAttribute('rx', '2');
+        hl.setAttribute('ry', '1.2');
+        hl.setAttribute('fill', '#EAFFB0');
+        hl.setAttribute('opacity', '0.85');
+        el.appendChild(hl);
+
+        layer.appendChild(el);
+        this.entities.set(entityKey, el);
+      }
+
+      el.setAttribute('transform', `translate(${proj.x}, ${proj.y})`);
+    }
+
     /**
      * Create SVG elements for a basic ground enemy
      * @param {SVGElement} group - Group element to add enemy parts to

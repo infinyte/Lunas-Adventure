@@ -64,6 +64,10 @@ gameEngine.on('enemy:defeated', (payload) => {
   io.emit('enemy:defeated', payload);
 });
 
+gameEngine.on('projectile:fired', (payload) => {
+  io.emit('projectile:fired', payload);
+});
+
 // Socket.IO connection handling
 io.on('connection', (socket) => {
   console.log('Player connected:', socket.id);

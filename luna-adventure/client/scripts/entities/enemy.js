@@ -341,8 +341,8 @@ class Enemy {
         switch (this.type) {
             case 'shooter':
                 this.attackCooldown = 2.0; // Shooters attack less often
-                // TODO: Create projectile here
-                console.log(`${this.type} enemy shot at player`);
+                // Projectile creation is authoritative on the server (gameEngine.fireProjectile).
+                // The client receives projectiles via game state and renders them via renderProjectile.
                 break;
 
             case 'boss':

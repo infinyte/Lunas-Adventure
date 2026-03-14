@@ -206,17 +206,21 @@ class Platform {
       if (behaviors.movingVertical) {
         // Calculate the distance from start position
         const distanceY = Math.abs(this.y - behaviors.startPosition.y);
-        
+
         // Check if we've reached the movement distance
         if (distanceY >= behaviors.moveDistance) {
           // Reverse direction and pause
           behaviors.moveDirection *= -1;
           behaviors.pauseTime = behaviors.pauseDuration;
         }
-        
+
         // Set velocity based on direction
         this.velocityY = behaviors.moveSpeed * behaviors.moveDirection;
       }
+
+      // Apply velocity to position
+      this.x += this.velocityX;
+      this.y += this.velocityY;
     }
     
     /**
