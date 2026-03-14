@@ -75,8 +75,8 @@ This checklist tracks implementation progress in actionable phases.
 
 ## Later
 
-### [ ] Add CI pipeline
-- [ ] `npm ci` → `npm run build` → `npm test` → `npm run validate`
+### [x] Add CI pipeline
+- [x] `npm ci` → `npm run build` → `npm test` → `npm run validate`
 
 ### [ ] Container deployment readiness
 - [ ] Finalize `Dockerfile` and `docker-compose.yml`
