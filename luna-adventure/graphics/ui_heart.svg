@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="72" height="24" viewBox="0 0 72 24" shape-rendering="geometricPrecision">
+  <defs>
+    <style>
+      .outline { stroke:#000; stroke-width:1.6; stroke-linejoin:round; }
+      .full { fill:#FF3B5E; }
+      .half-left { fill:#FF3B5E; }
+      .half-right { fill:#D3D3D3; }
+      .empty { fill:#E6E6E6; }
+      .highlight { fill:#FFD1DA; opacity:0.9; }
+    </style>
+  </defs>
+
+  <!-- Heart Full (id="heart-full") at x=0 -->
+  <g id="heart-full" transform="translate(0,0)">
+    <g transform="translate(12,12) scale(0.9)">
+      <path class="full outline" d="M0 -6 C-4 -10 -10 -8 -10 -4 C-10 0 -2 6 0 8 C2 6 10 0 10 -4 C10 -8 4 -10 0 -6 Z"/>
+      <path class="highlight" d="M-2 -6 C-3 -7 -6 -6 -6 -4 C-6 -2 -3 0 -2 0" />
+    </g>
+  </g>
+
+  <!-- Heart Half (id="heart-half") at x=24 -->
+  <g id="heart-half" transform="translate(24,0)">
+    <g transform="translate(12,12) scale(0.9)">
+      <!-- left half red -->
+      <path class="half-left outline" d="M0 -6 C-4 -10 -10 -8 -10 -4 C-10 0 -2 6 0 8 L0 -6 Z"/>
+      <!-- right half grey -->
+      <path class="half-right outline" d="M0 -6 C4 -10 10 -8 10 -4 C10 0 2 6 0 8 L0 -6 Z"/>
+    </g>
+  </g>
+
+  <!-- Heart Empty (id="heart-empty") at x=48 -->
+  <g id="heart-empty" transform="translate(48,0)">
+    <g transform="translate(12,12) scale(0.9)">
+      <path class="empty outline" d="M0 -6 C-4 -10 -10 -8 -10 -4 C-10 0 -2 6 0 8 C2 6 10 0 10 -4 C10 -8 4 -10 0 -6 Z"/>
+    </g>
+  </g>
+</svg>

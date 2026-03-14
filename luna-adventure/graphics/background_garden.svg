@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="600" viewBox="0 0 2000 600" preserveAspectRatio="xMidYMid slice" shape-rendering="geometricPrecision">
+  <defs>
+    <!-- Sky gradient -->
+    <linearGradient id="skyGrad" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#9ED9FF"/>
+      <stop offset="1" stop-color="#DFF3FF"/>
+    </linearGradient>
+
+    <!-- Sun glow -->
+    <radialGradient id="sunGlow" cx="0.15" cy="0.12" r="0.3">
+      <stop offset="0" stop-color="#FFD36A" stop-opacity="0.95"/>
+      <stop offset="0.5" stop-color="#FFD36A" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#FFD36A" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Cloud shape -->
+    <g id="cloud">
+      <ellipse cx="0" cy="0" rx="60" ry="30" fill="#FFFFFF"/>
+      <ellipse cx="-40" cy="6" rx="36" ry="22" fill="#FFFFFF"/>
+      <ellipse cx="40" cy="6" rx="36" ry="22" fill="#FFFFFF"/>
+    </g>
+
+    <!-- Hill colors -->
+    <linearGradient id="hillShade" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#8ED07A"/>
+      <stop offset="1" stop-color="#6FB85F"/>
+    </linearGradient>
+
+    <!-- Flower shapes -->
+    <g id="flower">
+      <circle cx="0" cy="0" r="6" fill="#FFD24D" stroke="#000" stroke-width="1"/>
+      <circle cx="-6" cy="0" r="4" fill="#FF6B6B" stroke="#000" stroke-width="0.8"/>
+      <circle cx="6" cy="0" r="4" fill="#FF6B6B" stroke="#000" stroke-width="0.8"/>
+      <rect x="-1" y="6" width="2" height="12" fill="#2E8B3A"/>
+    </g>
+
+    <!-- Simple bush -->
+    <g id="bush">
+      <ellipse cx="0" cy="0" rx="36" ry="20" fill="#4DA24A" stroke="#000" stroke-width="1"/>
+      <ellipse cx="-18" cy="-6" rx="18" ry="12" fill="#5EC85A" stroke="#000" stroke-width="0.8"/>
+      <ellipse cx="18" cy="-6" rx="18" ry="12" fill="#5EC85A" stroke="#000" stroke-width="0.8"/>
+    </g>
+  </defs>
+
+  <!-- BACK LAYER: Sky -->
+  <rect x="0" y="0" width="2000" height="600" fill="url(#skyGrad)"/>
+
+  <!-- Sun with glow (upper-left) -->
+  <g id="sunLayer" transform="translate(300,120)">
+    <circle cx="0" cy="0" r="120" fill="url(#sunGlow)"/>
+    <circle cx="0" cy="0" r="48" fill="#FFD36A" stroke="#F2B84D" stroke-width="4"/>
+  </g>
+
+  <!-- Far clouds (slow parallax) -->
+  <g id="clouds-far" opacity="0.95">
+    <use href="#cloud" transform="translate(200,90) scale(1.2)"/>
+    <use href="#cloud" transform="translate(700,60) scale(0.9)"/>
+    <use href="#cloud" transform="translate(1200,110) scale(1.1)"/>
+    <use href="#cloud" transform="translate(1700,80) scale(0.8)"/>
+  </g>
+
+  <!-- FAR HILLS (distant, desaturated) -->
+  <g id="hills-far">
+    <path d="M0 380 C200 320 400 360 600 340 C800 320 1000 360 1200 340 C1400 320 1600 360 2000 340 L2000 600 L0 600 Z"
+          fill="#9FD88A" opacity="0.85"/>
+    <path d="M0 420 C250 360 500 420 800 400 C1100 380 1400 420 2000 380 L2000 600 L0 600 Z"
+          fill="#7FC26A" opacity="0.9"/>
+  </g>
+
+  <!-- MIDGROUND: rows of flowers, sunflowers, bushes (mid parallax) -->
+  <g id="mid-flowers">
+    <!-- repeated clusters across width -->
+    <g transform="translate(40,420)">
+      <use href="#flower" transform="translate(0,0)"/>
+      <use href="#flower" transform="translate(40,6) scale(0.9)"/>
+      <use href="#bush" transform="translate(120,6) scale(0.9)"/>
+    </g>
+
+    <g transform="translate(360,430)">
+      <use href="#flower" transform="translate(0,0) scale(0.9)"/>
+      <use href="#flower" transform="translate(48,8) scale(0.85)"/>
+      <use href="#bush" transform="translate(140,6) scale(1.0)"/>
+    </g>
+
+    <g transform="translate(720,420)">
+      <use href="#flower" transform="translate(0,0)"/>
+      <use href="#flower" transform="translate(44,6) scale(0.95)"/>
+      <use href="#bush" transform="translate(130,6) scale(1.05)"/>
+    </g>
+
+    <g transform="translate(1080,430)">
+      <use href="#flower" transform="translate(0,0) scale(0.9)"/>
+      <use href="#flower" transform="translate(46,8) scale(0.85)"/>
+      <use href="#bush" transform="translate(150,6) scale(1.0)"/>
+    </g>
+
+    <g transform="translate(1440,420)">
+      <use href="#flower" transform="translate(0,0)"/>
+      <use href="#flower" transform="translate(40,6) scale(0.9)"/>
+      <use href="#bush" transform="translate(120,6) scale(0.95)"/>
+    </g>
+
+    <g transform="translate(1800,430)">
+      <use href="#flower" transform="translate(0,0) scale(0.9)"/>
+      <use href="#bush" transform="translate(120,6) scale(1.0)"/>
+    </g>
+  </g>
+
+  <!-- FOREGROUND HILL (near, fast parallax) -->
+  <g id="foreground-hill">
+    <path d="M0 520 C150 460 350 500 600 480 C850 460 1100 500 1400 480 C1700 460 2000 520 L2000 600 L0 600 Z"
+          fill="#3FA34A" stroke="#2E8B3A" stroke-width="2"/>
+    <!-- grass tuft pattern along top -->
+    <g fill="#5EC85A" stroke="#2E8B3A" stroke-width="0.8">
+      <path d="M20 500 q8 -18 16 0 q8 -18 16 0 q8 -18 16 0 q8 -18 16 0" />
+      <path d="M420 490 q8 -18 16 0 q8 -18 16 0 q8 -18 16 0" transform="translate(0,0)"/>
+      <path d="M820 500 q8 -18 16 0 q8 -18 16 0 q8 -18 16 0" />
+      <path d="M1220 490 q8 -18 16 0 q8 -18 16 0 q8 -18 16 0" />
+      <path d="M1620 500 q8 -18 16 0 q8 -18 16 0 q8 -18 16 0" />
+    </g>
+  </g>
+
+  <!-- Small decorative foreground flowers and stones (very front) -->
+  <g id="foreground-decor">
+    <use href="#flower" transform="translate(80,500) scale(1.1)"/>
+    <use href="#flower" transform="translate(220,510) scale(0.9)"/>
+    <use href="#bush" transform="translate(320,500) scale(1.1)"/>
+    <use href="#flower" transform="translate(520,505) scale(1.0)"/>
+    <use href="#flower" transform="translate(920,505) scale(1.2)"/>
+    <use href="#bush" transform="translate(1600,500) scale(1.15)"/>
+  </g>
+
+  <!-- Optional subtle vignette to frame scene -->
+  <rect x="0" y="0" width="2000" height="600" fill="none" opacity="0.0"/>
+</svg>

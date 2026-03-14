@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="210" height="20" viewBox="0 0 210 20" shape-rendering="geometricPrecision">
+  <defs>
+    <style>
+      .outer { fill:#2B2B2B; stroke:#000; stroke-width:2; rx:6; ry:6; }
+      .inner { fill:#E8F7E9; stroke:#2E8B3A; stroke-width:2; rx:4; ry:4; }
+      .slot { fill:none; stroke:#1F1F1F; stroke-width:1.2; rx:3; ry:3; }
+      .icon-bg { fill:#F6E7D0; stroke:#000; stroke-width:1.2; rx:4; ry:4; }
+      .paw { fill:#FF8C2B; stroke:#000; stroke-width:0.9; }
+    </style>
+  </defs>
+
+  <!-- Outer frame -->
+  <rect x="0" y="0" width="210" height="20" class="outer" rx="6" ry="6"/>
+
+  <!-- Left icon panel (paw/carrot) -->
+  <g transform="translate(4,2)">
+    <rect x="0" y="0" width="36" height="16" class="icon-bg"/>
+    <!-- small carrot icon -->
+    <g transform="translate(8,2) scale(0.9)">
+      <path d="M6 2 C4 6,4 10,8 14 C10 16,14 16,18 14 C20 12,20 10,18 8 C16 6,12 4,6 2 Z" class="paw"/>
+      <rect x="18" y="6" width="2" height="4" fill="#2E8B3A" stroke="#000" stroke-width="0.6"/>
+    </g>
+  </g>
+
+  <!-- Health fill channel (renderer will draw fill inside this area) -->
+  <g transform="translate(46,2)">
+    <rect x="0" y="0" width="160" height="16" class="inner"/>
+    <rect x="2" y="2" width="156" height="12" class="slot" rx="3" ry="3"/>
+  </g>
+</svg>

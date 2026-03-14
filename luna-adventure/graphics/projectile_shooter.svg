@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12" shape-rendering="geometricPrecision">
+  <defs>
+    <radialGradient id="orbGlow" cx="40%" cy="38%" r="55%">
+      <stop offset="0%" stop-color="#EAFFB0"/>
+      <stop offset="40%" stop-color="#7AE600"/>
+      <stop offset="100%" stop-color="#2A7A00"/>
+    </radialGradient>
+    <radialGradient id="trailGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#9AFF30" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#3AAA00" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Motion-blur tail (pointing left, projectile travels right) -->
+  <ellipse cx="3" cy="6" rx="3.5" ry="1.8" fill="url(#trailGlow)"/>
+  <ellipse cx="1.5" cy="6" rx="1.8" ry="1.0" fill="#7AE600" opacity="0.3"/>
+
+  <!-- Orb body -->
+  <circle cx="7.5" cy="6" r="4" fill="url(#orbGlow)" stroke="#1A6000" stroke-width="0.8"/>
+
+  <!-- Inner highlight -->
+  <ellipse cx="6.2" cy="4.8" rx="1.4" ry="0.9" fill="#EAFFB0" opacity="0.85"/>
+
+  <!-- Angry eyes (two dark dots) -->
+  <circle cx="6.5" cy="5.4" r="0.65" fill="#1A3A00"/>
+  <circle cx="8.5" cy="5.4" r="0.65" fill="#1A3A00"/>
+
+  <!-- Angry brow lines -->
+  <line x1="5.9" y1="4.8" x2="7.0" y2="5.0" stroke="#1A3A00" stroke-width="0.7" stroke-linecap="round"/>
+  <line x1="7.9" y1="5.0" x2="9.0" y2="4.8" stroke="#1A3A00" stroke-width="0.7" stroke-linecap="round"/>
+
+  <!-- Small frown -->
+  <path d="M6.5 6.5 q1 0.7 2 0" stroke="#1A3A00" stroke-width="0.65" stroke-linecap="round" fill="none"/>
+
+  <!-- Outer glow pulse -->
+  <circle cx="7.5" cy="6" r="4" fill="none" stroke="#9AFF30" stroke-width="0.5" opacity="0.5">
+    <animate attributeName="r" values="4;4.8;4" dur="0.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0.1;0.5" dur="0.5s" repeatCount="indefinite"/>
+  </circle>
+</svg>

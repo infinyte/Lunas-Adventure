@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="150" height="70" viewBox="0 0 150 70" shape-rendering="geometricPrecision">
+  <defs>
+    <style>
+      .cloud-fill { fill:#FFFFFF; }
+      .cloud-shadow { fill:#F0F6FB; }
+      .outline { stroke:#000000; stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
+    </style>
+  </defs>
+
+  <!-- Variant A: id="cloud-A" 120x60 scaled to fit -->
+  <g id="cloud-A" transform="translate(15,5) scale(0.9)">
+    <g transform="translate(0,0)">
+      <ellipse class="cloud-fill outline" cx="60" cy="30" rx="60" ry="30"/>
+      <ellipse class="cloud-fill outline" cx="30" cy="36" rx="36" ry="22"/>
+      <ellipse class="cloud-fill outline" cx="90" cy="36" rx="36" ry="22"/>
+      <path d="M20 44 q20 -8 40 0 q20 -8 40 0" class="cloud-shadow" />
+    </g>
+  </g>
+
+  <!-- Variant B: id="cloud-B" 80x45 -->
+  <g id="cloud-B" transform="translate(10,10) scale(0.6)">
+    <g transform="translate(0,0)">
+      <ellipse class="cloud-fill outline" cx="60" cy="30" rx="60" ry="30"/>
+      <ellipse class="cloud-fill outline" cx="36" cy="36" rx="30" ry="18"/>
+      <ellipse class="cloud-fill outline" cx="84" cy="36" rx="24" ry="16"/>
+      <path d="M28 44 q16 -6 32 0" class="cloud-shadow" />
+    </g>
+  </g>
+
+  <!-- Variant C: id="cloud-C" 150x70 full canvas -->
+  <g id="cloud-C" transform="translate(0,0) scale(1)">
+    <g transform="translate(0,0)">
+      <ellipse class="cloud-fill outline" cx="75" cy="35" rx="75" ry="35"/>
+      <ellipse class="cloud-fill outline" cx="40" cy="44" rx="44" ry="26"/>
+      <ellipse class="cloud-fill outline" cx="110" cy="44" rx="44" ry="26"/>
+      <path d="M30 54 q30 -10 60 0 q30 -10 60 0" class="cloud-shadow" />
+    </g>
+  </g>
+</svg>

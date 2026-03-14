@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="80" viewBox="0 0 60 80" shape-rendering="geometricPrecision">
+  <defs>
+    <style>
+      .outline { stroke:#000000; stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
+      .wood { fill:#A0522D; }
+      .wood-dark { fill:#7A3F1F; }
+      .iron { fill:#3B3F42; }
+      .iron-dark { fill:#2A2D30; }
+      .glow { fill:#FFD24D; opacity:0.0; }
+      .keyhole { fill:#111111; }
+      .light { fill:#FFD36A; opacity:0.0; }
+      .shadow { fill:#000000; opacity:0.12; }
+    </style>
+  </defs>
+
+  <!-- Locked state group -->
+  <g id="door-locked" transform="translate(0,0)">
+    <!-- door frame -->
+    <rect x="2" y="6" width="56" height="68" rx="6" ry="6" fill="#5A3B2A" class="outline"/>
+    <!-- inner wooden panel -->
+    <rect x="8" y="12" width="44" height="56" rx="4" ry="4" class="wood outline"/>
+    <!-- vertical planks -->
+    <path d="M20 12 L20 68" class="outline" stroke="#7A3F1F" stroke-width="1.6" />
+    <path d="M30 12 L30 68" class="outline" stroke="#7A3F1F" stroke-width="1.6" />
+    <path d="M40 12 L40 68" class="outline" stroke="#7A3F1F" stroke-width="1.6" />
+    <!-- iron hinges (left) -->
+    <g transform="translate(6,22)">
+      <rect x="-2" y="-2" width="8" height="12" rx="2" ry="2" class="iron outline"/>
+      <circle cx="2" cy="4" r="1.6" class="iron-dark outline"/>
+    </g>
+    <g transform="translate(6,46)">
+      <rect x="-2" y="-2" width="8" height="12" rx="2" ry="2" class="iron outline"/>
+      <circle cx="2" cy="4" r="1.6" class="iron-dark outline"/>
+    </g>
+    <!-- iron plate and handle (right) -->
+    <g transform="translate(46,36)">
+      <rect x="-2" y="-8" width="8" height="16" rx="2" ry="2" class="iron outline"/>
+      <circle cx="2" cy="-2" r="2.2" class="iron-dark outline"/>
+      <!-- handle knob -->
+      <circle cx="-8" cy="0" r="3.6" class="iron outline" fill="#4A4E52"/>
+      <rect x="-12" y="-1.6" width="6" height="3.2" rx="1" ry="1" class="iron outline" fill="#4A4E52"/>
+    </g>
+    <!-- large keyhole (center-right) -->
+    <g transform="translate(36,40)">
+      <path d="M0 -6 a4 4 0 1 1 0 8 L0 6 a2 2 0 1 1 0 -12 Z" class="keyhole"/>
+      <circle cx="0" cy="-6" r="1.2" fill="#000"/>
+    </g>
+    <!-- subtle shadow under door bottom -->
+    <rect x="8" y="66" width="44" height="6" class="shadow" rx="3" ry="3"/>
+  </g>
+
+  <!-- Unlocked state group (same position, slightly ajar with glow) -->
+  <g id="door-unlocked" transform="translate(0,0)">
+    <!-- frame (same) -->
+    <rect x="2" y="6" width="56" height="68" rx="6" ry="6" fill="#5A3B2A" class="outline"/>
+    <!-- door panel rotated slightly to appear ajar -->
+    <g transform="translate(30,40) rotate(-12)">
+      <rect x="-22" y="-28" width="44" height="56" rx="4" ry="4" class="wood outline"/>
+      <!-- planks -->
+      <path d="M-10 -28 L-10 28" class="outline" stroke="#7A3F1F" stroke-width="1.6" />
+      <path d="M0 -28 L0 28" class="outline" stroke="#7A3F1F" stroke-width="1.6" />
+      <path d="M10 -28 L10 28" class="outline" stroke="#7A3F1F" stroke-width="1.6" />
+      <!-- iron plate and handle on the swinging door -->
+      <g transform="translate(14,0)">
+        <rect x="-2" y="-8" width="8" height="16" rx="2" ry="2" class="iron outline"/>
+        <circle cx="2" cy="-2" r="2.2" class="iron-dark outline"/>
+        <circle cx="-8" cy="0" r="3.6" class="iron outline" fill="#4A4E52"/>
+        <rect x="-12" y="-1.6" width="6" height="3.2" rx="1" ry="1" class="iron outline" fill="#4A4E52"/>
+      </g>
+      <!-- keyhole replaced by glowing slot -->
+      <g transform="translate(6,0)">
+        <ellipse cx="0" cy="-6" rx="3.6" ry="2.6" fill="#FFD24D" class="outline"/>
+        <rect x="-1.2" y="-4" width="2.4" height="10" rx="1" ry="1" fill="#FFD24D" />
+      </g>
+    </g>
+
+    <!-- golden light spilling from gap -->
+    <g transform="translate(30,40)">
+      <path d="M12 -28 C40 -10 40 10 12 28 L12 28 L6 28 L6 -28 Z" fill="#FFD36A" opacity="0.85"/>
+      <path d="M10 -24 C34 -8 34 8 10 24 L10 24 L8 24 L8 -24 Z" fill="#FFD24D" opacity="0.6"/>
+    </g>
+
+    <!-- crown/glow accents near gap -->
+    <g transform="translate(30,40)">
+      <polygon points="18,-20 20,-26 22,-20 28,-20 23,-16 25,-10 20,-14 15,-10 17,-16 12,-20" fill="#FFD24D" stroke="#000" stroke-width="0.6" opacity="0.9"/>
+    </g>
+
+    <!-- hinge on left frame (visible) -->
+    <g transform="translate(6,22)">
+      <rect x="-2" y="-2" width="8" height="12" rx="2" ry="2" class="iron outline"/>
+      <circle cx="2" cy="4" r="1.6" class="iron-dark outline"/>
+    </g>
+
+    <!-- light glow overlay (for editors to toggle opacity) -->
+    <circle cx="30" cy="20" r="28" fill="#FFD24D" class="glow" opacity="0.18"/>
+    <!-- subtle floor shadow for open door -->
+    <rect x="8" y="66" width="44" height="6" class="shadow" rx="3" ry="3"/>
+  </g>
+
+  <!-- Note: both states are included in this single SVG file as groups with IDs "door-locked" and "door-unlocked". Toggle visibility in your renderer or editor to switch states. -->
+</svg>

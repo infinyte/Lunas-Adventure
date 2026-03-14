@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="50" viewBox="0 0 64 50" shape-rendering="geometricPrecision">
+  <defs>
+    <style>
+      .outline { stroke:#000000; stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
+      .grass { fill:#5CC24A; }
+      .grass-dark { fill:#4AA13B; }
+      .dirt-top { fill:#8B4513; }
+      .dirt-mid { fill:#6F3510; }
+      .dirt-bottom { fill:#5A2A0D; }
+      .pebble { fill:#4B2B18; }
+      .root { stroke:#3E1F0F; stroke-width:1.2; stroke-linecap:round; opacity:0.9; }
+      .tuft { fill:#5CC24A; stroke:#000000; stroke-width:1; stroke-linejoin:round; }
+    </style>
+  </defs>
+
+  <!-- Background transparent by default -->
+
+  <!-- Top grass strip (12px tall). Designed symmetric at left/right edges for seamless tiling -->
+  <g transform="translate(0,0)">
+    <!-- grass base rectangle -->
+    <rect x="0" y="0" width="64" height="12" class="grass"/>
+    <!-- grass scalloped top edge (tufts) - repeatable pattern across tile -->
+    <path class="outline grass-dark" d="M0 12 
+      C6 6, 12 12, 18 8
+      C24 4, 30 12, 36 8
+      C42 4, 48 12, 54 8
+      C58 5, 62 12, 64 12
+      L64 12 L0 12 Z" fill="#5CC24A"/>
+    <!-- small tufts to break silhouette -->
+    <path class="tuft" d="M6 6 q3 -6 6 0 z" />
+    <path class="tuft" d="M20 4 q3 -6 6 0 z" />
+    <path class="tuft" d="M34 6 q3 -6 6 0 z" />
+    <path class="tuft" d="M48 4 q3 -6 6 0 z" />
+  </g>
+
+  <!-- Dirt body (from y=12 to y=50). Layered bands for packed soil -->
+  <g transform="translate(0,12)">
+    <!-- top dirt band -->
+    <rect x="0" y="0" width="64" height="12" class="dirt-top outline" />
+    <!-- middle dirt band -->
+    <rect x="0" y="12" width="64" height="12" class="dirt-mid outline" />
+    <!-- bottom dirt band -->
+    <rect x="0" y="24" width="64" height="14" class="dirt-bottom outline" />
+
+    <!-- pebble details (one-line per pebble) placed to tile seamlessly -->
+    <circle class="pebble outline" cx="8" cy="8" r="2"/>
+    <circle class="pebble outline" cx="20" cy="6" r="1.6"/>
+    <circle class="pebble outline" cx="32" cy="10" r="2.2"/>
+    <circle class="pebble outline" cx="44" cy="8" r="1.8"/>
+    <circle class="pebble outline" cx="56" cy="6" r="1.6"/>
+
+    <circle class="pebble outline" cx="12" cy="20" r="1.8"/>
+    <circle class="pebble outline" cx="28" cy="18" r="2"/>
+    <circle class="pebble outline" cx="40" cy="22" r="1.6"/>
+    <circle class="pebble outline" cx="52" cy="20" r="1.8"/>
+
+    <circle class="pebble outline" cx="6" cy="34" r="2"/>
+    <circle class="pebble outline" cx="18" cy="30" r="1.6"/>
+    <circle class="pebble outline" cx="30" cy="36" r="2.2"/>
+    <circle class="pebble outline" cx="46" cy="32" r="1.8"/>
+    <circle class="pebble outline" cx="58" cy="34" r="1.4"/>
+
+    <!-- subtle root lines that flow horizontally so edges match for tiling -->
+    <path class="root" d="M0 14 q8 -6 16 -2 q8 4 16 0 q8 -4 16 2" fill="none"/>
+    <path class="root" d="M0 26 q10 -4 20 0 q10 4 20 0 q10 -4 24 2" fill="none"/>
+    <path class="root" d="M0 38 q6 -2 12 2 q8 6 16 2 q8 -4 24 0" fill="none"/>
+  </g>
+</svg>

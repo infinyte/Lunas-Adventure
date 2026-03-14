@@ -1,0 +1,602 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2900" height="100" viewBox="0 0 2900 100" shape-rendering="geometricPrecision">
+  <defs>
+    <style>
+      .outline { stroke:#000000; stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
+      .body { fill:#8B5E3C; }        /* brown blob */
+      .body-dark { fill:#6f4a31; }
+      .crown { fill:#FFD24D; stroke:#000; stroke-width:1.6; }
+      .gem-red { fill:#E03B3B; stroke:#000; stroke-width:0.8; }
+      .gem-green { fill:#6ACB8A; stroke:#000; stroke-width:0.8; }
+      .gem-blue { fill:#5DA8FF; stroke:#000; stroke-width:0.8; }
+      .eye-sclera { fill:#FFFFFF; stroke:#000; stroke-width:1.2; }
+      .pupil { fill:#E03B3B; }
+      .brow { stroke:#000; stroke-width:3; stroke-linecap:round; }
+      .tooth { fill:#FFFFFF; stroke:#000; stroke-width:1; }
+      .tentacle { fill:#7A4E34; stroke:#000; stroke-width:1.6; }
+      .fly { fill:#222222; stroke:#000; stroke-width:0.8; }
+      .stink { fill:none; stroke:#9E8B6A; stroke-width:2; stroke-linecap:round; opacity:0.9; }
+      .glow-red { fill:#FF6B6B; opacity:0.28; }
+      .smoke { fill:#9E9EA3; stroke:#000; stroke-width:0.9; opacity:0.95; }
+      .splatter { fill:#7A4E34; stroke:#000; stroke-width:1; }
+      .star { fill:#FFD24D; stroke:#000; stroke-width:0.9; }
+    </style>
+  </defs>
+
+  <!-- Helper: each frame group is 100x100. Translate by 100*n -->
+
+  <!-- Idle frames 0-3: breathe pulse, flies circle, stink lines animate, crown glint -->
+  <!-- Idle 0 -->
+  <g transform="translate(0,0)">
+    <!-- body -->
+    <ellipse class="outline body" cx="50" cy="56" rx="42" ry="30"/>
+    <ellipse class="body-dark" cx="50" cy="74" rx="30" ry="10"/>
+    <!-- crown -->
+    <g transform="translate(0,-28)">
+      <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      <circle class="gem-red" cx="40" cy="26" r="3"/>
+      <circle class="gem-green" cx="50" cy="26" r="3"/>
+      <circle class="gem-blue" cx="60" cy="26" r="3"/>
+    </g>
+    <!-- eyes -->
+    <ellipse class="eye-sclera" cx="36" cy="46" rx="8" ry="6"/>
+    <ellipse class="eye-sclera" cx="64" cy="46" rx="8" ry="6"/>
+    <circle class="pupil" cx="36" cy="46" r="3"/>
+    <circle class="pupil" cx="64" cy="46" r="3"/>
+    <path class="brow" d="M28 38 L36 42"/>
+    <path class="brow" d="M72 38 L64 42"/>
+    <!-- mouth -->
+    <path class="outline" d="M30 62 q20 18 40 0" fill="#3b2a20"/>
+    <rect class="tooth" x="44" y="58" width="6" height="8" rx="1"/>
+    <rect class="tooth" x="54" y="58" width="6" height="8" rx="1"/>
+    <!-- tentacles -->
+    <path class="tentacle outline" d="M18 68 q-6 10 6 18 q8 6 12 2" />
+    <path class="tentacle outline" d="M82 68 q6 10 -6 18 q-8 6 -12 2" />
+    <!-- flies (simple) -->
+    <g>
+      <circle class="fly" cx="20" cy="20" r="3"/>
+      <circle class="fly" cx="80" cy="24" r="3"/>
+      <path class="outline" d="M20 20 q15 -10 60 4" fill="none" opacity="0.5"/>
+    </g>
+    <!-- stink lines -->
+    <path class="stink" d="M40 10 q6 6 0 12" />
+    <path class="stink" d="M60 8 q6 8 0 14" />
+  </g>
+
+  <!-- Idle 1: slight inhale (body larger), flies shifted -->
+  <g transform="translate(100,0)">
+    <ellipse class="outline body" cx="50" cy="54" rx="44" ry="32"/>
+    <ellipse class="body-dark" cx="50" cy="76" rx="32" ry="10"/>
+    <g transform="translate(0,-28)">
+      <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      <circle class="gem-red" cx="40" cy="26" r="3"/>
+      <circle class="gem-green" cx="50" cy="26" r="3"/>
+      <circle class="gem-blue" cx="60" cy="26" r="3"/>
+    </g>
+    <ellipse class="eye-sclera" cx="36" cy="44" rx="8" ry="6"/>
+    <ellipse class="eye-sclera" cx="64" cy="44" rx="8" ry="6"/>
+    <circle class="pupil" cx="38" cy="44" r="3"/>
+    <circle class="pupil" cx="66" cy="44" r="3"/>
+    <path class="brow" d="M28 36 L36 40"/>
+    <path class="brow" d="M72 36 L64 40"/>
+    <path class="outline" d="M30 62 q20 18 40 0" fill="#3b2a20"/>
+    <rect class="tooth" x="44" y="58" width="6" height="8" rx="1"/>
+    <rect class="tooth" x="54" y="58" width="6" height="8" rx="1"/>
+    <path class="tentacle outline" d="M16 70 q-8 8 4 18 q8 6 12 2" />
+    <path class="tentacle outline" d="M84 66 q8 12 -4 20 q-8 6 -12 2" />
+    <g>
+      <circle class="fly" cx="26" cy="18" r="3"/>
+      <circle class="fly" cx="74" cy="28" r="3"/>
+      <path class="outline" d="M26 18 q18 -8 56 6" fill="none" opacity="0.5"/>
+    </g>
+    <path class="stink" d="M42 8 q6 6 0 12" />
+    <path class="stink" d="M62 6 q6 8 0 14" />
+  </g>
+
+  <!-- Idle 2: exhale (body smaller), flies shifted -->
+  <g transform="translate(200,0)">
+    <ellipse class="outline body" cx="50" cy="58" rx="40" ry="28"/>
+    <ellipse class="body-dark" cx="50" cy="76" rx="28" ry="9"/>
+    <g transform="translate(0,-28)">
+      <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      <circle class="gem-red" cx="40" cy="26" r="3"/>
+      <circle class="gem-green" cx="50" cy="26" r="3"/>
+      <circle class="gem-blue" cx="60" cy="26" r="3"/>
+    </g>
+    <ellipse class="eye-sclera" cx="36" cy="48" rx="8" ry="6"/>
+    <ellipse class="eye-sclera" cx="64" cy="48" rx="8" ry="6"/>
+    <circle class="pupil" cx="34" cy="48" r="3"/>
+    <circle class="pupil" cx="62" cy="48" r="3"/>
+    <path class="brow" d="M28 40 L36 44"/>
+    <path class="brow" d="M72 40 L64 44"/>
+    <path class="outline" d="M30 62 q20 18 40 0" fill="#3b2a20"/>
+    <rect class="tooth" x="44" y="58" width="6" height="8" rx="1"/>
+    <rect class="tooth" x="54" y="58" width="6" height="8" rx="1"/>
+    <path class="tentacle outline" d="M18 66 q-6 12 6 18 q8 6 12 2" />
+    <path class="tentacle outline" d="M82 70 q6 8 -6 18 q-8 6 -12 2" />
+    <g>
+      <circle class="fly" cx="22" cy="22" r="3"/>
+      <circle class="fly" cx="78" cy="22" r="3"/>
+      <path class="outline" d="M22 22 q20 -6 56 4" fill="none" opacity="0.5"/>
+    </g>
+    <path class="stink" d="M40 12 q6 6 0 12" />
+    <path class="stink" d="M60 10 q6 8 0 14" />
+  </g>
+
+  <!-- Idle 3: blink and crown glint -->
+  <g transform="translate(300,0)">
+    <ellipse class="outline body" cx="50" cy="56" rx="42" ry="30"/>
+    <ellipse class="body-dark" cx="50" cy="74" rx="30" ry="10"/>
+    <g transform="translate(0,-28)">
+      <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      <circle class="gem-red" cx="40" cy="26" r="3"/>
+      <circle class="gem-green" cx="50" cy="26" r="3"/>
+      <circle class="gem-blue" cx="60" cy="26" r="3"/>
+      <!-- crown glint -->
+      <path class="star" d="M52 18 l2 -6 l2 6 l-2 2 z"/>
+    </g>
+    <ellipse class="eye-sclera" cx="36" cy="46" rx="8" ry="6"/>
+    <ellipse class="eye-sclera" cx="64" cy="46" rx="8" ry="6"/>
+    <path class="outline" d="M34 46 q2 -1 4 0" fill="none"/>
+    <path class="outline" d="M62 46 q2 -1 4 0" fill="none"/>
+    <path class="outline" d="M30 62 q20 18 40 0" fill="#3b2a20"/>
+    <rect class="tooth" x="44" y="58" width="6" height="8" rx="1"/>
+    <rect class="tooth" x="54" y="58" width="6" height="8" rx="1"/>
+    <path class="tentacle outline" d="M18 68 q-6 10 6 18 q8 6 12 2" />
+    <path class="tentacle outline" d="M82 68 q6 10 -6 18 q-8 6 -12 2" />
+    <g>
+      <circle class="fly" cx="20" cy="20" r="3"/>
+      <circle class="fly" cx="80" cy="24" r="3"/>
+      <path class="outline" d="M20 20 q15 -10 60 4" fill="none" opacity="0.5"/>
+    </g>
+    <path class="stink" d="M40 10 q6 6 0 12" />
+    <path class="stink" d="M60 8 q6 8 0 14" />
+  </g>
+
+  <!-- Move frames 4-9: lurch side to side, tentacles flailing -->
+  <!-- Move 0 -->
+  <g transform="translate(400,0)">
+    <g transform="translate(-6,2) rotate(-6 50 50)">
+      <ellipse class="outline body" cx="50" cy="56" rx="42" ry="30"/>
+      <ellipse class="body-dark" cx="50" cy="74" rx="30" ry="10"/>
+      <g transform="translate(0,-28)">
+        <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      </g>
+      <ellipse class="eye-sclera" cx="36" cy="46" rx="8" ry="6"/>
+      <ellipse class="eye-sclera" cx="64" cy="46" rx="8" ry="6"/>
+      <circle class="pupil" cx="36" cy="46" r="3"/>
+      <circle class="pupil" cx="64" cy="46" r="3"/>
+      <path class="outline" d="M30 62 q20 18 40 0" fill="#3b2a20"/>
+      <path class="tentacle outline" d="M10 70 q-10 12 8 20 q10 6 14 2" />
+      <path class="tentacle outline" d="M90 66 q12 14 -8 22 q-10 6 -14 2" />
+      <g>
+        <circle class="fly" cx="18" cy="18" r="3"/>
+        <circle class="fly" cx="82" cy="26" r="3"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Move 1 -->
+  <g transform="translate(500,0)">
+    <g transform="translate(0,0) rotate(4 50 50)">
+      <ellipse class="outline body" cx="50" cy="56" rx="42" ry="30"/>
+      <ellipse class="body-dark" cx="50" cy="74" rx="30" ry="10"/>
+      <g transform="translate(0,-28)">
+        <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      </g>
+      <ellipse class="eye-sclera" cx="36" cy="46" rx="8" ry="6"/>
+      <ellipse class="eye-sclera" cx="64" cy="46" rx="8" ry="6"/>
+      <circle class="pupil" cx="38" cy="46" r="3"/>
+      <circle class="pupil" cx="66" cy="46" r="3"/>
+      <path class="outline" d="M30 62 q20 18 40 0" fill="#3b2a20"/>
+      <path class="tentacle outline" d="M14 68 q-6 10 6 18 q8 6 12 2" />
+      <path class="tentacle outline" d="M86 68 q6 10 -6 18 q-8 6 -12 2" />
+      <g>
+        <circle class="fly" cx="24" cy="16" r="3"/>
+        <circle class="fly" cx="76" cy="28" r="3"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Move 2 -->
+  <g transform="translate(600,0)">
+    <g transform="translate(6,-2) rotate(10 50 50)">
+      <ellipse class="outline body" cx="50" cy="56" rx="42" ry="30"/>
+      <ellipse class="body-dark" cx="50" cy="74" rx="30" ry="10"/>
+      <g transform="translate(0,-28)">
+        <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      </g>
+      <ellipse class="eye-sclera" cx="36" cy="46" rx="8" ry="6"/>
+      <ellipse class="eye-sclera" cx="64" cy="46" rx="8" ry="6"/>
+      <circle class="pupil" cx="34" cy="46" r="3"/>
+      <circle class="pupil" cx="62" cy="46" r="3"/>
+      <path class="outline" d="M30 62 q20 18 40 0" fill="#3b2a20"/>
+      <path class="tentacle outline" d="M12 66 q-8 10 6 18 q8 6 12 2" />
+      <path class="tentacle outline" d="M88 70 q8 10 -6 18 q-8 6 -12 2" />
+      <g>
+        <circle class="fly" cx="20" cy="20" r="3"/>
+        <circle class="fly" cx="80" cy="24" r="3"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Move 3 -->
+  <g transform="translate(700,0)">
+    <g transform="translate(-4,1) rotate(-4 50 50)">
+      <ellipse class="outline body" cx="50" cy="56" rx="42" ry="30"/>
+      <ellipse class="body-dark" cx="50" cy="74" rx="30" ry="10"/>
+      <g transform="translate(0,-28)">
+        <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      </g>
+      <ellipse class="eye-sclera" cx="36" cy="46" rx="8" ry="6"/>
+      <ellipse class="eye-sclera" cx="64" cy="46" rx="8" ry="6"/>
+      <circle class="pupil" cx="36" cy="46" r="3"/>
+      <circle class="pupil" cx="64" cy="46" r="3"/>
+      <path class="outline" d="M30 62 q20 18 40 0" fill="#3b2a20"/>
+      <path class="tentacle outline" d="M16 70 q-6 8 8 18 q8 6 12 2" />
+      <path class="tentacle outline" d="M84 66 q6 12 -8 20 q-10 6 -14 2" />
+      <g>
+        <circle class="fly" cx="22" cy="18" r="3"/>
+        <circle class="fly" cx="78" cy="26" r="3"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Move 4 -->
+  <g transform="translate(800,0)">
+    <g transform="translate(4,-1) rotate(6 50 50)">
+      <ellipse class="outline body" cx="50" cy="56" rx="42" ry="30"/>
+      <ellipse class="body-dark" cx="50" cy="74" rx="30" ry="10"/>
+      <g transform="translate(0,-28)">
+        <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      </g>
+      <ellipse class="eye-sclera" cx="36" cy="46" rx="8" ry="6"/>
+      <ellipse class="eye-sclera" cx="64" cy="46" rx="8" ry="6"/>
+      <circle class="pupil" cx="38" cy="46" r="3"/>
+      <circle class="pupil" cx="66" cy="46" r="3"/>
+      <path class="outline" d="M30 62 q20 18 40 0" fill="#3b2a20"/>
+      <path class="tentacle outline" d="M14 68 q-6 10 6 18 q8 6 12 2" />
+      <path class="tentacle outline" d="M86 68 q6 10 -6 18 q-8 6 -12 2" />
+      <g>
+        <circle class="fly" cx="26" cy="16" r="3"/>
+        <circle class="fly" cx="74" cy="28" r="3"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Move 5 -->
+  <g transform="translate(900,0)">
+    <g transform="translate(0,0) rotate(0 50 50)">
+      <ellipse class="outline body" cx="50" cy="56" rx="42" ry="30"/>
+      <ellipse class="body-dark" cx="50" cy="74" rx="30" ry="10"/>
+      <g transform="translate(0,-28)">
+        <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      </g>
+      <ellipse class="eye-sclera" cx="36" cy="46" rx="8" ry="6"/>
+      <ellipse class="eye-sclera" cx="64" cy="46" rx="8" ry="6"/>
+      <circle class="pupil" cx="36" cy="46" r="3"/>
+      <circle class="pupil" cx="64" cy="46" r="3"/>
+      <path class="outline" d="M30 62 q20 18 40 0" fill="#3b2a20"/>
+      <path class="tentacle outline" d="M12 66 q-8 10 6 18 q8 6 12 2" />
+      <path class="tentacle outline" d="M88 70 q8 10 -6 18 q-8 6 -12 2" />
+      <g>
+        <circle class="fly" cx="20" cy="20" r="3"/>
+        <circle class="fly" cx="80" cy="24" r="3"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Attack Phase 1 frames 10-13: wind up (swell) then tentacle smash -->
+  <!-- Attack1 0: wind-up swell -->
+  <g transform="translate(1000,0)">
+    <ellipse class="outline body" cx="50" cy="50" rx="48" ry="34"/>
+    <ellipse class="body-dark" cx="50" cy="78" rx="34" ry="10"/>
+    <g transform="translate(0,-28)">
+      <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+    </g>
+    <ellipse class="eye-sclera" cx="36" cy="44" rx="9" ry="7"/>
+    <ellipse class="eye-sclera" cx="64" cy="44" rx="9" ry="7"/>
+    <circle class="pupil" cx="36" cy="44" r="3"/>
+    <circle class="pupil" cx="64" cy="44" r="3"/>
+    <path class="outline" d="M30 66 q20 22 40 0" fill="#3b2a20"/>
+    <rect class="tooth" x="44" y="60" width="6" height="10" rx="1"/>
+    <rect class="tooth" x="54" y="60" width="6" height="10" rx="1"/>
+    <path class="tentacle outline" d="M20 72 q-8 10 10 22 q10 6 14 2" />
+    <path class="tentacle outline" d="M80 68 q12 16 -10 24 q-10 6 -14 2" />
+  </g>
+
+  <!-- Attack1 1: peak swell -->
+  <g transform="translate(1100,0)">
+    <ellipse class="outline body" cx="50" cy="48" rx="52" ry="36"/>
+    <ellipse class="body-dark" cx="50" cy="80" rx="36" ry="10"/>
+    <g transform="translate(0,-28)">
+      <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+    </g>
+    <ellipse class="eye-sclera" cx="36" cy="42" rx="10" ry="8"/>
+    <ellipse class="eye-sclera" cx="64" cy="42" rx="10" ry="8"/>
+    <circle class="pupil" cx="36" cy="42" r="3"/>
+    <circle class="pupil" cx="64" cy="42" r="3"/>
+    <path class="outline" d="M30 68 q20 24 40 0" fill="#3b2a20"/>
+    <rect class="tooth" x="44" y="62" width="6" height="10" rx="1"/>
+    <rect class="tooth" x="54" y="62" width="6" height="10" rx="1"/>
+    <path class="tentacle outline" d="M18 74 q-10 12 12 24 q10 6 14 2" />
+    <path class="tentacle outline" d="M82 66 q14 18 -12 26 q-10 6 -14 2" />
+  </g>
+
+  <!-- Attack1 2: smash down (tentacle hits) -->
+  <g transform="translate(1200,0)">
+    <ellipse class="outline body" cx="50" cy="60" rx="46" ry="28"/>
+    <ellipse class="body-dark" cx="50" cy="82" rx="30" ry="8"/>
+    <g transform="translate(0,-28)">
+      <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+    </g>
+    <ellipse class="eye-sclera" cx="36" cy="50" rx="8" ry="6"/>
+    <ellipse class="eye-sclera" cx="64" cy="50" rx="8" ry="6"/>
+    <circle class="pupil" cx="36" cy="50" r="3"/>
+    <circle class="pupil" cx="64" cy="50" r="3"/>
+    <path class="outline" d="M30 70 q20 12 40 0" fill="#3b2a20"/>
+    <rect class="tooth" x="44" y="66" width="6" height="8" rx="1"/>
+    <rect class="tooth" x="54" y="66" width="6" height="8" rx="1"/>
+    <!-- smashed tentacle down -->
+    <path class="tentacle outline" d="M20 72 q20 6 40 2 q6 -1 8 -6" />
+    <path class="tentacle outline" d="M80 68 q6 8 -6 10 q-8 2 -12 0" />
+    <!-- impact mark -->
+    <circle class="smoke" cx="30" cy="92" r="6"/>
+  </g>
+
+  <!-- Attack1 3: recover -->
+  <g transform="translate(1300,0)">
+    <ellipse class="outline body" cx="50" cy="56" rx="42" ry="30"/>
+    <ellipse class="body-dark" cx="50" cy="74" rx="30" ry="10"/>
+    <g transform="translate(0,-28)">
+      <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+    </g>
+    <ellipse class="eye-sclera" cx="36" cy="46" rx="8" ry="6"/>
+    <ellipse class="eye-sclera" cx="64" cy="46" rx="8" ry="6"/>
+    <circle class="pupil" cx="36" cy="46" r="3"/>
+    <circle class="pupil" cx="64" cy="46" r="3"/>
+    <path class="outline" d="M30 62 q20 18 40 0" fill="#3b2a20"/>
+    <path class="tentacle outline" d="M18 68 q-6 10 6 18 q8 6 12 2" />
+    <path class="tentacle outline" d="M82 68 q6 10 -6 18 q-8 6 -12 2" />
+  </g>
+
+  <!-- Attack Phase 2 frames 14-17: low-health red glow, spit projectile -->
+  <!-- Attack2 0: red glow begins -->
+  <g transform="translate(1400,0)">
+    <ellipse class="outline body" cx="50" cy="56" rx="42" ry="30"/>
+    <ellipse class="body-dark" cx="50" cy="74" rx="30" ry="10"/>
+    <rect class="glow-red" x="6" y="10" width="88" height="60" rx="20"/>
+    <g transform="translate(0,-28)">
+      <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+    </g>
+    <ellipse class="eye-sclera" cx="36" cy="46" rx="8" ry="6"/>
+    <ellipse class="eye-sclera" cx="64" cy="46" rx="8" ry="6"/>
+    <circle class="pupil" cx="36" cy="46" r="3"/>
+    <circle class="pupil" cx="64" cy="46" r="3"/>
+    <path class="outline" d="M30 62 q20 18 40 0" fill="#3b2a20"/>
+    <path class="tentacle outline" d="M18 68 q-6 10 6 18 q8 6 12 2" />
+    <path class="tentacle outline" d="M82 68 q6 10 -6 18 q-8 6 -12 2" />
+  </g>
+
+  <!-- Attack2 1: spit projectile forming -->
+  <g transform="translate(1500,0)">
+    <ellipse class="outline body" cx="50" cy="56" rx="42" ry="30"/>
+    <ellipse class="body-dark" cx="50" cy="74" rx="30" ry="10"/>
+    <rect class="glow-red" x="6" y="10" width="88" height="60" rx="20"/>
+    <g transform="translate(0,-28)">
+      <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+    </g>
+    <ellipse class="eye-sclera" cx="36" cy="46" rx="8" ry="6"/>
+    <ellipse class="eye-sclera" cx="64" cy="46" rx="8" ry="6"/>
+    <circle class="pupil" cx="36" cy="46" r="3"/>
+    <circle class="pupil" cx="64" cy="46" r="3"/>
+    <path class="outline" d="M30 62 q20 18 40 0" fill="#3b2a20"/>
+    <!-- projectile at mouth -->
+    <circle class="smoke" cx="50" cy="56" r="6"/>
+    <path class="tentacle outline" d="M18 68 q-6 10 6 18 q8 6 12 2" />
+  </g>
+
+  <!-- Attack2 2: spit launched (projectile ahead) -->
+  <g transform="translate(1600,0)">
+    <ellipse class="outline body" cx="50" cy="56" rx="42" ry="30"/>
+    <ellipse class="body-dark" cx="50" cy="74" rx="30" ry="10"/>
+    <rect class="glow-red" x="6" y="10" width="88" height="60" rx="20"/>
+    <g transform="translate(0,-28)">
+      <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+    </g>
+    <ellipse class="eye-sclera" cx="36" cy="46" rx="8" ry="6"/>
+    <ellipse class="eye-sclera" cx="64" cy="46" rx="8" ry="6"/>
+    <circle class="pupil" cx="36" cy="46" r="3"/>
+    <circle class="pupil" cx="64" cy="46" r="3"/>
+    <path class="outline" d="M30 62 q20 18 40 0" fill="#3b2a20"/>
+    <!-- projectile mid-flight -->
+    <g transform="translate(20,0)">
+      <circle class="smoke" cx="70" cy="56" r="6"/>
+      <path class="outline" d="M60 56 q8 -6 20 -6" fill="none" opacity="0.6"/>
+    </g>
+    <path class="tentacle outline" d="M82 68 q6 10 -6 18 q-8 6 -12 2" />
+  </g>
+
+  <!-- Attack2 3: recovery, still red glow -->
+  <g transform="translate(1700,0)">
+    <ellipse class="outline body" cx="50" cy="56" rx="42" ry="30"/>
+    <ellipse class="body-dark" cx="50" cy="74" rx="30" ry="10"/>
+    <rect class="glow-red" x="6" y="10" width="88" height="60" rx="20"/>
+    <g transform="translate(0,-28)">
+      <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+    </g>
+    <ellipse class="eye-sclera" cx="36" cy="46" rx="8" ry="6"/>
+    <ellipse class="eye-sclera" cx="64" cy="46" rx="8" ry="6"/>
+    <circle class="pupil" cx="36" cy="46" r="3"/>
+    <circle class="pupil" cx="64" cy="46" r="3"/>
+    <path class="outline" d="M30 62 q20 18 40 0" fill="#3b2a20"/>
+    <path class="tentacle outline" d="M18 68 q-6 10 6 18 q8 6 12 2" />
+    <path class="tentacle outline" d="M82 68 q6 10 -6 18 q-8 6 -12 2" />
+  </g>
+
+  <!-- Hit frames 18-20: recoil, flattened, red flash -->
+  <!-- Hit 0 -->
+  <g transform="translate(1800,0)">
+    <g transform="translate(-4,6) rotate(-8 50 60)">
+      <ellipse class="outline body" cx="50" cy="66" rx="46" ry="22"/>
+      <ellipse class="body-dark" cx="50" cy="82" rx="34" ry="8"/>
+      <g transform="translate(0,-28)">
+        <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      </g>
+      <ellipse class="eye-sclera" cx="36" cy="54" rx="6" ry="4"/>
+      <ellipse class="eye-sclera" cx="64" cy="54" rx="6" ry="4"/>
+      <path class="outline" d="M30 68 q20 8 40 0" fill="#3b2a20"/>
+      <rect class="tooth" x="44" y="64" width="6" height="6" rx="1"/>
+      <rect class="tooth" x="54" y="64" width="6" height="6" rx="1"/>
+      <rect class="glow-red" x="6" y="40" width="88" height="30" rx="8"/>
+    </g>
+  </g>
+
+  <!-- Hit 1 -->
+  <g transform="translate(1900,0)">
+    <g transform="translate(4,4) rotate(6 50 60)">
+      <ellipse class="outline body" cx="50" cy="64" rx="44" ry="24"/>
+      <ellipse class="body-dark" cx="50" cy="80" rx="32" ry="9"/>
+      <g transform="translate(0,-28)">
+        <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      </g>
+      <ellipse class="eye-sclera" cx="36" cy="52" rx="6" ry="4"/>
+      <ellipse class="eye-sclera" cx="64" cy="52" rx="6" ry="4"/>
+      <path class="outline" d="M30 66 q20 10 40 0" fill="#3b2a20"/>
+      <rect class="tooth" x="44" y="62" width="6" height="6" rx="1"/>
+      <rect class="tooth" x="54" y="62" width="6" height="6" rx="1"/>
+      <rect class="glow-red" x="6" y="38" width="88" height="30" rx="8"/>
+    </g>
+  </g>
+
+  <!-- Hit 2 -->
+  <g transform="translate(2000,0)">
+    <g transform="translate(0,6) rotate(0 50 60)">
+      <ellipse class="outline body" cx="50" cy="66" rx="46" ry="22"/>
+      <ellipse class="body-dark" cx="50" cy="82" rx="34" ry="8"/>
+      <g transform="translate(0,-28)">
+        <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      </g>
+      <ellipse class="eye-sclera" cx="36" cy="54" rx="6" ry="4"/>
+      <ellipse class="eye-sclera" cx="64" cy="54" rx="6" ry="4"/>
+      <path class="outline" d="M30 68 q20 8 40 0" fill="#3b2a20"/>
+      <rect class="tooth" x="44" y="64" width="6" height="6" rx="1"/>
+      <rect class="tooth" x="54" y="64" width="6" height="6" rx="1"/>
+      <rect class="glow-red" x="6" y="40" width="88" height="30" rx="8"/>
+    </g>
+  </g>
+
+  <!-- Death frames 21-28: shake, crown flies off, inflate, pop, splatter -->
+  <!-- Die 0: begin shake -->
+  <g transform="translate(2100,0)">
+    <g transform="translate(-6,2) rotate(-8 50 50)">
+      <ellipse class="outline body" cx="50" cy="56" rx="42" ry="30"/>
+      <ellipse class="body-dark" cx="50" cy="74" rx="30" ry="10"/>
+      <g transform="translate(0,-28)">
+        <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      </g>
+      <ellipse class="eye-sclera" cx="36" cy="46" rx="8" ry="6"/>
+      <ellipse class="eye-sclera" cx="64" cy="46" rx="8" ry="6"/>
+      <circle class="pupil" cx="36" cy="46" r="3"/>
+      <circle class="pupil" cx="64" cy="46" r="3"/>
+      <path class="outline" d="M30 62 q20 18 40 0" fill="#3b2a20"/>
+    </g>
+  </g>
+
+  <!-- Die 1: crown loosening and starting to fly -->
+  <g transform="translate(2200,0)">
+    <g transform="translate(0,0) rotate(0 50 50)">
+      <ellipse class="outline body" cx="50" cy="56" rx="44" ry="32"/>
+      <ellipse class="body-dark" cx="50" cy="76" rx="32" ry="10"/>
+      <!-- crown mid-lift -->
+      <g transform="translate(0,-40) rotate(-12 50 30)">
+        <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      </g>
+      <ellipse class="eye-sclera" cx="36" cy="46" rx="8" ry="6"/>
+      <ellipse class="eye-sclera" cx="64" cy="46" rx="8" ry="6"/>
+      <path class="outline" d="M30 62 q20 18 40 0" fill="#3b2a20"/>
+      <path class="tentacle outline" d="M18 68 q-6 10 6 18 q8 6 12 2" />
+    </g>
+  </g>
+
+  <!-- Die 2: crown airborne, body inflating -->
+  <g transform="translate(2300,0)">
+    <g transform="translate(0,-6) scale(1.08 1.08) rotate(6 50 50)">
+      <ellipse class="outline body" cx="50" cy="50" rx="56" ry="38"/>
+      <ellipse class="body-dark" cx="50" cy="86" rx="36" ry="10"/>
+      <!-- crown flying off to the right -->
+      <g transform="translate(30,-50) rotate(24 50 30)">
+        <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      </g>
+      <ellipse class="eye-sclera" cx="36" cy="46" rx="8" ry="6"/>
+      <ellipse class="eye-sclera" cx="64" cy="46" rx="8" ry="6"/>
+      <path class="outline" d="M30 66 q20 22 40 0" fill="#3b2a20"/>
+    </g>
+  </g>
+
+  <!-- Die 3: pop moment (body small burst), crown bouncing -->
+  <g transform="translate(2400,0)">
+    <!-- splatter pieces -->
+    <g>
+      <circle class="splatter outline" cx="40" cy="60" r="10"/>
+      <circle class="splatter outline" cx="60" cy="62" r="8"/>
+      <circle class="splatter outline" cx="30" cy="70" r="6"/>
+      <circle class="splatter outline" cx="70" cy="72" r="5"/>
+      <!-- crown bounce -->
+      <g transform="translate(20,-30) rotate(12 50 30)">
+        <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      </g>
+      <!-- small stars -->
+      <polygon class="star outline" points="10,10 13,14 18,14 14,17 15,22 10,19 5,22 6,17 2,14 8,14"/>
+      <polygon class="star outline" points="80,6 83,10 88,10 84,13 85,18 80,15 75,18 76,13 72,10 78,10"/>
+    </g>
+  </g>
+
+  <!-- Die 4: more splatter spread -->
+  <g transform="translate(2500,0)">
+    <g>
+      <circle class="splatter outline" cx="30" cy="62" r="12"/>
+      <circle class="splatter outline" cx="50" cy="66" r="10"/>
+      <circle class="splatter outline" cx="70" cy="70" r="8"/>
+      <path class="outline" d="M20 78 q20 -6 60 0" fill="#7A4E34"/>
+      <g transform="translate(18,-28) rotate(6 50 30)">
+        <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Die 5: crown settles and bounces smaller -->
+  <g transform="translate(2600,0)">
+    <g>
+      <circle class="splatter outline" cx="40" cy="66" r="10"/>
+      <circle class="splatter outline" cx="60" cy="68" r="6"/>
+      <g transform="translate(12,-20) rotate(2 50 30)">
+        <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      </g>
+      <polygon class="star outline" points="10,12 13,16 18,16 14,19 15,24 10,21 5,24 6,19 2,16 8,16"/>
+    </g>
+  </g>
+
+  <!-- Die 6: tiny remnants and fading stink -->
+  <g transform="translate(2700,0)">
+    <g>
+      <circle class="splatter outline" cx="46" cy="70" r="8"/>
+      <circle class="splatter outline" cx="34" cy="72" r="6"/>
+      <circle class="splatter outline" cx="60" cy="74" r="4"/>
+      <path class="stink" d="M40 40 q6 6 0 12" />
+      <g transform="translate(10,-18) rotate(-6 50 30)">
+        <path class="crown outline" d="M30 30 L40 18 L50 30 L60 18 L70 30 L70 36 L30 36 Z"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Die 7: final tiny specks -->
+  <g transform="translate(2800,0)">
+    <g>
+      <circle class="splatter outline" cx="36" cy="72" r="4"/>
+      <circle class="splatter outline" cx="50" cy="74" r="3"/>
+      <circle class="splatter outline" cx="64" cy="76" r="2"/>
+      <path class="stink" d="M44 36 q6 6 0 12" />
+    </g>
+  </g>
+
+</svg>

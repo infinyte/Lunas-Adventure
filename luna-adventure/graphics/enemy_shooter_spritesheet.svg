@@ -1,0 +1,271 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="40" viewBox="0 0 680 40" shape-rendering="geometricPrecision">
+  <defs>
+    <style>
+      .outline { stroke:#000000; stroke-width:1.6; stroke-linejoin:round; stroke-linecap:round; }
+      .body { fill:#6AA84F; }        /* green body */
+      .metal { fill:#8A8F94; }       /* barrel / metal */
+      .bolt { fill:#5B5F63; }
+      .eye { fill:#FFD24D; }         /* glowing yellow eye */
+      .eye-pupil { fill:#000000; }
+      .mouth { fill:#3B3B3B; }
+      .spark { fill:#FFD24D; stroke:#000; stroke-width:0.8; }
+      .smoke { fill:#9E9EA3; opacity:0.95; stroke:#000; stroke-width:0.9; }
+      .star { fill:#FFD24D; stroke:#000; stroke-width:0.9; }
+      .dent { fill:#FFFFFF; opacity:0.85; }
+    </style>
+  </defs>
+
+  <!-- Helper: each frame is 40x40. Translate by 40*n -->
+  <!-- Idle frames 0-2: eyes scanning left-right, body rocks subtly -->
+  <!-- Idle 0: eyes center -->
+  <g transform="translate(0,0)">
+    <!-- base body -->
+    <rect class="outline body" x="6" y="12" rx="8" ry="8" width="28" height="18"/>
+    <!-- bolts -->
+    <circle class="bolt outline" cx="10" cy="18" r="2"/>
+    <circle class="bolt outline" cx="30" cy="18" r="2"/>
+    <!-- barrel / snout -->
+    <rect class="outline metal" x="26" y="14" width="12" height="6" rx="2" ry="2"/>
+    <rect class="outline metal" x="34" y="15" width="6" height="4" rx="1" ry="1"/>
+    <!-- eye scanning -->
+    <ellipse class="outline eye" cx="18" cy="18" rx="5" ry="3"/>
+    <circle class="eye-pupil" cx="18" cy="18" r="1.2"/>
+    <!-- legs -->
+    <rect class="outline metal" x="12" y="28" width="6" height="4" rx="1"/>
+    <rect class="outline metal" x="22" y="28" width="6" height="4" rx="1"/>
+  </g>
+
+  <!-- Idle 1: eyes look left, slight rock left -->
+  <g transform="translate(40,0)">
+    <g transform="translate(-1,0) rotate(-4 20 20)">
+      <rect class="outline body" x="6" y="12" rx="8" ry="8" width="28" height="18"/>
+      <circle class="bolt outline" cx="10" cy="18" r="2"/>
+      <circle class="bolt outline" cx="30" cy="18" r="2"/>
+      <rect class="outline metal" x="26" y="14" width="12" height="6" rx="2" ry="2"/>
+      <rect class="outline metal" x="34" y="15" width="6" height="4" rx="1" ry="1"/>
+      <ellipse class="outline eye" cx="16" cy="18" rx="5" ry="3"/>
+      <circle class="eye-pupil" cx="15" cy="18" r="1.2"/>
+      <rect class="outline metal" x="11" y="28" width="6" height="4" rx="1"/>
+      <rect class="outline metal" x="21" y="28" width="6" height="4" rx="1"/>
+    </g>
+  </g>
+
+  <!-- Idle 2: eyes look right, slight rock right -->
+  <g transform="translate(80,0)">
+    <g transform="translate(1,0) rotate(4 20 20)">
+      <rect class="outline body" x="6" y="12" rx="8" ry="8" width="28" height="18"/>
+      <circle class="bolt outline" cx="10" cy="18" r="2"/>
+      <circle class="bolt outline" cx="30" cy="18" r="2"/>
+      <rect class="outline metal" x="26" y="14" width="12" height="6" rx="2" ry="2"/>
+      <rect class="outline metal" x="34" y="15" width="6" height="4" rx="1" ry="1"/>
+      <ellipse class="outline eye" cx="20" cy="18" rx="5" ry="3"/>
+      <circle class="eye-pupil" cx="21.5" cy="18" r="1.2"/>
+      <rect class="outline metal" x="13" y="28" width="6" height="4" rx="1"/>
+      <rect class="outline metal" x="23" y="28" width="6" height="4" rx="1"/>
+    </g>
+  </g>
+
+  <!-- Move frames 3-6: shuffles slowly, barrel swiveling -->
+  <!-- Move 0: barrel left -->
+  <g transform="translate(120,0)">
+    <rect class="outline body" x="6" y="12" rx="8" ry="8" width="28" height="18"/>
+    <circle class="bolt outline" cx="10" cy="18" r="2"/>
+    <circle class="bolt outline" cx="30" cy="18" r="2"/>
+    <g transform="translate(-2,0) rotate(-8 30 17)">
+      <rect class="outline metal" x="26" y="14" width="12" height="6" rx="2" ry="2"/>
+      <rect class="outline metal" x="34" y="15" width="6" height="4" rx="1" ry="1"/>
+    </g>
+    <ellipse class="outline eye" cx="18" cy="18" rx="5" ry="3"/>
+    <circle class="eye-pupil" cx="17" cy="18" r="1.2"/>
+    <rect class="outline metal" x="11" y="28" width="6" height="4" rx="1"/>
+    <rect class="outline metal" x="21" y="28" width="6" height="4" rx="1"/>
+  </g>
+
+  <!-- Move 1: neutral barrel -->
+  <g transform="translate(160,0)">
+    <rect class="outline body" x="6" y="12" rx="8" ry="8" width="28" height="18"/>
+    <circle class="bolt outline" cx="10" cy="18" r="2"/>
+    <circle class="bolt outline" cx="30" cy="18" r="2"/>
+    <rect class="outline metal" x="26" y="14" width="12" height="6" rx="2" ry="2"/>
+    <rect class="outline metal" x="34" y="15" width="6" height="4" rx="1" ry="1"/>
+    <ellipse class="outline eye" cx="18" cy="18" rx="5" ry="3"/>
+    <circle class="eye-pupil" cx="18" cy="18" r="1.2"/>
+    <rect class="outline metal" x="12" y="28" width="6" height="4" rx="1"/>
+    <rect class="outline metal" x="22" y="28" width="6" height="4" rx="1"/>
+  </g>
+
+  <!-- Move 2: barrel right -->
+  <g transform="translate(200,0)">
+    <rect class="outline body" x="6" y="12" rx="8" ry="8" width="28" height="18"/>
+    <circle class="bolt outline" cx="10" cy="18" r="2"/>
+    <circle class="bolt outline" cx="30" cy="18" r="2"/>
+    <g transform="translate(2,0) rotate(8 30 17)">
+      <rect class="outline metal" x="26" y="14" width="12" height="6" rx="2" ry="2"/>
+      <rect class="outline metal" x="34" y="15" width="6" height="4" rx="1" ry="1"/>
+    </g>
+    <ellipse class="outline eye" cx="18" cy="18" rx="5" ry="3"/>
+    <circle class="eye-pupil" cx="19.5" cy="18" r="1.2"/>
+    <rect class="outline metal" x="13" y="28" width="6" height="4" rx="1"/>
+    <rect class="outline metal" x="23" y="28" width="6" height="4" rx="1"/>
+  </g>
+
+  <!-- Move 3: shuffle step, slight body shift -->
+  <g transform="translate(240,0)">
+    <g transform="translate(0,1)">
+      <rect class="outline body" x="6" y="12" rx="8" ry="8" width="28" height="18"/>
+      <circle class="bolt outline" cx="10" cy="18" r="2"/>
+      <circle class="bolt outline" cx="30" cy="18" r="2"/>
+      <rect class="outline metal" x="26" y="14" width="12" height="6" rx="2" ry="2"/>
+      <rect class="outline metal" x="34" y="15" width="6" height="4" rx="1" ry="1"/>
+      <ellipse class="outline eye" cx="18" cy="18" rx="5" ry="3"/>
+      <circle class="eye-pupil" cx="18" cy="18" r="1.2"/>
+      <rect class="outline metal" x="10" y="28" width="6" height="4" rx="1"/>
+      <rect class="outline metal" x="20" y="28" width="6" height="4" rx="1"/>
+    </g>
+  </g>
+
+  <!-- Attack frames 7-9: barrel aims, flash, recoil -->
+  <!-- Attack 0: aim (barrel rotates toward target) -->
+  <g transform="translate(280,0)">
+    <rect class="outline body" x="6" y="12" rx="8" ry="8" width="28" height="18"/>
+    <circle class="bolt outline" cx="10" cy="18" r="2"/>
+    <circle class="bolt outline" cx="30" cy="18" r="2"/>
+    <g transform="translate(6,-2) rotate(18 30 17)">
+      <rect class="outline metal" x="26" y="14" width="12" height="6" rx="2" ry="2"/>
+      <rect class="outline metal" x="34" y="15" width="6" height="4" rx="1" ry="1"/>
+    </g>
+    <ellipse class="outline eye" cx="18" cy="18" rx="5" ry="3"/>
+    <circle class="eye-pupil" cx="20" cy="18" r="1.2"/>
+    <rect class="outline metal" x="12" y="28" width="6" height="4" rx="1"/>
+    <rect class="outline metal" x="22" y="28" width="6" height="4" rx="1"/>
+  </g>
+
+  <!-- Attack 1: flash and projectile (muzzle flash) -->
+  <g transform="translate(320,0)">
+    <rect class="outline body" x="6" y="12" rx="8" ry="8" width="28" height="18"/>
+    <circle class="bolt outline" cx="10" cy="18" r="2"/>
+    <circle class="bolt outline" cx="30" cy="18" r="2"/>
+    <g transform="translate(8,-3) rotate(22 30 17)">
+      <rect class="outline metal" x="26" y="14" width="12" height="6" rx="2" ry="2"/>
+      <rect class="outline metal" x="34" y="15" width="6" height="4" rx="1" ry="1"/>
+      <!-- muzzle flash -->
+      <path class="spark outline" d="M42 16 l6 -4 l-2 6 l-6 -2 z"/>
+    </g>
+    <ellipse class="outline eye" cx="18" cy="18" rx="5" ry="3"/>
+    <circle class="eye-pupil" cx="21" cy="18" r="1.2"/>
+    <rect class="outline metal" x="12" y="28" width="6" height="4" rx="1"/>
+    <rect class="outline metal" x="22" y="28" width="6" height="4" rx="1"/>
+  </g>
+
+  <!-- Attack 2: recoil (barrel pulled back, small smoke) -->
+  <g transform="translate(360,0)">
+    <rect class="outline body" x="6" y="12" rx="8" ry="8" width="28" height="18"/>
+    <circle class="bolt outline" cx="10" cy="18" r="2"/>
+    <circle class="bolt outline" cx="30" cy="18" r="2"/>
+    <g transform="translate(4,1) rotate(14 30 17)">
+      <rect class="outline metal" x="24" y="15" width="10" height="6" rx="2" ry="2"/>
+      <rect class="outline metal" x="32" y="16" width="6" height="4" rx="1" ry="1"/>
+      <circle class="smoke" cx="44" cy="18" r="2"/>
+    </g>
+    <ellipse class="outline eye" cx="18" cy="18" rx="5" ry="3"/>
+    <circle class="eye-pupil" cx="19" cy="18" r="1.2"/>
+    <rect class="outline metal" x="12" y="28" width="6" height="4" rx="1"/>
+    <rect class="outline metal" x="22" y="28" width="6" height="4" rx="1"/>
+  </g>
+
+  <!-- Hit frames 10-11: dents/sparks, shakes -->
+  <!-- Hit 0: dent and small spark -->
+  <g transform="translate(400,0)">
+    <g transform="translate(-2,2) rotate(-6 20 20)">
+      <rect class="outline body" x="6" y="12" rx="8" ry="8" width="28" height="18"/>
+      <circle class="bolt outline" cx="10" cy="18" r="2"/>
+      <circle class="bolt outline" cx="30" cy="18" r="2"/>
+      <rect class="outline metal" x="26" y="14" width="12" height="6" rx="2" ry="2"/>
+      <rect class="outline metal" x="34" y="15" width="6" height="4" rx="1" ry="1"/>
+      <ellipse class="outline eye" cx="18" cy="18" rx="5" ry="3"/>
+      <circle class="eye-pupil" cx="16.5" cy="18" r="1.2"/>
+      <!-- dent -->
+      <ellipse class="dent outline" cx="22" cy="20" rx="4" ry="2"/>
+      <!-- spark -->
+      <path class="spark outline" d="M26 14 l2 -4 l2 4 l-2 1 z"/>
+      <rect class="outline metal" x="12" y="28" width="6" height="4" rx="1"/>
+      <rect class="outline metal" x="22" y="28" width="6" height="4" rx="1"/>
+    </g>
+  </g>
+
+  <!-- Hit 1: shake other direction, more sparks -->
+  <g transform="translate(440,0)">
+    <g transform="translate(2,-1) rotate(8 20 20)">
+      <rect class="outline body" x="6" y="12" rx="8" ry="8" width="28" height="18"/>
+      <circle class="bolt outline" cx="10" cy="18" r="2"/>
+      <circle class="bolt outline" cx="30" cy="18" r="2"/>
+      <rect class="outline metal" x="26" y="14" width="12" height="6" rx="2" ry="2"/>
+      <rect class="outline metal" x="34" y="15" width="6" height="4" rx="1" ry="1"/>
+      <ellipse class="outline eye" cx="18" cy="18" rx="5" ry="3"/>
+      <circle class="eye-pupil" cx="19.2" cy="18" r="1.2"/>
+      <ellipse class="dent outline" cx="24" cy="19" rx="3.2" ry="1.6"/>
+      <path class="spark outline" d="M28 12 l3 -3 l1 4 l-3 1 z"/>
+      <path class="spark outline" d="M30 18 l2 -2 l1 3 l-2 1 z"/>
+      <rect class="outline metal" x="12" y="28" width="6" height="4" rx="1"/>
+      <rect class="outline metal" x="22" y="28" width="6" height="4" rx="1"/>
+    </g>
+  </g>
+
+  <!-- Die frames 12-16: smoke, sparks, explosion with stars -->
+  <!-- Die 0: smoke begins -->
+  <g transform="translate(480,0)">
+    <rect class="outline body" x="6" y="12" rx="8" ry="8" width="28" height="18"/>
+    <circle class="bolt outline" cx="10" cy="18" r="2"/>
+    <circle class="bolt outline" cx="30" cy="18" r="2"/>
+    <rect class="outline metal" x="26" y="14" width="12" height="6" rx="2" ry="2"/>
+    <rect class="outline metal" x="34" y="15" width="6" height="4" rx="1" ry="1"/>
+    <ellipse class="outline eye" cx="18" cy="18" rx="5" ry="3"/>
+    <circle class="eye-pupil" cx="18" cy="18" r="1.2"/>
+    <circle class="smoke" cx="44" cy="18" r="3"/>
+    <path class="spark outline" d="M22 10 l2 -4 l3 4 l-3 1 z"/>
+  </g>
+
+  <!-- Die 1: bigger smoke and sparks -->
+  <g transform="translate(520,0)">
+    <g transform="translate(0,2) rotate(6 20 20)">
+      <rect class="outline body" x="6" y="12" rx="8" ry="8" width="28" height="18"/>
+      <rect class="outline metal" x="26" y="14" width="12" height="6" rx="2" ry="2"/>
+      <circle class="smoke" cx="44" cy="18" r="4"/>
+      <circle class="smoke" cx="40" cy="14" r="3"/>
+      <path class="spark outline" d="M18 8 l3 -5 l4 6 l-4 1 z"/>
+      <path class="spark outline" d="M30 8 l3 -5 l4 6 l-4 1 z"/>
+    </g>
+  </g>
+
+  <!-- Die 2: explosion pop with stars -->
+  <g transform="translate(560,0)">
+    <g transform="translate(0,4) rotate(12 20 20)">
+      <circle class="outline star" cx="20" cy="18" r="10"/>
+      <path class="outline metal" d="M12 22 l6 -2 l-6 4 z" fill="#8A8F94"/>
+      <polygon class="star outline" points="6,6 9,10 14,10 10,13 11,18 6,15 1,18 2,13 -2,10 2,10"/>
+      <polygon class="star outline" points="34,4 37,8 42,8 38,11 39,16 34,13 29,16 30,11 26,8 31,8"/>
+    </g>
+  </g>
+
+  <!-- Die 3: remnant smoking, stars smaller -->
+  <g transform="translate(600,0)">
+    <g transform="translate(0,6) rotate(18 20 20)">
+      <circle class="smoke outline" cx="20" cy="22" r="6"/>
+      <circle class="smoke outline" cx="26" cy="18" r="4"/>
+      <circle class="smoke outline" cx="14" cy="18" r="4"/>
+      <polygon class="star outline" points="8,6 10,9 14,9 11,11 12,14 8,12 4,14 5,11 2,9 6,9"/>
+    </g>
+  </g>
+
+  <!-- Die 4: dissipated smoke and tiny sparks -->
+  <g transform="translate(640,0)">
+    <g transform="translate(0,8)">
+      <circle class="smoke outline" cx="18" cy="20" r="4"/>
+      <circle class="smoke outline" cx="24" cy="16" r="3"/>
+      <path class="spark outline" d="M10 10 l2 -3 l3 3 l-3 1 z"/>
+      <path class="spark outline" d="M30 12 l2 -3 l3 3 l-3 1 z"/>
+      <circle class="smoke outline" cx="28" cy="22" r="2"/>
+    </g>
+  </g>
+
+</svg>

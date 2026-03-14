@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" shape-rendering="geometricPrecision">
+  <defs>
+    <style>
+      .rim { fill:#FFD700; stroke:#B8860B; stroke-width:1.2; }
+      .face { fill:#FFD94D; stroke:#B8860B; stroke-width:0.9; }
+      .emboss { fill:#B8860B; }
+      .highlight { fill:#FFF9C9; opacity:0.95; }
+    </style>
+  </defs>
+
+  <!-- coin center group -->
+  <g transform="translate(0,0)">
+    <!-- outer rim as ellipse that will be squished to simulate spin -->
+    <ellipse cx="15" cy="15" rx="10" ry="12" class="rim">
+      <animate attributeName="rx" values="10;4;10" dur="0.8s" repeatCount="indefinite"/>
+    </ellipse>
+
+    <!-- inner face -->
+    <ellipse cx="15" cy="15" rx="8" ry="10" class="face">
+      <animate attributeName="rx" values="8;3;8" dur="0.8s" repeatCount="indefinite"/>
+    </ellipse>
+
+    <!-- embossed paw/star in center -->
+    <g transform="translate(15,15)">
+      <path class="emboss" d="M0 -4 L1 -1 L4 0 L1 1 L0 4 L-1 1 L-4 0 L-1 -1 Z" />
+    </g>
+
+    <!-- highlight arc (static) -->
+    <path class="highlight" d="M7 7 C10 4, 14 4, 17 7 C14 5, 10 6, 7 7 Z" />
+  </g>
+</svg>

@@ -34,6 +34,11 @@ luna-adventure/
 ├── scripts/                       # Build and utility scripts
 │   └── postinstall.js             # Empty file
 │
+│
+├── graphics/                      # Game Source Graphics
+│   ├── game_graphic_1.svg          # Sprite Sheet SVG
+│   └── game_graphic_2.svg          # Sprite Sheet SVG
+│
 ├── .gitignore                     # Git ignore file
 ├── LICENSE                        # MIT license
 ├── docker-compose.yml             # Docker config (marked as TODO)

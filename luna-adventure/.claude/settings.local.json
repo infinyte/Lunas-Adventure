@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd /c/work/Lunas-Adventure/luna-adventure && npm install 2>&1)",
+      "Bash(HUSKY=0 npm install 2>&1 | tail -5)",
+      "Bash(npm test:*)",
+      "Bash(find /c/work/Lunas-Adventure/luna-adventure/server -type f -name \"*.js\" 2>/dev/null | grep -v node_modules | head -50)",
+      "Bash(find /c/work/Lunas-Adventure/luna-adventure/client -type f -name \"*.js\" 2>/dev/null | grep -v node_modules)",
+      "Bash(ls -la /c/work/Lunas-Adventure/luna-adventure/server/*.js 2>/dev/null | head -20)"
+    ]
+  }
+}

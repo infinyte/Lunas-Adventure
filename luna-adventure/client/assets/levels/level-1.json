@@ -1,0 +1,51 @@
+{
+  "id": "level-1",
+  "name": "Garden Adventure",
+  "width": 2000,
+  "height": 600,
+  "gravity": 0.5,
+  "platforms": [
+    {
+      "id": "ground-1",
+      "x": 0,
+      "y": 500,
+      "width": 800,
+      "height": 100,
+      "type": "ground"
+    },
+    {
+      "id": "platform-1",
+      "x": 200,
+      "y": 400,
+      "width": 200,
+      "height": 20,
+      "type": "platform"
+    }
+  ],
+  "collectibles": [
+    {
+      "id": "carrot-1",
+      "x": 300,
+      "y": 370,
+      "width": 30,
+      "height": 30,
+      "type": "carrot"
+    }
+  ],
+  "enemies": [
+    {
+      "id": "enemy-1",
+      "x": 400,
+      "y": 470,
+      "width": 40,
+      "height": 40,
+      "type": "basic",
+      "patrolStart": 300,
+      "patrolEnd": 500
+    }
+  ],
+  "spawnPoint": {
+    "x": 50,
+    "y": 400
+  }
+}
