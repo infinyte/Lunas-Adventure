@@ -7,6 +7,7 @@ const requiredDirs = ['sprites', 'levels', 'sounds', 'music', 'configs'];
 await fs.mkdir(assetsRoot, { recursive: true });
 
 for (const dir of requiredDirs) {
+  // eslint-disable-next-line no-await-in-loop
   await fs.mkdir(path.join(assetsRoot, dir), { recursive: true });
 }
 

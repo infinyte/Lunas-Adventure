@@ -1,4 +1,4 @@
-import SoundManager from '../scripts/soundManager';
+import { SoundManager } from '../scripts/soundManager';
 
 describe('SoundManager', () => {
   afterEach(() => {

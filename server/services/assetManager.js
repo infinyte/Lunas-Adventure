@@ -2,6 +2,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { EventEmitter } from 'events';
+
 const projectRoot = process.cwd();
 
 /**
@@ -10,25 +11,25 @@ const projectRoot = process.cwd();
 class AssetManager extends EventEmitter {
   constructor(options = {}) {
     super();
-    
+
     // Paths for different asset types
     this.paths = {
       sprites: options.spritesPath || path.join(projectRoot, 'client/assets/sprites'),
       levels: options.levelsPath || path.join(projectRoot, 'client/assets/levels'),
       configs: options.configsPath || path.join(projectRoot, 'client/assets/configs')
     };
-    
+
     // Cache for loaded assets
     this.cache = {
       sprites: new Map(),
       levels: new Map(),
       configs: new Map()
     };
-    
+
     // Initialize with basic assets
     this.initialized = false;
     this.ready = this.initialize();
-    
+
     console.log('Asset Manager initialized with paths:', this.paths);
   }
 
@@ -52,10 +53,12 @@ class AssetManager extends EventEmitter {
 
     for (const entry of entries) {
       if (!entry.isFile() || !entry.name.endsWith('.json')) {
+        // eslint-disable-next-line no-continue
         continue;
       }
 
       const filePath = path.join(directoryPath, entry.name);
+      // eslint-disable-next-line no-await-in-loop
       const raw = await fs.readFile(filePath, 'utf-8');
       const parsed = JSON.parse(raw);
       const key = parsed.id || path.parse(entry.name).name;

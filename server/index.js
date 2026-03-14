@@ -2,13 +2,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import createServerFactory from './appFactory.js';
 
-// Handle __dirname (not available in ES Modules)
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const currentFile = fileURLToPath(import.meta.url);
 
 export const createServer = createServerFactory;
 
-const isMainModule = process.argv[1] && path.resolve(process.argv[1]) === __filename;
+const isMainModule = process.argv[1] && path.resolve(process.argv[1]) === currentFile;
 
 if (isMainModule) {
   const runtimeServer = createServerFactory();

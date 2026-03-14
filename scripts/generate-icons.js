@@ -2,6 +2,8 @@
 // Generates all PWA icon PNG assets from client/assets/favicon.svg using sharp.
 // Run via: npm run build:icons
 
+/* eslint-disable no-underscore-dangle */
+// eslint-disable-next-line import/no-unresolved
 import sharp from 'sharp';
 import fs from 'fs';
 import path from 'path';
@@ -19,7 +21,9 @@ const MASKABLE_SIZE = 196;
 const MASKABLE_INNER = Math.round(MASKABLE_SIZE * 0.72);
 const MASKABLE_PAD = Math.round((MASKABLE_SIZE - MASKABLE_INNER) / 2);
 // Background colour matches the favicon's outer rect fill (#8B4513)
-const MASKABLE_BG = { r: 139, g: 69, b: 19, alpha: 1 };
+const MASKABLE_BG = {
+  r: 139, g: 69, b: 19, alpha: 1
+};
 
 async function generateIcons() {
   fs.mkdirSync(outDir, { recursive: true });
@@ -28,6 +32,7 @@ async function generateIcons() {
 
   for (const size of SIZES) {
     const dest = path.join(outDir, `icon-${size}x${size}.png`);
+    // eslint-disable-next-line no-await-in-loop
     await sharp(svgBuffer).resize(size, size).png().toFile(dest);
     console.log(`  icon-${size}x${size}.png`);
   }

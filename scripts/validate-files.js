@@ -15,6 +15,7 @@ const requiredFiles = [
 
 const missing = [];
 for (const file of requiredFiles) {
+  // eslint-disable-next-line no-await-in-loop
   const exists = await fs
     .access(path.resolve(file))
     .then(() => true)

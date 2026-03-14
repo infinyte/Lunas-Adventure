@@ -1,9 +1,9 @@
 #!/usr/bin/env node
+/* eslint-disable no-underscore-dangle */
 
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { execSync } from 'child_process';
 
 // Get the directory name from the URL of the current module
 const __filename = fileURLToPath(import.meta.url);
@@ -12,8 +12,8 @@ const rootDir = path.join(__dirname, '..');
 
 /**
  * Luna's Adventure Postinstall Script
- * 
- * This script runs after npm install and ensures the project 
+ *
+ * This script runs after npm install and ensures the project
  * structure is properly set up with all necessary directories and files.
  */
 
@@ -32,7 +32,7 @@ const colors = {
 function log(message, type = 'info') {
   const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
   const prefix = `[${timestamp}]`;
-  
+
   switch (type) {
     case 'success':
       console.log(`${prefix} ${colors.green}✓${colors.reset} ${message}`);
@@ -104,21 +104,22 @@ async function setupProject() {
       path.join(rootDir, 'client/assets/configs'),
       path.join(rootDir, 'client/scripts/entities'),
       path.join(rootDir, 'client/styles'),
-      
+
       // Server directories
       path.join(rootDir, 'server/services'),
       path.join(rootDir, 'server/controllers'),
       path.join(rootDir, 'server/routes'),
       path.join(rootDir, 'server/config'),
-      
+
       // Other directories
       path.join(rootDir, 'shared'),
-      path.join(rootDir, 'data'),      // For saved game data
-      path.join(rootDir, 'docs'),      // For documentation
-      path.join(rootDir, 'scripts')    // For utility scripts
+      path.join(rootDir, 'data'), // For saved game data
+      path.join(rootDir, 'docs'), // For documentation
+      path.join(rootDir, 'scripts') // For utility scripts
     ];
 
     for (const dir of directories) {
+      // eslint-disable-next-line no-await-in-loop
       await ensureDir(dir);
     }
 
@@ -205,47 +206,47 @@ export const ENTITY_TYPES = {
     const levelPath = path.join(rootDir, 'client/assets/levels/level-1.json');
     if (!(await fileExists(levelPath))) {
       const levelContent = JSON.stringify({
-        id: "level-1",
-        name: "Garden Adventure",
+        id: 'level-1',
+        name: 'Garden Adventure',
         width: 2000,
         height: 600,
         gravity: 0.5,
         platforms: [
           {
-            id: "ground-1",
+            id: 'ground-1',
             x: 0,
             y: 500,
             width: 800,
             height: 100,
-            type: "ground"
+            type: 'ground'
           },
           {
-            id: "platform-1", 
+            id: 'platform-1',
             x: 200,
             y: 400,
             width: 200,
             height: 20,
-            type: "platform"
+            type: 'platform'
           }
         ],
         collectibles: [
           {
-            id: "carrot-1",
+            id: 'carrot-1',
             x: 300,
             y: 370,
             width: 30,
             height: 30,
-            type: "carrot"
+            type: 'carrot'
           }
         ],
         enemies: [
           {
-            id: "enemy-1",
+            id: 'enemy-1',
             x: 400,
             y: 470,
             width: 40,
             height: 40,
-            type: "basic",
+            type: 'basic',
             patrolStart: 300,
             patrolEnd: 500
           }
@@ -255,7 +256,7 @@ export const ENTITY_TYPES = {
           y: 400
         }
       }, null, 2);
-      
+
       await ensureFile(levelPath, levelContent);
     }
 
@@ -313,7 +314,7 @@ ENABLE_MULTIPLAYER=true
 `;
       await ensureFile(envPath, envContent);
     }
-    
+
     // Create data directory for saved games
     const dataDir = path.join(rootDir, 'data');
     await ensureDir(dataDir);
@@ -327,11 +328,12 @@ ENABLE_MULTIPLAYER=true
     ];
 
     for (const gitkeepPath of gitkeepPaths) {
+      // eslint-disable-next-line no-await-in-loop
       await ensureFile(gitkeepPath, '# This file exists to ensure Git tracks this empty directory');
     }
 
     log(`${colors.bright}Luna's Adventure setup completed successfully!${colors.reset}`, 'success');
-    
+
     // Provide a hint about next steps
     log('\nYou can now start development by running:', 'info');
     log(`${colors.yellow}npm run dev${colors.reset}`, 'info');
@@ -342,7 +344,7 @@ ENABLE_MULTIPLAYER=true
 }
 
 // Execute setup
-setupProject().catch(error => {
+setupProject().catch((error) => {
   log(`Unhandled error: ${error.message}`, 'error');
   process.exit(1);
 });

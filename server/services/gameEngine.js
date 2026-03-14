@@ -1,4 +1,3 @@
-
 import { EventEmitter } from 'node:events';
 
 /**
@@ -28,19 +27,33 @@ class GameEngine extends EventEmitter {
   initializeGame() {
     // Create base platforms for the first level
     this.platforms = [
-      { id: 'platform-1', x: 0, y: 500, width: 800, height: 50, type: 'ground' },
-      { id: 'platform-2', x: 200, y: 400, width: 200, height: 20, type: 'platform' },
-      { id: 'platform-3', x: 500, y: 350, width: 200, height: 20, type: 'platform' },
-      { id: 'platform-4', x: 700, y: 250, width: 200, height: 20, type: 'platform' }
+      {
+        id: 'platform-1', x: 0, y: 500, width: 800, height: 50, type: 'ground'
+      },
+      {
+        id: 'platform-2', x: 200, y: 400, width: 200, height: 20, type: 'platform'
+      },
+      {
+        id: 'platform-3', x: 500, y: 350, width: 200, height: 20, type: 'platform'
+      },
+      {
+        id: 'platform-4', x: 700, y: 250, width: 200, height: 20, type: 'platform'
+      }
     ];
-    
+
     // Create collectibles (carrots for Luna)
     this.collectibles = [
-      { id: 'carrot-1', x: 300, y: 370, width: 30, height: 30, type: 'carrot', collected: false },
-      { id: 'carrot-2', x: 600, y: 320, width: 30, height: 30, type: 'carrot', collected: false },
-      { id: 'carrot-3', x: 800, y: 220, width: 30, height: 30, type: 'carrot', collected: false }
+      {
+        id: 'carrot-1', x: 300, y: 370, width: 30, height: 30, type: 'carrot', collected: false
+      },
+      {
+        id: 'carrot-2', x: 600, y: 320, width: 30, height: 30, type: 'carrot', collected: false
+      },
+      {
+        id: 'carrot-3', x: 800, y: 220, width: 30, height: 30, type: 'carrot', collected: false
+      }
     ];
-    
+
     // Create enemies
     this.enemies = new Map();
     this.addEnemy('enemy-1', 400, 470, 'basic');
@@ -50,35 +63,35 @@ class GameEngine extends EventEmitter {
     this.projectiles = [];
     this.projectileId = 0;
   }
-  
+
   /**
    * Start the game loop
    */
   startGame() {
     if (this.isRunning) return;
-    
+
     this.isRunning = true;
     const frameTime = 1000 / this.fps;
-    
+
     this.gameLoop = setInterval(() => {
       this.update();
       this.emit('game:update', this.getGameState());
     }, frameTime);
-    
+
     console.log('Game loop started');
   }
-  
+
   /**
    * Stop the game loop
    */
   stopGame() {
     if (!this.isRunning) return;
-    
+
     clearInterval(this.gameLoop);
     this.isRunning = false;
     console.log('Game loop stopped');
   }
-  
+
   /**
    * Update all game entities and physics
    */
@@ -87,13 +100,13 @@ class GameEngine extends EventEmitter {
     this.updatePlatforms();
 
     // Update all players
-    for (const [id, player] of this.players.entries()) {
+    for (const [, player] of this.players.entries()) {
       this.updatePlayerPhysics(player);
       this.checkCollisions(player);
     }
 
     // Update all enemies
-    for (const [id, enemy] of this.enemies.entries()) {
+    for (const [, enemy] of this.enemies.entries()) {
       this.updateEnemyAI(enemy);
       this.updateEnemyPhysics(enemy);
     }
@@ -101,7 +114,7 @@ class GameEngine extends EventEmitter {
     // Move projectiles and check hits
     this.updateProjectiles();
   }
-  
+
   /**
    * Apply physics to player entity
    * @param {Object} player - Player object
@@ -109,24 +122,24 @@ class GameEngine extends EventEmitter {
   updatePlayerPhysics(player) {
     // Apply gravity
     player.velocityY += this.gravity;
-    
+
     // Apply horizontal friction
     player.velocityX *= this.friction;
-    
+
     // Update position
     player.x += player.velocityX;
     player.y += player.velocityY;
-    
+
     // Check world boundaries
     if (player.x < 0) player.x = 0;
     if (player.x + player.width > 1000) player.x = 1000 - player.width;
-    
+
     // Check if player fell off the world
     if (player.y > 600) {
       this.playerDeath(player.id);
     }
   }
-  
+
   /**
    * Check for collisions between player and other game entities
    * @param {Object} player - Player object
@@ -135,6 +148,7 @@ class GameEngine extends EventEmitter {
     // Check platform collisions
     for (const platform of this.platforms) {
       // Skip non-solid (broken) platforms
+      // eslint-disable-next-line no-continue
       if (platform.solid === false) continue;
 
       if (this.isColliding(player, platform)) {
@@ -166,7 +180,7 @@ class GameEngine extends EventEmitter {
         }
       }
     }
-    
+
     // Check collectible collisions
     for (const collectible of this.collectibles) {
       if (!collectible.collected && this.isColliding(player, collectible)) {
@@ -175,7 +189,7 @@ class GameEngine extends EventEmitter {
         this.emit('player:collect', { playerId: player.id, collectibleId: collectible.id });
       }
     }
-    
+
     // Check enemy collisions
     for (const [id, enemy] of this.enemies.entries()) {
       if (this.isColliding(player, enemy)) {
@@ -200,10 +214,10 @@ class GameEngine extends EventEmitter {
    */
   isColliding(entity1, entity2) {
     return (
-      entity1.x < entity2.x + entity2.width &&
-      entity1.x + entity1.width > entity2.x &&
-      entity1.y < entity2.y + entity2.height &&
-      entity1.y + entity1.height > entity2.y
+      entity1.x < entity2.x + entity2.width
+      && entity1.x + entity1.width > entity2.x
+      && entity1.y < entity2.y + entity2.height
+      && entity1.y + entity1.height > entity2.y
     );
   }
 
@@ -296,7 +310,9 @@ class GameEngine extends EventEmitter {
    */
   collectCollectible(playerId, collectibleId) {
     const player = this.players.get(playerId);
-    const collectible = this.collectibles.find((item) => item.id === collectibleId && !item.collected);
+    const collectible = this.collectibles.find(
+      (item) => item.id === collectibleId && !item.collected
+    );
 
     if (!player || !collectible) {
       return;
@@ -323,7 +339,7 @@ class GameEngine extends EventEmitter {
       }
     } else if (enemy.type === 'flying') {
       // Flying enemies move in a sine wave pattern
-      enemy.y = enemy.y + Math.sin(Date.now() / 500) * 2;
+      enemy.y += Math.sin(Date.now() / 500) * 2;
 
       if (enemy.direction === 'right') {
         enemy.velocityX = 2;
@@ -371,15 +387,13 @@ class GameEngine extends EventEmitter {
         } else {
           enemy.attackCooldown -= 1 / this.fps;
         }
-      } else {
+      } else if (enemy.direction === 'right') {
         // No player in range — slow patrol
-        if (enemy.direction === 'right') {
-          enemy.velocityX = 0.5;
-          if (enemy.x > 600) enemy.direction = 'left';
-        } else {
-          enemy.velocityX = -0.5;
-          if (enemy.x < 300) enemy.direction = 'right';
-        }
+        enemy.velocityX = 0.5;
+        if (enemy.x > 600) enemy.direction = 'left';
+      } else {
+        enemy.velocityX = -0.5;
+        if (enemy.x < 300) enemy.direction = 'right';
       }
     }
   }
@@ -393,11 +407,11 @@ class GameEngine extends EventEmitter {
     if (enemy.type !== 'flying') {
       enemy.velocityY += this.gravity;
     }
-    
+
     // Update position
     enemy.x += enemy.velocityX;
     enemy.y += enemy.velocityY;
-    
+
     // Check platform collisions for non-flying enemies
     if (enemy.type !== 'flying') {
       for (const platform of this.platforms) {
@@ -410,7 +424,7 @@ class GameEngine extends EventEmitter {
       }
     }
   }
-  
+
   /**
    * Update platform state machines each tick (moving + breaking).
    */
@@ -548,7 +562,7 @@ class GameEngine extends EventEmitter {
   playerJump(playerId) {
     const player = this.players.get(playerId);
     if (!player) return;
-    
+
     if (!player.isJumping && player.isGrounded) {
       player.velocityY = -12;
       player.isJumping = true;
@@ -556,7 +570,7 @@ class GameEngine extends EventEmitter {
       this.emit('player:jump', { playerId });
     }
   }
-  
+
   /**
    * Update player position based on input
    * @param {string} playerId - Player ID
@@ -565,7 +579,7 @@ class GameEngine extends EventEmitter {
   updatePlayerPosition(playerId, data) {
     const player = this.players.get(playerId);
     if (!player) return;
-    
+
     if (data.direction === 'left') {
       player.velocityX = -5;
       player.direction = 'left';
@@ -574,7 +588,7 @@ class GameEngine extends EventEmitter {
       player.direction = 'right';
     }
   }
-  
+
   /**
    * Handle player damage
    * @param {string} playerId - Player ID
@@ -588,7 +602,7 @@ class GameEngine extends EventEmitter {
     player.invulnerableUntil = Date.now() + 1500;
 
     player.health -= 20;
-    
+
     if (player.health <= 0) {
       this.playerDeath(playerId);
     } else {
@@ -598,7 +612,7 @@ class GameEngine extends EventEmitter {
       this.emit('player:damage', { playerId, health: player.health });
     }
   }
-  
+
   /**
    * Handle player death
    * @param {string} playerId - Player ID
@@ -606,9 +620,9 @@ class GameEngine extends EventEmitter {
   playerDeath(playerId) {
     const player = this.players.get(playerId);
     if (!player) return;
-    
+
     player.lives -= 1;
-    
+
     if (player.lives <= 0) {
       this.emit('player:gameover', { playerId, score: player.score });
     } else {
@@ -622,7 +636,7 @@ class GameEngine extends EventEmitter {
       this.emit('player:respawn', { playerId, lives: player.lives });
     }
   }
-  
+
   /**
    * Get the current game state
    * @returns {Object} - Complete game state

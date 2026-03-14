@@ -14,6 +14,7 @@ console.log('Platform:', process.platform);
 console.log('CWD:', process.cwd());
 
 for (const item of checks) {
+  // eslint-disable-next-line no-await-in-loop
   const exists = await fs
     .access(path.resolve(item))
     .then(() => true)

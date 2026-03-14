@@ -2,7 +2,7 @@
 
 /**
  * Entities Index
- * 
+ *
  * This file exports all entity classes to make imports cleaner throughout the project.
  * Import from here instead of importing individual entity files.
  */

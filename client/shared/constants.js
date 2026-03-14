@@ -2,7 +2,7 @@
 
 /**
  * Luna's Adventure Game Constants
- * 
+ *
  * This file contains all game constants shared between client and server
  * to ensure consistent gameplay and physics across all components.
  */
@@ -10,7 +10,7 @@
 // Game world dimensions
 export const GAME_WIDTH = 1000;
 export const GAME_HEIGHT = 600;
-export const WORLD_WIDTH = 2000;  // Level can be wider than visible area (for scrolling)
+export const WORLD_WIDTH = 2000; // Level can be wider than visible area (for scrolling)
 export const WORLD_HEIGHT = 600;
 
 // Physics constants
@@ -69,17 +69,17 @@ export const PLATFORM_TYPES = {
   BOUNCY: 'bouncy'
 };
 export const BREAKING_PLATFORM_DURATION = 0.5; // seconds until breaks
-export const BREAKING_PLATFORM_RESPAWN = 3.0;  // seconds until respawns
-export const BOUNCY_PLATFORM_FORCE = 1.5;      // multiplier for bounce height
+export const BREAKING_PLATFORM_RESPAWN = 3.0; // seconds until respawns
+export const BOUNCY_PLATFORM_FORCE = 1.5; // multiplier for bounce height
 export const MOVING_PLATFORM_SPEED = 1;
-export const MOVING_PLATFORM_PAUSE = 0.5;      // seconds to pause at endpoints
+export const MOVING_PLATFORM_PAUSE = 0.5; // seconds to pause at endpoints
 
 // Collectible constants
 export const COLLECTIBLE_TYPES = {
   CARROT: 'carrot',
   GOLDEN_CARROT: 'goldenCarrot',
   COIN: 'coin',
-  GEM: 'gem', 
+  GEM: 'gem',
   KEY: 'key',
   POWERUP: 'powerup'
 };
@@ -88,12 +88,12 @@ export const COLLECTIBLE_VALUES = {
   GOLDEN_CARROT: 500,
   COIN: 50,
   GEM: 200,
-  KEY: 0,      // Keys don't give points but unlock areas
-  POWERUP: 0   // Power-ups give abilities, not points
+  KEY: 0, // Keys don't give points but unlock areas
+  POWERUP: 0 // Power-ups give abilities, not points
 };
 export const COLLECTIBLE_WIDTH = 30;
 export const COLLECTIBLE_HEIGHT = 30;
-export const COLLECTIBLE_BOBBING_SPEED = 3;    // Speed of bobbing animation
+export const COLLECTIBLE_BOBBING_SPEED = 3; // Speed of bobbing animation
 
 // Power-up constants
 export const POWERUP_TYPES = {
@@ -105,15 +105,15 @@ export const POWERUP_TYPES = {
   EXTRA_LIFE: 'extraLife'
 };
 export const POWERUP_DURATIONS = {
-  SPEED_BOOST: 10,     // seconds
-  HIGH_JUMP: 8,        // seconds
-  DOUBLE_JUMP: 15,     // seconds
-  INVULNERABILITY: 5   // seconds
+  SPEED_BOOST: 10, // seconds
+  HIGH_JUMP: 8, // seconds
+  DOUBLE_JUMP: 15, // seconds
+  INVULNERABILITY: 5 // seconds
 };
 export const POWERUP_STRENGTH = {
-  SPEED_BOOST: 1.5,    // multiplier
-  HIGH_JUMP: 1.3,      // multiplier
-  HEALTH: 25           // health points restored
+  SPEED_BOOST: 1.5, // multiplier
+  HIGH_JUMP: 1.3, // multiplier
+  HEALTH: 25 // health points restored
 };
 
 // Game states
@@ -147,13 +147,13 @@ export const NETWORK_EVENTS = {
 };
 
 // Networking settings
-export const NETWORK_UPDATE_RATE = 10;     // Updates per second
-export const INPUT_BUFFER_SIZE = 20;       // Store last 20 inputs for reconciliation
-export const CLIENT_PREDICTION = true;     // Enable client-side prediction
+export const NETWORK_UPDATE_RATE = 10; // Updates per second
+export const INPUT_BUFFER_SIZE = 20; // Store last 20 inputs for reconciliation
+export const CLIENT_PREDICTION = true; // Enable client-side prediction
 export const SERVER_RECONCILIATION = true; // Enable server reconciliation
 
 // Animation constants
-export const ANIMATION_FPS = 10;           // Frames per second for animations
+export const ANIMATION_FPS = 10; // Frames per second for animations
 export const PLAYER_ANIMATION_FRAMES = {
   IDLE: 4,
   RUN: 6,
@@ -196,17 +196,17 @@ export const ENTITY_TYPES = {
 };
 
 // UI constants
-export const UI_NOTIFICATION_DURATION = 3000;  // ms
-export const UI_SCORE_POPUP_DURATION = 1000;   // ms
+export const UI_NOTIFICATION_DURATION = 3000; // ms
+export const UI_SCORE_POPUP_DURATION = 1000; // ms
 
 // Level constants
-export const TOTAL_LEVELS = 5;                 // Total number of levels in the game
+export const TOTAL_LEVELS = 5; // Total number of levels in the game
 export const LEVEL_TRANSITION_DURATION = 1000; // ms
 
 // Mobile control settings
-export const MOBILE_CONTROL_SIZE = 70;         // Size of mobile control buttons
-export const MOBILE_JUMP_BUTTON_SIZE = 90;     // Size of jump button
-export const MOBILE_CONTROL_OPACITY = 0.7;     // Opacity of mobile controls
+export const MOBILE_CONTROL_SIZE = 70; // Size of mobile control buttons
+export const MOBILE_JUMP_BUTTON_SIZE = 90; // Size of jump button
+export const MOBILE_CONTROL_OPACITY = 0.7; // Opacity of mobile controls
 
 /**
  * Helper function to get the default score value for a collectible type
