@@ -129,7 +129,7 @@ curl -fsSL https://raw.githubusercontent.com/yourusername/lunas-adventure/main/s
 **Windows (PowerShell):**
 
 ```powershell
-iwr -useb https://raw.githubusercontent.com/yourusername/lunas-adventure/main/scripts/setup.ps1 | iex
+iwr -useb https://raw.githubusercontent.com/infinyte/lunas-adventure/main/scripts/setup.ps1 | iex
 ```
 
 The script will guide you through the installation process, asking for your preferences along the way.
@@ -549,7 +549,5 @@ docker rmi lunas-adventure-server lunas-adventure-client
 cd ..
 rm -rf lunas-adventure
 ```
-
----
 
 Thank you for installing Luna's Adventure! If you have suggestions for improving this installation guide, please let us know through our GitHub repository or Discord community.
