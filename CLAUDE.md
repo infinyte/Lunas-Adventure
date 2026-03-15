@@ -7,14 +7,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-# Development (server + client with hot-reload concurrently)
+# Development — single Express server on port 3000 (serves static client + API + Socket.IO)
 npm run dev
 
-# Server only (nodemon, port 3000)
+# Alias for npm run dev (same nodemon invocation)
 npm run server:dev
 
-# Client only (light-server, port 8080, proxies API to port 3000)
-npm run client:dev
+# Legacy: light-server on port 8080 proxying to port 3000 (no longer needed)
+# npm run client:dev
 
 # Run all tests with coverage
 npm test

@@ -11,7 +11,7 @@
     },
     "scripts": {
         "start": "node server/index.js",
-        "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+        "dev": "nodemon server/index.js",
         "build": "npm run client:build && npm run build:assets",
         "test": "jest --coverage",
         "lint": "eslint \"**/*.js\" --ignore-path .gitignore",
@@ -34,8 +34,8 @@
         "analyze": "source-map-explorer dist/client/scripts/bundle.js",
         "diagnostics": "node scripts/diagnostics.js",
         "validate": "node scripts/validate-files.js",
-        "prepare": "husky install",
-        "postinstall": "node scripts/postinstall.js"
+        "prepare": "husky install || true",
+        "postinstall": "node scripts/postinstall.js || true"
     },
     "repository": {
         "type": "git",
@@ -140,10 +140,10 @@
     ],
     "nodemonConfig": {
         "ignore": [
-            "client/*",
-            "node_modules/*",
-            "coverage/*",
-            "dist/*"
+            "client/**",
+            "node_modules/**",
+            "coverage/**",
+            "dist/**"
         ],
         "delay": "1000"
     },

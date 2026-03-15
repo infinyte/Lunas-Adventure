@@ -356,20 +356,33 @@ class Game {
           return;
         }
 
-        // Determine server URL based on environment
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        // Build server URL using HTTP(S) — Socket.IO handles the WebSocket upgrade internally.
+        // When the client is served from the same Express server (port 3000) we can omit the
+        // URL entirely.  When proxied behind a different port we still need an explicit host.
+        const httpProtocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
         const host = window.location.hostname;
         const currentPort = window.location.port;
         const isLocalHost = host === 'localhost' || host === '127.0.0.1';
+        // If served by the old light-server on 8080 in dev, point at the Express server on 3000.
         const socketPort = currentPort === '8080' && isLocalHost ? '3000' : currentPort;
         const portSegment = socketPort ? `:${socketPort}` : '';
-        const serverUrl = `${protocol}//${host}${portSegment}`;
+        const serverUrl = `${httpProtocol}//${host}${portSegment}`;
+
+        console.log(`Connecting to Socket.IO server at ${serverUrl}`);
 
         // Connect to socket.io server
         this.socket = window.io(serverUrl);
 
+        // Overall connection timeout — prevents infinite hang if connect_error never fires
+        const connectionTimeout = setTimeout(() => {
+          reject(new Error(`Socket.IO connection timed out after 15 s (tried ${serverUrl})`));
+        }, 15000);
+
+        const cleanup = () => clearTimeout(connectionTimeout);
+
         // Socket connection event
         this.socket.on('connect', () => {
+          cleanup();
           console.log('Connected to server with ID:', this.socket.id);
           this.playerId = this.socket.id;
           resolve();
@@ -377,7 +390,8 @@ class Game {
 
         // Socket error event
         this.socket.on('connect_error', (error) => {
-          console.error('Connection error:', error);
+          cleanup();
+          console.error('Connection error:', error.message);
           reject(error);
         });
 
@@ -392,15 +406,13 @@ class Game {
           this.updateGameState(gameState);
         });
 
-        // Issue 11: Lightweight tick update (positions only, every frame)
+        // Lightweight tick update (positions only, every frame)
         this.socket.on('game:tick', (tickState) => {
           this.updateTickState(tickState);
         });
 
-        // Level data from server
-        this.socket.on('level:data', (levelData) => {
-          this.processLevelData(levelData);
-        });
+        // NOTE: level:data is NOT registered here — loadLevel() registers a one-time
+        // listener so that processLevelData is only called once per request, not twice.
 
         // Player join event
         this.socket.on('player:join', (playerData) => {
