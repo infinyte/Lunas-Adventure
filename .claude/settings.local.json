@@ -31,7 +31,8 @@
       "Bash(npx eslint:*)",
       "Bash(grep:*)",
       "Bash(stat:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(sleep:*)"
     ]
   }
 }
