@@ -29,46 +29,83 @@ class GameEngine extends EventEmitter {
   }
 
   /**
-   * Initialize the game world and physics
+   * Initialize a minimal fallback game world (used before any level is loaded).
    */
   initializeGame() {
-    // Create base platforms for the first level
     this.platforms = [
       {
         id: 'platform-1', x: 0, y: 500, width: 800, height: 50, type: 'ground'
-      },
-      {
-        id: 'platform-2', x: 200, y: 400, width: 200, height: 20, type: 'platform'
-      },
-      {
-        id: 'platform-3', x: 500, y: 350, width: 200, height: 20, type: 'platform'
-      },
-      {
-        id: 'platform-4', x: 700, y: 250, width: 200, height: 20, type: 'platform'
       }
     ];
-
-    // Create collectibles (carrots for Luna)
-    this.collectibles = [
-      {
-        id: 'carrot-1', x: 300, y: 370, width: 30, height: 30, type: 'carrot', collected: false
-      },
-      {
-        id: 'carrot-2', x: 600, y: 320, width: 30, height: 30, type: 'carrot', collected: false
-      },
-      {
-        id: 'carrot-3', x: 800, y: 220, width: 30, height: 30, type: 'carrot', collected: false
-      }
-    ];
-
-    // Create enemies
+    this.collectibles = [];
+    this.doors = [];
     this.enemies = new Map();
-    this.addEnemy('enemy-1', 400, 470, 'basic');
-    this.addEnemy('enemy-2', 600, 320, 'flying');
-
-    // Projectiles (created by shooter enemies)
     this.projectiles = [];
     this.projectileId = 0;
+    this.currentLevelId = null;
+  }
+
+  /**
+   * Load a level from JSON data, replacing all current world state.
+   * Repositions existing players to the level's spawn point.
+   * Only reloads if the level ID differs from the currently loaded level.
+   * @param {Object} levelData - Level JSON object
+   */
+  loadLevel(levelData) {
+    if (!levelData || levelData.id === this.currentLevelId) return;
+
+    this.currentLevelId = levelData.id;
+
+    // Platforms — shallow-copy each object so the engine can mutate state fields
+    this.platforms = (levelData.platforms || []).map((p) => ({ ...p }));
+
+    // Collectibles — always start uncollected
+    this.collectibles = (levelData.collectibles || []).map((c) => ({
+      ...c,
+      collected: false
+    }));
+
+    // Doors — copy locked state from JSON
+    this.doors = (levelData.doors || []).map((d) => ({ ...d }));
+
+    // Enemies — add via addEnemy() so boss sizing and patrol bounds are applied
+    this.enemies = new Map();
+    (levelData.enemies || []).forEach((e) => {
+      this.addEnemy(e.id, e.x, e.y, e.type, {
+        patrolStart: e.patrolStart,
+        patrolEnd: e.patrolEnd
+      });
+    });
+
+    // Projectiles reset
+    this.projectiles = [];
+    this.projectileId = 0;
+
+    // Override gravity if specified
+    if (levelData.gravity !== undefined) {
+      this.gravity = levelData.gravity;
+    }
+
+    // Reposition all connected players to the spawn point
+    const spawn = levelData.spawnPoint || { x: 50, y: 400 };
+    for (const player of this.players.values()) {
+      player.x = spawn.x;
+      player.y = spawn.y;
+      player.velocityX = 0;
+      player.velocityY = 0;
+      player.health = 100;
+      player.invulnerableUntil = Date.now() + 1500;
+    }
+
+    console.log(
+      `Level loaded: ${levelData.id}`
+      + ` (${this.platforms.length} platforms,`
+      + ` ${this.collectibles.length} collectibles,`
+      + ` ${this.enemies.size} enemies,`
+      + ` ${this.doors.length} doors)`
+    );
+
+    this.emit('level:loaded', { levelId: levelData.id });
   }
 
   /**
@@ -193,12 +230,11 @@ class GameEngine extends EventEmitter {
       }
     }
 
-    // Check collectible collisions
+    // Check collectible collisions — route through collectCollectible() so that
+    // key→door unlock logic runs and the forwarded collectible:collected event fires.
     for (const collectible of this.collectibles) {
       if (!collectible.collected && this.isColliding(player, collectible)) {
-        collectible.collected = true;
-        player.score += 100;
-        this.emit('player:collect', { playerId: player.id, collectibleId: collectible.id });
+        this.collectCollectible(player.id, collectible.id);
       }
     }
 
@@ -365,13 +401,15 @@ class GameEngine extends EventEmitter {
    */
   updateEnemyAI(enemy) {
     if (enemy.type === 'basic') {
-      // Basic enemies patrol back and forth
+      // Basic enemies patrol between their level-defined bounds
+      const patrolEnd = enemy.patrolEnd !== undefined ? enemy.patrolEnd : 600;
+      const patrolStart = enemy.patrolStart !== undefined ? enemy.patrolStart : 300;
       if (enemy.direction === 'right') {
         enemy.velocityX = 1;
-        if (enemy.x > 600) enemy.direction = 'left';
+        if (enemy.x > patrolEnd) enemy.direction = 'left';
       } else {
         enemy.velocityX = -1;
-        if (enemy.x < 300) enemy.direction = 'right';
+        if (enemy.x < patrolStart) enemy.direction = 'right';
       }
     } else if (enemy.type === 'flying') {
       // Flying enemies move in a sine wave pattern
@@ -424,13 +462,15 @@ class GameEngine extends EventEmitter {
           enemy.attackCooldown -= 1 / this.fps;
         }
       } else if (enemy.direction === 'right') {
-        // No player in range — patrol right
+        // No player in range — patrol right within level-defined bounds
         enemy.velocityX = 0.5;
-        if (enemy.x > 600) enemy.direction = 'left';
+        const shooterEnd = enemy.patrolEnd !== undefined ? enemy.patrolEnd : 600;
+        if (enemy.x > shooterEnd) enemy.direction = 'left';
       } else {
-        // No player in range — patrol left
+        // No player in range — patrol left within level-defined bounds
         enemy.velocityX = -0.5;
-        if (enemy.x < 300) enemy.direction = 'right';
+        const shooterStart = enemy.patrolStart !== undefined ? enemy.patrolStart : 300;
+        if (enemy.x < shooterStart) enemy.direction = 'right';
       }
     } else if (enemy.type === 'boss') {
       const phase2 = enemy.health <= enemy.maxHealth / 2;

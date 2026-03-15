@@ -32,7 +32,10 @@
       "Bash(grep:*)",
       "Bash(stat:*)",
       "Bash(cd:*)",
-      "Bash(sleep:*)"
+      "Bash(sleep:*)",
+      "Bash(for f:*)",
+      "Bash(cat:*)",
+      "Bash(python:*)"
     ]
   }
 }

@@ -306,6 +306,15 @@ class Game {
       this.hideLoadingScreen();
       this.showStartScreen();
 
+      // Handle PWA shortcut actions from URL query params
+      // e.g. /?action=start  /?action=highscores
+      const urlAction = new URLSearchParams(window.location.search).get('action');
+      if (urlAction === 'start') {
+        this.startGame();
+      } else if (urlAction === 'highscores') {
+        this.showHighScoresScreen();
+      }
+
       console.log('Game initialization complete!');
     } catch (error) {
       console.error('Game initialization failed:', error);
@@ -2026,6 +2035,11 @@ class Game {
   collectCarrot(carrotId) {
     console.log('Collected carrot:', carrotId);
 
+    // Mark collected locally before emitting so the server echo's wasCollected
+    // check in handleCollectibleCollected skips the duplicate score increment.
+    const localCollectible = this.state.collectibles.get(carrotId);
+    if (localCollectible) localCollectible.collected = true;
+
     // Update state
     this.state.carrotsCollected++;
     this.state.score += 100;
@@ -2283,25 +2297,23 @@ class Game {
   continueToNextLevel() {
     console.log('Continuing to next level...');
 
-    // Get next level id
     const currentLevelNum = parseInt(this.state.currentLevel.split('-')[1], 10);
+
+    // Explicit guard: show victory when the last level is completed
+    if (currentLevelNum >= this.constants.TOTAL_LEVELS) {
+      this.showVictoryScreen();
+      return;
+    }
+
     const nextLevelId = `level-${currentLevelNum + 1}`;
 
-    // Load next level
     this.loadLevel(nextLevelId)
       .then(() => {
-        // Start game again
         this.startGame();
       })
       .catch((error) => {
         console.error('Error loading next level:', error);
-
-        // Check if it's just because we've finished all levels
-        if (error.message.includes('not found') || error.message.includes('timed out')) {
-          this.showVictoryScreen();
-        } else {
-          this.showErrorScreen('Failed to load next level. Please try again.');
-        }
+        this.showErrorScreen('Failed to load next level. Please try again.');
       });
   }
 
@@ -2588,32 +2600,51 @@ class Game {
       }
     }
 
-    // Update enemies
+    // Update enemies in-place — avoid clearing the map so client-side animation
+    // state and patrol bounds are preserved across the ~1-second full-state sync.
     if (gameState.enemies) {
-      // Clear old enemies
-      this.state.enemies.clear();
+      const serverIds = new Set(gameState.enemies.map((e) => e.id));
 
-      // Add new enemies
+      // Remove enemies the server has dropped
+      for (const [id] of this.state.enemies) {
+        if (!serverIds.has(id)) {
+          this.state.enemies.delete(id);
+          const el = document.getElementById(`entity-${id}`);
+          if (el) el.remove();
+          const hp = document.getElementById(`boss-hp-${id}`);
+          if (hp) hp.remove();
+        }
+      }
+
+      // Update existing or create new enemy objects
       for (const enemyData of gameState.enemies) {
-        const enemy = new Enemy(
-          enemyData.id,
-          enemyData.x,
-          enemyData.y,
-          enemyData.width || 40,
-          enemyData.height || 40,
-          enemyData.type
-        );
+        let enemy = this.state.enemies.get(enemyData.id);
+        if (!enemy) {
+          enemy = new Enemy(
+            enemyData.id,
+            enemyData.x,
+            enemyData.y,
+            enemyData.width || 40,
+            enemyData.height || 40,
+            enemyData.type
+          );
+          // Set patrol bounds only on first creation
+          enemy.patrolStart = enemyData.patrolStart !== undefined
+            ? enemyData.patrolStart : enemyData.x - 100;
+          enemy.patrolEnd = enemyData.patrolEnd !== undefined
+            ? enemyData.patrolEnd : enemyData.x + 100;
+          enemy.startY = enemyData.startY !== undefined ? enemyData.startY : enemyData.y;
+          this.state.enemies.set(enemy.id, enemy);
+        }
 
+        // Always sync authoritative position and velocity from server
+        enemy.x = enemyData.x;
+        enemy.y = enemyData.y;
         enemy.velocityX = enemyData.velocityX || 0;
         enemy.velocityY = enemyData.velocityY || 0;
         enemy.direction = enemyData.direction || 'right';
-
-        // Add patrol information for AI
-        enemy.patrolStart = enemyData.patrolStart || enemyData.x - 100;
-        enemy.patrolEnd = enemyData.patrolEnd || enemyData.x + 100;
-        enemy.startY = enemyData.startY || enemyData.y;
-
-        this.state.enemies.set(enemy.id, enemy);
+        if (enemyData.health !== undefined) enemy.health = enemyData.health;
+        if (enemyData.maxHealth !== undefined) enemy.maxHealth = enemyData.maxHealth;
       }
     }
 
@@ -2687,10 +2718,17 @@ class Game {
    */
   handlePlayerRespawn(data) {
     if (data.playerId === this.playerId) {
-      // Update lives
       this.state.playerLives = data.lives;
 
-      // Show notification
+      // Snap local player back to the level spawn point
+      if (this.localPlayer) {
+        const spawn = this.spawnPoint || { x: 50, y: 400 };
+        this.localPlayer.x = spawn.x;
+        this.localPlayer.y = spawn.y;
+        this.localPlayer.velocityX = 0;
+        this.localPlayer.velocityY = 0;
+      }
+
       this.showNotification(`Life lost! Lives remaining: ${data.lives}`, 'warning');
     }
   }
@@ -2726,8 +2764,8 @@ class Game {
         if (door) door.locked = false;
       }
 
-      if (data.playerId === this.playerId) {
-        // Update local state
+      // Only add score if the collectible wasn't already counted locally by collectCarrot()
+      if (!wasCollected && data.playerId === this.playerId) {
         this.state.score += 100;
       }
 
@@ -2740,14 +2778,17 @@ class Game {
    * @param {Object} data - Enemy defeat event data
    */
   handleEnemyDefeated(data) {
+    // Only add score if we hadn't already counted it via the local defeatEnemy() call.
+    // defeatEnemy() deletes from the map first, so if the enemy is gone it was already scored.
+    const wasStillTracked = this.state.enemies.has(data.enemyId);
+
     this.state.enemies.delete(data.enemyId);
     const enemyEl = document.getElementById(`entity-${data.enemyId}`);
     if (enemyEl) enemyEl.remove();
     const bossHpEl = document.getElementById(`boss-hp-${data.enemyId}`);
     if (bossHpEl) bossHpEl.remove();
 
-    if (data.playerId === this.playerId) {
-      // Update score
+    if (wasStillTracked && data.playerId === this.playerId) {
       this.state.score += 200;
     }
 

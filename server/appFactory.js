@@ -110,7 +110,10 @@ export function createServer(options = {}) {
     socket.on('level:request', async (data) => {
       const levelId = data?.levelId || 'level-1';
       const level = await assetManager.getLevel(levelId);
+      // Load level into the authoritative game engine (no-op if already loaded)
+      gameEngine.loadLevel(level);
       socket.emit('level:data', level);
+      broadcastState();
     });
 
     socket.on('game:start', () => {

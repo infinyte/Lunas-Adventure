@@ -138,7 +138,7 @@ export const NETWORK_EVENTS = {
   PLAYER_RESPAWN: 'player:respawn',
   PLAYER_COLLECT: 'player:collect',
   PLAYER_GAMEOVER: 'player:gameover',
-  ENEMY_DEFEAT: 'enemy:defeat',
+  ENEMY_DEFEAT: 'enemy:defeated',
   GAME_START: 'game:start',
   GAME_STATE: 'game:state',
   LEVEL_REQUEST: 'level:request',
