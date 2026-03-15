@@ -13,6 +13,10 @@ function createDocumentStub() {
   elements.set('game-container', container);
 
   return {
+    fullscreenElement: null,
+    documentElement: {
+      requestFullscreen: jest.fn(() => Promise.resolve())
+    },
     implementation: {
       hasFeature: () => true
     },
@@ -43,6 +47,7 @@ function createDocumentStub() {
 
 function createWindowStub() {
   const handlers = {};
+  const storage = new Map();
 
   const socket = {
     id: 'socket-local',
@@ -71,6 +76,15 @@ function createWindowStub() {
       protocol: 'http:',
       hostname: 'localhost',
       port: '3000'
+    },
+    localStorage: {
+      getItem: (key) => (storage.has(key) ? storage.get(key) : null),
+      setItem: (key, value) => {
+        storage.set(key, value);
+      },
+      removeItem: (key) => {
+        storage.delete(key);
+      }
     },
     WebSocket: function WebSocketStub() {},
     requestAnimationFrame,
@@ -231,5 +245,58 @@ describe('Game orchestration', () => {
     expect(remotePlayer.direction).toBe('left');
     expect(game.state.enemies.size).toBe(1);
     expect(remoteEnemy.type).toBe('basic');
+  });
+
+  test('loads persisted settings during construction', () => {
+    window.localStorage.setItem('lunas-adventure:settings', JSON.stringify({
+      debug: true,
+      sound: false,
+      music: false,
+      fullscreen: true
+    }));
+
+    const game = createGameWithoutAutoInit();
+
+    expect(game.settings.debug).toBe(true);
+    expect(game.settings.sound).toBe(false);
+    expect(game.settings.music).toBe(false);
+    expect(game.settings.fullscreen).toBe(true);
+  });
+
+  test('updateSettings persists values and applies them to subsystems', () => {
+    const game = createGameWithoutAutoInit();
+
+    game.soundManager = {
+      setSettings: jest.fn()
+    };
+    game.renderer = {
+      setDebugMode: jest.fn()
+    };
+    game.physics = {
+      setDebugMode: jest.fn()
+    };
+
+    game.updateSettings({
+      debug: true,
+      sound: false,
+      music: false
+    });
+
+    expect(game.soundManager.setSettings).toHaveBeenCalledWith(expect.objectContaining({
+      debug: true,
+      sound: false,
+      music: false,
+      fullscreen: false
+    }));
+    expect(game.renderer.setDebugMode).toHaveBeenCalledWith(true);
+    expect(game.physics.setDebugMode).toHaveBeenCalledWith(true);
+
+    const persistedSettings = JSON.parse(window.localStorage.getItem('lunas-adventure:settings'));
+    expect(persistedSettings).toMatchObject({
+      debug: true,
+      sound: false,
+      music: false,
+      fullscreen: false
+    });
   });
 });

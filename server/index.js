@@ -2,9 +2,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import createServerFactory from './appFactory.js';
 
-// Handle __dirname (not available in ES Modules)
+// Handle __filename (not available in ES Modules)
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export const createServer = createServerFactory;
 

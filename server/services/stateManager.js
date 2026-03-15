@@ -2,6 +2,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { EventEmitter } from 'events';
+
 const projectRoot = process.cwd();
 
 /**
@@ -10,27 +11,27 @@ const projectRoot = process.cwd();
 class StateManager extends EventEmitter {
   constructor(options = {}) {
     super();
-    
+
     // Data storage path
     this.dataPath = options.dataPath || path.join(projectRoot, 'data');
-    
+
     // In-memory cache of state data
     this.state = {
       highScores: [],
       playerProgress: new Map(),
       settings: {}
     };
-    
+
     // Maximum entries in high scores
     this.maxHighScores = options.maxHighScores || 100;
-    
+
     // Auto-save interval (if enabled)
     this.autoSaveInterval = null;
     this.autoSaveEnabled = options.autoSave !== false;
     this.autoSaveDelay = options.autoSaveDelay || 60000; // 1 minute default
     this.highScoresFile = path.join(this.dataPath, 'highscores.json');
     this.ready = this.initialize();
-    
+
     console.log('State Manager initialized with data path:', this.dataPath);
   }
 

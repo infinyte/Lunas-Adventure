@@ -29,6 +29,10 @@ export function createServer(options = {}) {
     io.emit('game:state', gameState);
   });
 
+  gameEngine.on('game:tick', (tickState) => {
+    io.emit('game:tick', tickState);
+  });
+
   gameEngine.on('player:join', (payload) => {
     io.emit('player:join', payload);
   });
@@ -152,10 +156,10 @@ export function createServer(options = {}) {
         return res.status(400).json({ error: 'score must be a finite number' });
       }
       const entry = await stateManager.addHighScore({ playerName, score, level });
-      res.status(201).json(entry);
+      return res.status(201).json(entry);
     } catch (error) {
       console.error('Failed to save high score:', error);
-      res.status(500).json({ error: 'Failed to save high score' });
+      return res.status(500).json({ error: 'Failed to save high score' });
     }
   });
 

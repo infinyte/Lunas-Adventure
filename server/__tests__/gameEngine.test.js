@@ -67,7 +67,9 @@ describe('GameEngine', () => {
     });
 
     engine.fireProjectile(
-      { id: 'enemy-shooter', x: 20, y: 20, width: 40, height: 40 },
+      {
+        id: 'enemy-shooter', x: 20, y: 20, width: 40, height: 40
+      },
       player.x,
       player.y
     );

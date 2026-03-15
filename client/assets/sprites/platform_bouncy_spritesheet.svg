@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="20" viewBox="0 0 128 20" shape-rendering="geometricPrecision">
+  <defs>
+    <style>
+      .outline { stroke:#000000; stroke-width:1.6; stroke-linejoin:round; stroke-linecap:round; }
+      .pad { fill:#32CD32; }
+      .pad-dark { fill:#28B428; }
+      .pad-highlight { fill:#7EE67E; opacity:0.95; }
+      .spring { fill:none; stroke:#6B6B6B; stroke-width:2; stroke-linecap:round; }
+      .spring-dark { stroke:#3E3E3E; stroke-width:2.2; }
+      .squash { stroke:#000000; stroke-width:1.2; stroke-linecap:round; opacity:0.9; }
+      .shadow { fill:#2A8A2A; opacity:0.95; }
+      .dot { fill:#2A8A2A; stroke:#000; stroke-width:0.8; }
+    </style>
+  </defs>
+
+  <!-- Frame 0: Normal (left, x=0..64) -->
+  <g transform="translate(0,0)">
+    <!-- top pad -->
+    <rect class="pad outline" x="2" y="1" width="60" height="12" rx="4" ry="4"/>
+    <!-- highlight strip -->
+    <path class="pad-highlight" d="M4 2 C12 0 20 4 28 2 C36 0 44 4 52 2 C58 1 60 3 62 2 L62 6 L4 6 Z"/>
+    <!-- shadow underside -->
+    <rect class="shadow" x="6" y="12" width="52" height="4" rx="2" ry="2"/>
+    <!-- coil spring centered under pad -->
+    <g transform="translate(32,18)">
+      <path class="spring-dark" d="M-18 0 q3 -6 6 0 q3 6 6 0 q3 -6 6 0 q3 6 6 0" />
+      <path class="spring" d="M-18 0 q3 -6 6 0 q3 6 6 0 q3 -6 6 0 q3 6 6 0" />
+    </g>
+    <!-- small feet/dots -->
+    <circle class="dot" cx="18" cy="18" r="1.6"/>
+    <circle class="dot" cx="46" cy="18" r="1.6"/>
+  </g>
+
+  <!-- Frame 1: Compressed (right, x=64..128). Pad height 12 -> compressed to 12px tall cell height 12 placed at bottom of 20px cell -->
+  <g transform="translate(64,0)">
+    <!-- compressed pad sits at y = 8 (20 - 12) -->
+    <rect class="pad outline" x="66-64" y="8" width="60" height="12" rx="4" ry="4"/>
+    <!-- highlight slightly reduced -->
+    <path class="pad-highlight" d="M68-64  y=8 M70 9 C78 7 86 11 94 9 C102 7 110 11 118 9 C122 8 124 10 126 9 L126 13 L68 13 Z" fill="#7EE67E" opacity="0.95"/>
+    <!-- flattened spring (short, thick lines) -->
+    <g transform="translate(96,20)">
+      <path class="spring-dark" d="M-18 -2 q6 0 12 0 q6 0 12 0" />
+      <path class="spring" d="M-18 -2 q6 0 12 0 q6 0 12 0" />
+    </g>
+    <!-- squash lines radiating -->
+    <path class="squash" d="M86 6 l-6 -6" />
+    <path class="squash" d="M106 6 l6 -6" />
+    <path class="squash" d="M96 6 l0 -7" />
+    <!-- small dust puffs -->
+    <circle class="dot" cx="86" cy="18" r="1.2"/>
+    <circle class="dot" cx="106" cy="18" r="1.2"/>
+  </g>
+</svg>

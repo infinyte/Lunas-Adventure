@@ -51,14 +51,14 @@ class InputHandler extends SimpleEmitter {
 
     // Key mappings
     this.keyMappings = {
-      'ArrowLeft': 'left',
-      'ArrowRight': 'right',
-      'ArrowUp': 'jump',
-      'Space': 'jump',
-      'KeyA': 'left',
-      'KeyD': 'right',
-      'KeyW': 'jump',
-      'KeyP': 'pause'
+      ArrowLeft: 'left',
+      ArrowRight: 'right',
+      ArrowUp: 'jump',
+      Space: 'jump',
+      KeyA: 'left',
+      KeyD: 'right',
+      KeyW: 'jump',
+      KeyP: 'pause'
     };
 
     // Initialize input listeners
@@ -69,60 +69,60 @@ class InputHandler extends SimpleEmitter {
     // Stored touch listeners for cleanup: [{ el, type, fn }, ...]
     this.touchListeners = [];
   }
-  
+
   /**
    * Enable input handling
    */
   enable() {
     if (this.enabled) return;
-    
+
     // Add event listeners
     window.addEventListener('keydown', this.boundHandleKeyDown);
     window.addEventListener('keyup', this.boundHandleKeyUp);
-    
+
     // Setup touch controls if on mobile
     this.setupTouchControls();
-    
+
     this.enabled = true;
     console.log('Input handler enabled');
   }
-  
+
   /**
    * Disable input handling
    */
   disable() {
     if (!this.enabled) return;
-    
+
     // Remove event listeners
     window.removeEventListener('keydown', this.boundHandleKeyDown);
     window.removeEventListener('keyup', this.boundHandleKeyUp);
-    
+
     // Clean up touch listeners
     this.cleanupTouchControls();
-    
+
     this.enabled = false;
     console.log('Input handler disabled');
   }
-  
+
   /**
    * Handle keydown events
-   * @param {KeyboardEvent} event 
+   * @param {KeyboardEvent} event
    */
   handleKeyDown(event) {
     const key = this.keyMappings[event.code];
     if (key && !this.keys[key]) {
       this.keys[key] = true;
       this.emit(key, true);
-      
+
       if (key === 'pause') {
         this.emit('pause');
       }
     }
   }
-  
+
   /**
    * Handle keyup events
-   * @param {KeyboardEvent} event 
+   * @param {KeyboardEvent} event
    */
   handleKeyUp(event) {
     const key = this.keyMappings[event.code];
@@ -131,7 +131,7 @@ class InputHandler extends SimpleEmitter {
       this.emit(key, false);
     }
   }
-  
+
   /**
    * Register a touch listener and store it for later cleanup.
    * @param {Element} el
@@ -229,7 +229,7 @@ class InputHandler extends SimpleEmitter {
     this.keys.right = false;
     this.keys.jump = false;
   }
-  
+
   /**
    * Check if device supports touch
    * @returns {boolean}

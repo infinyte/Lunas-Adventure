@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="24" viewBox="0 0 60 24" shape-rendering="geometricPrecision">
+  <defs>
+    <style>
+      .burst { fill:#FFD24D; stroke:#000; stroke-width:1.4; }
+      .pointer { fill:#FFD24D; stroke:#000; stroke-width:1.2; }
+      .inner { fill:#FFFFFF; opacity:0.0; } /* transparent interior for dynamic text */
+    </style>
+  </defs>
+
+  <!-- starburst rounded rectangle -->
+  <g transform="translate(0,0)">
+    <path class="burst" d="M6 2 L54 2 C56 2 58 4 58 6 L58 14 C58 16 56 18 54 18 L36 18 L30 22 L24 18 L6 18 C4 18 2 16 2 14 L2 6 C2 4 4 2 6 2 Z"/>
+    <!-- pointer -->
+    <path class="pointer" d="M30 18 L34 22 L26 22 Z"/>
+    <!-- interior area left transparent for number -->
+    <rect x="10" y="4" width="40" height="10" class="inner" rx="3" ry="3"/>
+  </g>
+</svg>

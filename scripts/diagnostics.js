@@ -13,10 +13,12 @@ console.log('Node:', process.version);
 console.log('Platform:', process.platform);
 console.log('CWD:', process.cwd());
 
-for (const item of checks) {
-  const exists = await fs
-    .access(path.resolve(item))
-    .then(() => true)
-    .catch(() => false);
-  console.log(`${item}: ${exists ? 'OK' : 'MISSING'}`);
-}
+const checkExists = (item) => fs
+  .access(path.resolve(item))
+  .then(() => true)
+  .catch(() => false);
+
+const results = await Promise.all(
+  checks.map(async (item) => ({ item, exists: await checkExists(item) }))
+);
+results.forEach(({ item, exists }) => console.log(`${item}: ${exists ? 'OK' : 'MISSING'}`));

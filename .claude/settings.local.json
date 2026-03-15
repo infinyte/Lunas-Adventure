@@ -26,7 +26,12 @@
       "Bash(netstat:*)",
       "Bash(wc:*)",
       "Bash(ls:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(git stash:*)",
+      "Bash(npx eslint:*)",
+      "Bash(grep:*)",
+      "Bash(stat:*)",
+      "Bash(cd:*)"
     ]
   }
 }

@@ -2,7 +2,7 @@
 
 /**
  * Luna's Adventure Service Worker
- * 
+ *
  * Provides offline functionality by caching assets and serving them
  * when the user is offline or the server is unavailable.
  */
@@ -35,13 +35,13 @@ const PRECACHE_RESOURCES = [
 ];
 
 // Install event - Precache resources
-self.addEventListener('install', event => {
+self.addEventListener('install', (event) => {
   console.log('Service Worker: Installing...');
-  
+
   // Wait until precaching is complete
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
+      .then((cache) => {
         console.log('Service Worker: Caching files');
         return cache.addAll(PRECACHE_RESOURCES);
       })
@@ -49,30 +49,29 @@ self.addEventListener('install', event => {
         console.log('Service Worker: Precaching complete');
         return self.skipWaiting(); // Activate immediately
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Service Worker: Precaching failed:', error);
       })
   );
 });
 
 // Activate event - Clean up old caches
-self.addEventListener('activate', event => {
+self.addEventListener('activate', (event) => {
   console.log('Service Worker: Activating...');
-  
+
   // Wait until cleanup is complete
   event.waitUntil(
     caches.keys()
-      .then(cacheNames => {
-        return Promise.all(
-          cacheNames.map(cache => {
-            // Delete any old caches that don't match current version
-            if (cache !== CACHE_NAME) {
-              console.log('Service Worker: Clearing old cache:', cache);
-              return caches.delete(cache);
-            }
-          })
-        );
-      })
+      .then((cacheNames) => Promise.all(
+        cacheNames.map((cache) => {
+          // Delete any old caches that don't match current version
+          if (cache !== CACHE_NAME) {
+            console.log('Service Worker: Clearing old cache:', cache);
+            return caches.delete(cache);
+          }
+          return Promise.resolve();
+        })
+      ))
       .then(() => {
         console.log('Service Worker: Now active');
         // Take control of all clients immediately
@@ -82,51 +81,51 @@ self.addEventListener('activate', event => {
 });
 
 // Fetch event - Serve from cache, falling back to network
-self.addEventListener('fetch', event => {
+self.addEventListener('fetch', (event) => {
   // Skip non-GET requests and socket.io connections
-  if (event.request.method !== 'GET' || 
-      event.request.url.includes('/socket.io/')) {
+  if (event.request.method !== 'GET'
+      || event.request.url.includes('/socket.io/')) {
     return;
   }
-  
+
   // For game assets and code, use cache-first strategy
   event.respondWith(
     caches.match(event.request)
-      .then(cachedResponse => {
+      .then((cachedResponse) => {
         // Return cached response if available
         if (cachedResponse) {
           return cachedResponse;
         }
-        
+
         // Otherwise, fetch from network
         return fetch(event.request)
-          .then(response => {
+          .then((response) => {
             // Skip caching if response is invalid
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
-            
+
             // Clone the response - one to return, one to cache
             const responseToCache = response.clone();
-            
+
             // Add the resource to the cache
             caches.open(CACHE_NAME)
-              .then(cache => {
+              .then((cache) => {
                 cache.put(event.request, responseToCache);
               });
-            
+
             return response;
           })
-          .catch(error => {
+          .catch((error) => {
             console.error('Service Worker: Fetch failed:', error);
-            
+
             // For HTML navigation requests, fallback to offline page
             if (event.request.mode === 'navigate') {
               return caches.match('/index.html');
             }
-            
+
             // Could return a fallback image or JSON here for other types
-            return new Response('Network error', { 
+            return new Response('Network error', {
               status: 503,
               statusText: 'Service Unavailable'
             });
@@ -136,7 +135,7 @@ self.addEventListener('fetch', event => {
 });
 
 // Listen for messages from the client
-self.addEventListener('message', event => {
+self.addEventListener('message', (event) => {
   // Handle cache update requests
   if (event.data && event.data.action === 'skipWaiting') {
     self.skipWaiting();
@@ -144,30 +143,33 @@ self.addEventListener('message', event => {
 });
 
 // Background sync for high scores and saved games
-self.addEventListener('sync', event => {
+self.addEventListener('sync', (event) => {
+  /* eslint-disable no-use-before-define */
   if (event.tag === 'sync-highscores') {
     event.waitUntil(syncHighScores());
   } else if (event.tag === 'sync-savedgame') {
     event.waitUntil(syncSavedGame());
   }
+  /* eslint-enable no-use-before-define */
 });
 
 /**
  * Sync high scores to server when online
  * @returns {Promise} - Promise that resolves when sync completes
  */
+/* eslint-disable no-use-before-define */
 async function syncHighScores() {
   try {
     // Open IndexedDB
     const db = await openDatabase();
-    
+
     // Get unsynchronized high scores
     const highScores = await getUnsyncedHighScores(db);
-    
+
     if (highScores.length === 0) {
       return;
     }
-    
+
     // Send to server
     const response = await fetch('/api/highscores', {
       method: 'POST',
@@ -176,7 +178,7 @@ async function syncHighScores() {
       },
       body: JSON.stringify({ scores: highScores })
     });
-    
+
     if (response.ok) {
       // Mark as synced in IndexedDB
       await markHighScoresAsSynced(db, highScores);
@@ -198,14 +200,14 @@ async function syncSavedGame() {
   try {
     // Open IndexedDB
     const db = await openDatabase();
-    
+
     // Get unsynchronized saved game
     const savedGame = await getUnsyncedSavedGame(db);
-    
+
     if (!savedGame) {
       return;
     }
-    
+
     // Send to server
     const response = await fetch('/api/savegame', {
       method: 'POST',
@@ -214,7 +216,7 @@ async function syncSavedGame() {
       },
       body: JSON.stringify(savedGame)
     });
-    
+
     if (response.ok) {
       // Mark as synced in IndexedDB
       await markSavedGameAsSynced(db, savedGame.id);
@@ -228,6 +230,8 @@ async function syncSavedGame() {
   }
 }
 
+/* eslint-enable no-use-before-define */
+
 /**
  * Open the IndexedDB database
  * @returns {Promise<IDBDatabase>} - Promise with database object
@@ -235,28 +239,28 @@ async function syncSavedGame() {
 function openDatabase() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open('LunasAdventureDB', 1);
-    
-    request.onupgradeneeded = event => {
+
+    request.onupgradeneeded = (event) => {
       const db = event.target.result;
-      
+
       // Create stores if they don't exist
       if (!db.objectStoreNames.contains('highScores')) {
         const highScoresStore = db.createObjectStore('highScores', { keyPath: 'id' });
         highScoresStore.createIndex('synced', 'synced', { unique: false });
       }
-      
+
       if (!db.objectStoreNames.contains('savedGames')) {
         const savedGamesStore = db.createObjectStore('savedGames', { keyPath: 'id' });
         savedGamesStore.createIndex('synced', 'synced', { unique: false });
       }
     };
-    
-    request.onsuccess = event => {
+
+    request.onsuccess = (event) => {
       resolve(event.target.result);
     };
-    
-    request.onerror = event => {
-      reject(new Error('Failed to open database: ' + event.target.error));
+
+    request.onerror = (event) => {
+      reject(new Error(`Failed to open database: ${event.target.error}`));
     };
   });
 }
@@ -272,13 +276,13 @@ function getUnsyncedHighScores(db) {
     const store = transaction.objectStore('highScores');
     const index = store.index('synced');
     const request = index.getAll(0); // 0 = not synced
-    
-    request.onsuccess = event => {
+
+    request.onsuccess = (event) => {
       resolve(event.target.result);
     };
-    
-    request.onerror = event => {
-      reject(new Error('Failed to get unsynced high scores: ' + event.target.error));
+
+    request.onerror = (event) => {
+      reject(new Error(`Failed to get unsynced high scores: ${event.target.error}`));
     };
   });
 }
@@ -293,15 +297,15 @@ function markHighScoresAsSynced(db, highScores) {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(['highScores'], 'readwrite');
     const store = transaction.objectStore('highScores');
-    
+
     // Update each high score
     let completed = 0;
     let failed = 0;
-    
-    highScores.forEach(score => {
+
+    highScores.forEach((score) => {
       score.synced = 1;
       const request = store.put(score);
-      
+
       request.onsuccess = () => {
         completed++;
         if (completed + failed === highScores.length) {
@@ -312,7 +316,7 @@ function markHighScoresAsSynced(db, highScores) {
           }
         }
       };
-      
+
       request.onerror = () => {
         failed++;
         if (completed + failed === highScores.length) {
@@ -320,7 +324,7 @@ function markHighScoresAsSynced(db, highScores) {
         }
       };
     });
-    
+
     if (highScores.length === 0) {
       resolve();
     }
@@ -338,13 +342,13 @@ function getUnsyncedSavedGame(db) {
     const store = transaction.objectStore('savedGames');
     const index = store.index('synced');
     const request = index.get(0); // 0 = not synced
-    
-    request.onsuccess = event => {
+
+    request.onsuccess = (event) => {
       resolve(event.target.result || null);
     };
-    
-    request.onerror = event => {
-      reject(new Error('Failed to get unsynced saved game: ' + event.target.error));
+
+    request.onerror = (event) => {
+      reject(new Error(`Failed to get unsynced saved game: ${event.target.error}`));
     };
   });
 }
@@ -360,29 +364,29 @@ function markSavedGameAsSynced(db, id) {
     const transaction = db.transaction(['savedGames'], 'readwrite');
     const store = transaction.objectStore('savedGames');
     const request = store.get(id);
-    
-    request.onsuccess = event => {
+
+    request.onsuccess = (event) => {
       const savedGame = event.target.result;
-      
+
       if (!savedGame) {
         reject(new Error('Saved game not found'));
         return;
       }
-      
+
       savedGame.synced = 1;
       const updateRequest = store.put(savedGame);
-      
+
       updateRequest.onsuccess = () => {
         resolve();
       };
-      
-      updateRequest.onerror = event => {
-        reject(new Error('Failed to mark saved game as synced: ' + event.target.error));
+
+      updateRequest.onerror = (updateErr) => {
+        reject(new Error(`Failed to mark saved game as synced: ${updateErr.target.error}`));
       };
     };
-    
-    request.onerror = event => {
-      reject(new Error('Failed to get saved game: ' + event.target.error));
+
+    request.onerror = (reqErr) => {
+      reject(new Error(`Failed to get saved game: ${reqErr.target.error}`));
     };
   });
 }

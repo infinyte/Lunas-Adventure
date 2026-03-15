@@ -2,6 +2,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { EventEmitter } from 'events';
+
 const projectRoot = process.cwd();
 
 /**
@@ -10,25 +11,25 @@ const projectRoot = process.cwd();
 class AssetManager extends EventEmitter {
   constructor(options = {}) {
     super();
-    
+
     // Paths for different asset types
     this.paths = {
       sprites: options.spritesPath || path.join(projectRoot, 'client/assets/sprites'),
       levels: options.levelsPath || path.join(projectRoot, 'client/assets/levels'),
       configs: options.configsPath || path.join(projectRoot, 'client/assets/configs')
     };
-    
+
     // Cache for loaded assets
     this.cache = {
       sprites: new Map(),
       levels: new Map(),
       configs: new Map()
     };
-    
+
     // Initialize with basic assets
     this.initialized = false;
     this.ready = this.initialize();
-    
+
     console.log('Asset Manager initialized with paths:', this.paths);
   }
 
@@ -50,17 +51,14 @@ class AssetManager extends EventEmitter {
     await fs.mkdir(directoryPath, { recursive: true });
     const entries = await fs.readdir(directoryPath, { withFileTypes: true });
 
-    for (const entry of entries) {
-      if (!entry.isFile() || !entry.name.endsWith('.json')) {
-        continue;
-      }
-
+    const jsonEntries = entries.filter((e) => e.isFile() && e.name.endsWith('.json'));
+    await Promise.all(jsonEntries.map(async (entry) => {
       const filePath = path.join(directoryPath, entry.name);
       const raw = await fs.readFile(filePath, 'utf-8');
       const parsed = JSON.parse(raw);
       const key = parsed.id || path.parse(entry.name).name;
       cache.set(key, parsed);
-    }
+    }));
   }
 
   async getLevels() {

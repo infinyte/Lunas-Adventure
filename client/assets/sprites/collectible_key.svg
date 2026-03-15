@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" shape-rendering="geometricPrecision">
+  <defs>
+    <style>
+      .outline { stroke:#000000; stroke-width:1.0; stroke-linejoin:round; stroke-linecap:round; }
+      .gold { fill:#FFD24D; }
+      .gold-dark { fill:#D9A32A; }
+      .spark { fill:#FFF9C9; stroke:#000; stroke-width:0.6; opacity:0.0; }
+    </style>
+  </defs>
+
+  <g transform="translate(0,0)">
+    <!-- bow (round with star cutout) -->
+    <g transform="translate(9,9)">
+      <circle class="gold outline" cx="6" cy="6" r="6"/>
+      <!-- star cutout -->
+      <path class="outline" d="M6 3 L7 6 L10 6 L7.5 8 L8.5 11 L6 9 L3.5 11 L4.5 8 L2 6 L5 6 Z" fill="#FFFFFF"/>
+    </g>
+
+    <!-- shaft -->
+    <rect class="gold outline" x="15" y="12" width="10" height="4" rx="1" ry="1"/>
+    <!-- teeth -->
+    <rect class="gold outline" x="23" y="12" width="3" height="2"/>
+    <rect class="gold outline" x="23" y="14" width="3" height="2"/>
+
+    <!-- small sparkle on bow that pulses -->
+    <polygon class="spark" points="6,2 7.2,5 10,5 7.8,7 8.6,10 6,8 3.4,10 4.2,7 2,5 4.8,5"
+             transform="translate(6,4) scale(0.45)">
+      <animate attributeName="opacity" values="0;1;0" dur="1.0s" repeatCount="indefinite"/>
+      <animateTransform attributeName="transform" type="scale"
+                        values="0.45;0.6;0.45" dur="1.0s" repeatCount="indefinite"/>
+    </polygon>
+  </g>
+</svg>

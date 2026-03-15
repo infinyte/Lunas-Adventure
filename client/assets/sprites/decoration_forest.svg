@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="160" viewBox="0 0 220 160" shape-rendering="geometricPrecision">
+  <defs>
+    <style>
+      .outline { stroke:#000; stroke-width:1.6; stroke-linejoin:round; stroke-linecap:round; }
+      .trunk { fill:#6B4A36; }
+      .canopy { fill:#2E6B4F; }
+      .fern { fill:#2E8B57; }
+      .mushroom-cap { fill:#7EE6FF; }
+      .mushroom-stem { fill:#CDEFF0; }
+      .log { fill:#8B5A3C; }
+      .log-ring { fill:#6B3E2A; }
+    </style>
+  </defs>
+
+  <!-- Tall stylized tree id="forest-tree" 80x120 -->
+  <g id="forest-tree" transform="translate(20,20)">
+    <!-- trunk -->
+    <rect class="trunk outline" x="28" y="40" width="24" height="80" rx="6"/>
+    <!-- canopy large -->
+    <ellipse class="canopy outline" cx="40" cy="20" rx="48" ry="36"/>
+    <ellipse class="canopy outline" cx="12" cy="28" rx="24" ry="18"/>
+    <ellipse class="canopy outline" cx="68" cy="28" rx="24" ry="18"/>
+    <!-- small hanging leaves -->
+    <path d="M40 10 q4 6 0 12" fill="#3E7F5F" class="outline"/>
+    <path d="M28 18 q4 6 0 10" fill="#3E7F5F" class="outline"/>
+    <path d="M52 18 q4 6 0 10" fill="#3E7F5F" class="outline"/>
+  </g>
+
+  <!-- Fern cluster id="fern-cluster" 50x35 -->
+  <g id="fern-cluster" transform="translate(110,90)">
+    <g transform="translate(0,0) scale(1)">
+      <path class="fern outline" d="M0 30 q6 -12 12 -8 q-6 -10 -12 -8 q6 -12 12 -8 q-6 -10 -12 -8" />
+      <path class="fern outline" d="M18 30 q6 -12 12 -8 q-6 -10 -12 -8 q6 -12 12 -8" transform="translate(6,0)"/>
+    </g>
+  </g>
+
+  <!-- Glowing mushroom cluster id="glow-mushrooms" 40x30 -->
+  <g id="glow-mushrooms" transform="translate(160,100)">
+    <!-- mushroom 1 -->
+    <g transform="translate(0,0)">
+      <ellipse class="mushroom-cap outline" cx="8" cy="6" rx="12" ry="8"/>
+      <rect class="mushroom-stem outline" x="6" y="8" width="4" height="12" rx="1"/>
+      <!-- glow halo -->
+      <ellipse cx="8" cy="6" rx="18" ry="12" fill="#7EE6FF" opacity="0.12"/>
+    </g>
+    <!-- mushroom 2 -->
+    <g transform="translate(24,6) scale(0.85)">
+      <ellipse class="mushroom-cap outline" cx="8" cy="6" rx="10" ry="6"/>
+      <rect class="mushroom-stem outline" x="6" y="8" width="3" height="10" rx="1"/>
+      <ellipse cx="8" cy="6" rx="14" ry="9" fill="#7EE6FF" opacity="0.10"/>
+    </g>
+  </g>
+
+  <!-- Mossy log id="mossy-log" 70x25 -->
+  <g id="mossy-log" transform="translate(20,120)">
+    <rect class="log outline" x="0" y="0" width="70" height="18" rx="6"/>
+    <ellipse class="log-ring outline" cx="8" cy="9" rx="6" ry="6"/>
+    <ellipse class="log-ring outline" cx="62" cy="9" rx="6" ry="6"/>
+    <!-- moss patches -->
+    <path d="M10 2 q6 -6 14 0 q-6 -4 -14 0" fill="#3FA34A" class="outline"/>
+    <path d="M40 2 q6 -6 14 0 q-6 -4 -14 0" fill="#3FA34A" class="outline"/>
+  </g>
+</svg>

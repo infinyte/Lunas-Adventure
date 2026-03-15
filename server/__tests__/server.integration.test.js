@@ -9,7 +9,6 @@ import { createServer } from '../appFactory.js';
 describe('Server integration: API and socket flows', () => {
   let tempRoot;
   let serverContext;
-  let baseUrl;
 
   beforeAll(async () => {
     tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), 'luna-server-int-'));
@@ -68,8 +67,7 @@ describe('Server integration: API and socket flows', () => {
       }
     });
 
-    const assignedPort = await serverContext.start(0);
-    baseUrl = `http://127.0.0.1:${assignedPort}`;
+    await serverContext.start(0);
   });
 
   afterAll(async () => {
