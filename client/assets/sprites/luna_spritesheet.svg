@@ -1,0 +1,354 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="40" viewBox="0 0 1200 40" shape-rendering="geometricPrecision">
+  <defs>
+    <style>
+      .outline { stroke:#000000; stroke-width:1; stroke-linejoin:round; stroke-linecap:round; }
+      .body { fill:#C68642; }
+      .cream { fill:#F6E7D0; }
+      .nose { fill:#F4A6B0; }
+      .eye { fill:#000000; }
+      .feet { fill:#B86A2A; }
+      .star { fill:#FFD24D; stroke:#000000; stroke-width:0.8; }
+    </style>
+  </defs>
+
+  <!-- Each frame is 60x40px. translate(60,0) scale(-1,1) mirrors content so Luna faces RIGHT by default. -->
+  <!-- Frame 0-3: Idle -->
+
+  <!-- Idle frame 0 -->
+  <g transform="translate(0,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <ellipse class="outline body" cx="30" cy="22" rx="22" ry="12"/>
+      <ellipse class="outline cream" cx="22" cy="18" rx="8" ry="6"/>
+      <circle class="outline" cx="26" cy="16" r="1.6" fill="#000"/>
+      <circle class="outline" cx="18" cy="16" r="1.6" fill="#000"/>
+      <circle class="nose outline" cx="22" cy="20" r="1.8"/>
+      <ellipse class="outline feet" cx="18" cy="31" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="26" cy="31" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="34" cy="31" rx="3.5" ry="2.6"/>
+      <path class="outline cream" d="M40 18 C38 14, 34 14, 32 18 C30 22, 36 22, 40 18 Z"/>
+      <path class="outline cream" d="M36 14 C34 12, 30 12, 28 14" fill="none"/>
+      <circle class="outline" cx="10" cy="12" r="4" fill="#C68642"/>
+      <circle class="outline" cx="50" cy="12" r="3.2" fill="#C68642"/>
+    </g>
+  </g>
+
+  <!-- Idle frame 1 (blink) -->
+  <g transform="translate(60,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <ellipse class="outline body" cx="30" cy="22" rx="22" ry="12"/>
+      <ellipse class="outline cream" cx="22" cy="18" rx="8" ry="6"/>
+      <path class="outline" d="M20 16 q3 0 6 0" fill="none"/>
+      <path class="outline" d="M14 16 q3 0 6 0" fill="none"/>
+      <circle class="nose outline" cx="22" cy="20" r="1.8"/>
+      <ellipse class="outline feet" cx="18" cy="31" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="26" cy="31" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="34" cy="31" rx="3.5" ry="2.6"/>
+      <path class="outline cream" d="M40 18 C38 14, 34 14, 32 18 C30 22, 36 22, 40 18 Z"/>
+      <circle class="outline" cx="10" cy="12" r="4" fill="#C68642"/>
+      <circle class="outline" cx="50" cy="12" r="3.2" fill="#C68642"/>
+    </g>
+  </g>
+
+  <!-- Idle frame 2 (breath out slight squash) -->
+  <g transform="translate(120,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <ellipse class="outline body" cx="30" cy="23" rx="23" ry="11"/>
+      <ellipse class="outline cream" cx="22" cy="19" rx="8" ry="6"/>
+      <circle class="eye" cx="26" cy="16" r="1.6"/>
+      <circle class="eye" cx="18" cy="16" r="1.6"/>
+      <circle class="nose outline" cx="22" cy="20" r="1.8"/>
+      <ellipse class="outline feet" cx="18" cy="31" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="26" cy="31" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="34" cy="31" rx="3.5" ry="2.6"/>
+      <path class="outline cream" d="M40 18 C38 14, 34 14, 32 18 C30 22, 36 22, 40 18 Z"/>
+      <circle class="outline" cx="10" cy="12" r="4" fill="#C68642"/>
+      <circle class="outline" cx="50" cy="12" r="3.2" fill="#C68642"/>
+    </g>
+  </g>
+
+  <!-- Idle frame 3 (blink) -->
+  <g transform="translate(180,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <ellipse class="outline body" cx="30" cy="22" rx="22" ry="12"/>
+      <ellipse class="outline cream" cx="22" cy="18" rx="8" ry="6"/>
+      <path class="outline" d="M20 16 q3 0 6 0" fill="none"/>
+      <path class="outline" d="M14 16 q3 0 6 0" fill="none"/>
+      <circle class="nose outline" cx="22" cy="20" r="1.8"/>
+      <ellipse class="outline feet" cx="18" cy="31" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="26" cy="31" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="34" cy="31" rx="3.5" ry="2.6"/>
+      <path class="outline cream" d="M40 18 C38 14, 34 14, 32 18 C30 22, 36 22, 40 18 Z"/>
+      <circle class="outline" cx="10" cy="12" r="4" fill="#C68642"/>
+      <circle class="outline" cx="50" cy="12" r="3.2" fill="#C68642"/>
+    </g>
+  </g>
+
+  <!-- Frames 4-9: Run (6 frames) -->
+
+  <!-- Run 0: legs forward, body up -->
+  <g transform="translate(240,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <ellipse class="outline body" cx="30" cy="20" rx="22" ry="11"/>
+      <ellipse class="outline cream" cx="22" cy="16" rx="8" ry="6"/>
+      <circle class="eye" cx="26" cy="14" r="1.6"/>
+      <circle class="eye" cx="18" cy="14" r="1.6"/>
+      <circle class="nose outline" cx="22" cy="18" r="1.8"/>
+      <ellipse class="outline feet" cx="16" cy="29" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="26" cy="27" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="36" cy="29" rx="3.5" ry="2.6"/>
+      <path class="outline cream" d="M38 16 C36 12, 32 12, 30 16 C28 20, 34 20, 38 16 Z"/>
+      <circle class="outline" cx="10" cy="10" r="4" fill="#C68642"/>
+      <circle class="outline" cx="50" cy="10" r="3.2" fill="#C68642"/>
+    </g>
+  </g>
+
+  <!-- Run 1: legs mid, body down -->
+  <g transform="translate(300,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <ellipse class="outline body" cx="30" cy="23" rx="22" ry="11"/>
+      <ellipse class="outline cream" cx="22" cy="19" rx="8" ry="6"/>
+      <circle class="eye" cx="26" cy="17" r="1.6"/>
+      <circle class="eye" cx="18" cy="17" r="1.6"/>
+      <circle class="nose outline" cx="22" cy="21" r="1.8"/>
+      <ellipse class="outline feet" cx="14" cy="31" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="24" cy="31" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="34" cy="31" rx="3.5" ry="2.6"/>
+      <path class="outline cream" d="M40 19 C38 15, 34 15, 32 19 C30 23, 36 23, 40 19 Z"/>
+    </g>
+  </g>
+
+  <!-- Run 2: legs back, body up -->
+  <g transform="translate(360,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <ellipse class="outline body" cx="30" cy="20" rx="22" ry="11"/>
+      <ellipse class="outline cream" cx="22" cy="16" rx="8" ry="6"/>
+      <circle class="eye" cx="26" cy="14" r="1.6"/>
+      <circle class="eye" cx="18" cy="14" r="1.6"/>
+      <circle class="nose outline" cx="22" cy="18" r="1.8"/>
+      <ellipse class="outline feet" cx="16" cy="27" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="26" cy="29" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="36" cy="31" rx="3.5" ry="2.6"/>
+      <path class="outline cream" d="M38 16 C36 12, 32 12, 30 16 C28 20, 34 20, 38 16 Z"/>
+    </g>
+  </g>
+
+  <!-- Run 3: legs forward, body down -->
+  <g transform="translate(420,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <ellipse class="outline body" cx="30" cy="23" rx="22" ry="11"/>
+      <ellipse class="outline cream" cx="22" cy="19" rx="8" ry="6"/>
+      <circle class="eye" cx="26" cy="17" r="1.6"/>
+      <circle class="eye" cx="18" cy="17" r="1.6"/>
+      <circle class="nose outline" cx="22" cy="21" r="1.8"/>
+      <ellipse class="outline feet" cx="18" cy="31" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="28" cy="29" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="36" cy="31" rx="3.5" ry="2.6"/>
+      <path class="outline cream" d="M40 19 C38 15, 34 15, 32 19 C30 23, 36 23, 40 19 Z"/>
+    </g>
+  </g>
+
+  <!-- Run 4: legs mid, body up -->
+  <g transform="translate(480,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <ellipse class="outline body" cx="30" cy="20" rx="22" ry="11"/>
+      <ellipse class="outline cream" cx="22" cy="16" rx="8" ry="6"/>
+      <circle class="eye" cx="26" cy="14" r="1.6"/>
+      <circle class="eye" cx="18" cy="14" r="1.6"/>
+      <circle class="nose outline" cx="22" cy="18" r="1.8"/>
+      <ellipse class="outline feet" cx="14" cy="29" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="24" cy="27" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="34" cy="29" rx="3.5" ry="2.6"/>
+      <path class="outline cream" d="M38 16 C36 12, 32 12, 30 16 C28 20, 34 20, 38 16 Z"/>
+    </g>
+  </g>
+
+  <!-- Run 5: sprint pose, legs extended -->
+  <g transform="translate(540,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <ellipse class="outline body" cx="30" cy="21" rx="22" ry="11"/>
+      <ellipse class="outline cream" cx="22" cy="17" rx="8" ry="6"/>
+      <circle class="eye" cx="26" cy="15" r="1.6"/>
+      <circle class="eye" cx="18" cy="15" r="1.6"/>
+      <circle class="nose outline" cx="22" cy="19" r="1.8"/>
+      <ellipse class="outline feet" cx="12" cy="31" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="30" cy="27" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="40" cy="31" rx="3.5" ry="2.6"/>
+      <path class="outline cream" d="M38 16 C36 12, 32 12, 30 16 C28 20, 34 20, 38 16 Z"/>
+    </g>
+  </g>
+
+  <!-- Frames 10-11: Jump (launch, apex tuck) -->
+
+  <!-- Jump launch -->
+  <g transform="translate(600,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <ellipse class="outline body" cx="30" cy="18" rx="22" ry="10"/>
+      <ellipse class="outline cream" cx="22" cy="14" rx="8" ry="6"/>
+      <circle class="eye" cx="26" cy="12" r="1.6"/>
+      <circle class="eye" cx="18" cy="12" r="1.6"/>
+      <circle class="nose outline" cx="22" cy="16" r="1.8"/>
+      <ellipse class="outline feet" cx="18" cy="33" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="26" cy="33" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="34" cy="33" rx="3.5" ry="2.6"/>
+      <path class="outline cream" d="M40 14 C38 10, 34 10, 32 14 C30 18, 36 18, 40 14 Z"/>
+    </g>
+  </g>
+
+  <!-- Jump apex tuck -->
+  <g transform="translate(660,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <ellipse class="outline body" cx="30" cy="14" rx="18" ry="9"/>
+      <ellipse class="outline cream" cx="22" cy="12" rx="7" ry="5"/>
+      <circle class="eye" cx="26" cy="11" r="1.6"/>
+      <circle class="eye" cx="18" cy="11" r="1.6"/>
+      <circle class="nose outline" cx="22" cy="14" r="1.8"/>
+      <ellipse class="outline feet" cx="24" cy="24" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="30" cy="24" rx="3.5" ry="2.6"/>
+      <path class="outline cream" d="M36 12 C34 9, 31 9, 29 12 C27 15, 33 15, 36 12 Z"/>
+    </g>
+  </g>
+
+  <!-- Frames 12-13: Fall (downward drift) -->
+
+  <!-- Fall 0 -->
+  <g transform="translate(720,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <ellipse class="outline body" cx="30" cy="18" rx="22" ry="11"/>
+      <ellipse class="outline cream" cx="22" cy="15" rx="8" ry="6"/>
+      <circle class="eye" cx="26" cy="13" r="1.6"/>
+      <circle class="eye" cx="18" cy="13" r="1.6"/>
+      <circle class="nose outline" cx="22" cy="17" r="1.8"/>
+      <ellipse class="outline feet" cx="18" cy="30" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="26" cy="30" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="34" cy="30" rx="3.5" ry="2.6"/>
+      <path class="outline cream" d="M40 15 C38 11, 34 11, 32 15 C30 19, 36 19, 40 15 Z"/>
+    </g>
+  </g>
+
+  <!-- Fall 1 (legs slightly splayed) -->
+  <g transform="translate(780,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <ellipse class="outline body" cx="30" cy="19" rx="22" ry="11"/>
+      <ellipse class="outline cream" cx="22" cy="16" rx="8" ry="6"/>
+      <circle class="eye" cx="26" cy="14" r="1.6"/>
+      <circle class="eye" cx="18" cy="14" r="1.6"/>
+      <circle class="nose outline" cx="22" cy="18" r="1.8"/>
+      <ellipse class="outline feet" cx="16" cy="29" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="30" cy="29" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="36" cy="31" rx="3.5" ry="2.6"/>
+      <path class="outline cream" d="M38 15 C36 11, 32 11, 30 15 C28 19, 34 19, 38 15 Z"/>
+    </g>
+  </g>
+
+  <!-- Frames 14-15: Hurt (recoil with pain expression) -->
+
+  <!-- Hurt 0 -->
+  <g transform="translate(840,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <ellipse class="outline body" cx="30" cy="22" rx="22" ry="12"/>
+      <ellipse class="outline cream" cx="22" cy="18" rx="8" ry="6"/>
+      <path class="outline" d="M24 15 q2 3 4 0" fill="none"/>
+      <path class="outline" d="M16 15 q2 3 4 0" fill="none"/>
+      <path class="outline" d="M20 20 q4 4 8 0" fill="none"/>
+      <circle class="nose outline" cx="22" cy="20" r="1.8"/>
+      <ellipse class="outline feet" cx="18" cy="31" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="26" cy="31" rx="3.5" ry="2.6"/>
+      <ellipse class="outline feet" cx="34" cy="31" rx="3.5" ry="2.6"/>
+      <path class="outline cream" d="M40 18 C38 14, 34 14, 32 18 C30 22, 36 22, 40 18 Z"/>
+    </g>
+  </g>
+
+  <!-- Hurt 1 (recoil tilted left, squint) -->
+  <g transform="translate(900,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <g transform="translate(-2,-2) rotate(-6 32 20)">
+        <ellipse class="outline body" cx="30" cy="22" rx="22" ry="12"/>
+        <ellipse class="outline cream" cx="22" cy="18" rx="8" ry="6"/>
+        <path class="outline" d="M20 16 q3 0 6 -2" fill="none"/>
+        <path class="outline" d="M14 16 q3 0 6 -2" fill="none"/>
+        <path class="outline" d="M20 20 q4 4 8 0" fill="none"/>
+        <circle class="nose outline" cx="22" cy="20" r="1.8"/>
+        <ellipse class="outline feet" cx="18" cy="31" rx="3.5" ry="2.6"/>
+        <ellipse class="outline feet" cx="26" cy="31" rx="3.5" ry="2.6"/>
+        <ellipse class="outline feet" cx="34" cy="31" rx="3.5" ry="2.6"/>
+        <path class="outline cream" d="M40 18 C38 14, 34 14, 32 18 C30 22, 36 22, 40 18 Z"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Frames 16-19: Death (dramatic comedic flop with swirly eyes and stars) -->
+
+  <!-- Death 0: flop start -->
+  <g transform="translate(960,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <g transform="translate(0,4) rotate(12 30 18)">
+        <ellipse class="outline body" cx="30" cy="22" rx="24" ry="11" fill="#C68642"/>
+        <ellipse class="outline cream" cx="22" cy="18" rx="8" ry="6"/>
+        <path class="outline" d="M26 16 q-2 4 -6 0" fill="none"/>
+        <path class="outline" d="M18 16 q-2 4 -6 0" fill="none"/>
+        <circle class="nose outline" cx="22" cy="20" r="1.8"/>
+        <ellipse class="outline feet" cx="20" cy="33" rx="3.5" ry="2.6"/>
+        <ellipse class="outline feet" cx="30" cy="33" rx="3.5" ry="2.6"/>
+        <path class="outline cream" d="M42 18 C40 14, 36 14, 34 18 C32 22, 38 22, 42 18 Z"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Death 1: swirly eyes, stars appear -->
+  <g transform="translate(1020,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <g transform="translate(0,6) rotate(18 30 18)">
+        <ellipse class="outline body" cx="30" cy="22" rx="24" ry="11"/>
+        <ellipse class="outline cream" cx="22" cy="18" rx="8" ry="6"/>
+        <path class="outline" d="M24 16 q3 0 6 0" fill="none"/>
+        <path class="outline" d="M16 16 q3 0 6 0" fill="none"/>
+        <path d="M24 14 c1 -2, 4 -2, 6 0" fill="none" stroke="#000" stroke-width="1"/>
+        <path d="M16 14 c1 -2, 4 -2, 6 0" fill="none" stroke="#000" stroke-width="1"/>
+        <path class="outline" d="M24 15 c1 1, 2 1, 3 0 c-1 -1, -2 -1, -3 0" fill="none"/>
+        <path class="outline" d="M16 15 c1 1, 2 1, 3 0 c-1 -1, -2 -1, -3 0" fill="none"/>
+        <circle class="nose outline" cx="22" cy="20" r="1.8"/>
+        <ellipse class="outline feet" cx="22" cy="33" rx="3.5" ry="2.6"/>
+        <ellipse class="outline feet" cx="32" cy="33" rx="3.5" ry="2.6"/>
+        <polygon class="star outline" points="6,6 8,10 12,10 9,12 10,16 6,13 2,16 3,12 0,10 4,10"/>
+        <polygon class="star outline" points="54,2 56,6 60,6 57,8 58,12 54,9 50,12 51,8 48,6 52,6"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Death 2: more dramatic flop, stars larger -->
+  <g transform="translate(1080,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <g transform="translate(0,8) rotate(24 30 18)">
+        <ellipse class="outline body" cx="30" cy="22" rx="25" ry="10"/>
+        <ellipse class="outline cream" cx="22" cy="18" rx="8" ry="6"/>
+        <path class="outline" d="M24 16 q3 0 6 0" fill="none"/>
+        <path class="outline" d="M16 16 q3 0 6 0" fill="none"/>
+        <path class="outline" d="M24 14 c2 -2, 6 -2, 8 0" fill="none"/>
+        <path class="outline" d="M16 14 c2 -2, 6 -2, 8 0" fill="none"/>
+        <circle class="nose outline" cx="22" cy="20" r="1.8"/>
+        <ellipse class="outline feet" cx="24" cy="33" rx="3.5" ry="2.6"/>
+        <ellipse class="outline feet" cx="34" cy="33" rx="3.5" ry="2.6"/>
+        <polygon class="star outline" points="8,4 11,9 16,9 12,12 13,17 8,14 3,17 4,12 0,9 6,9"/>
+        <polygon class="star outline" points="52,0 55,5 60,5 56,8 58,13 52,10 46,13 48,8 44,5 50,5"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Death 3: final comedic flop, tiny spirals and stars -->
+  <g transform="translate(1140,0)">
+    <g transform="translate(60,0) scale(-1,1)">
+      <g transform="translate(0,10) rotate(28 30 18)">
+        <ellipse class="outline body" cx="30" cy="22" rx="25" ry="10"/>
+        <ellipse class="outline cream" cx="22" cy="18" rx="8" ry="6"/>
+        <path class="outline" d="M24 14 c1 -1, 3 -1, 4 0 c-1 1, -3 1, -4 0" fill="none"/>
+        <path class="outline" d="M16 14 c1 -1, 3 -1, 4 0 c-1 1, -3 1, -4 0" fill="none"/>
+        <circle class="nose outline" cx="22" cy="20" r="1.8"/>
+        <ellipse class="outline feet" cx="26" cy="33" rx="3.5" ry="2.6"/>
+        <ellipse class="outline feet" cx="36" cy="33" rx="3.5" ry="2.6"/>
+        <polygon class="star outline" points="10,2 13,7 18,7 14,10 15,15 10,12 5,15 6,10 2,7 8,7"/>
+        <polygon class="star outline" points="46,0 49,5 54,5 50,8 52,13 46,10 40,13 42,8 38,5 44,5"/>
+      </g>
+    </g>
+  </g>
+
+</svg>

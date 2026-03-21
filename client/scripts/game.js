@@ -19,6 +19,8 @@ import { Enemy } from './entities/enemy.js';
 import { Platform } from './entities/platform.js';
 import * as constants from '../shared/constants.js';
 
+const SETTINGS_STORAGE_KEY = 'lunas-adventure:settings';
+
 class Game {
   /**
    * Initialize the game
@@ -32,6 +34,7 @@ class Game {
       platforms: new Map(),
       collectibles: new Map(),
       projectiles: new Map(),
+      doors: new Map(),
       currentLevel: null,
       isRunning: false,
       isPaused: false,
@@ -52,6 +55,7 @@ class Game {
       music: true,
       fullscreen: false
     };
+    this.settings = this.loadSettings();
 
     // Constants
     this.constants = constants;
@@ -179,12 +183,15 @@ class Game {
           return;
         }
 
-        // Determine server URL based on environment
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        // Build server URL using HTTP(S) — Socket.IO handles the WebSocket upgrade internally.
+        // When the client is served from the same Express server (port 3000) we can omit the
+        // URL entirely.  When proxied behind a different port we still need an explicit host.
+        const httpProtocol = window.location.protocol === 'https:' ? 'https:' : 'http:';
         const host = window.location.hostname;
         const currentPort = window.location.port;
         const isLocalHost = host === 'localhost' || host === '127.0.0.1';
-        const socketPort = currentPort === '8080' && isLocalHost ? '3000' : currentPort;
+        // If served by the old light-server on 8080 in dev, point at the Express server on 3000.
+ort        const socketPort = currentPort === '8080' && isLocalHost ? '3000' : currentPort;
         const portSegment = socketPort ? `:${socketPort}` : '';
         const serverUrl = `${protocol}//${host}${portSegment}`;
 
@@ -193,6 +200,7 @@ class Game {
 
         // Socket connection event
         this.socket.on('connect', () => {
+          cleanup();
           console.log('Connected to server with ID:', this.socket.id);
           this.playerId = this.socket.id;
           resolve();
@@ -200,7 +208,8 @@ class Game {
 
         // Socket error event
         this.socket.on('connect_error', (error) => {
-          console.error('Connection error:', error);
+          cleanup();
+          console.error('Connection error:', error.message);
           reject(error);
         });
 
@@ -1078,7 +1087,23 @@ class Game {
           velocityX: this.localPlayer.velocityX,
           velocityY: this.localPlayer.velocityY,
           direction: this.localPlayer.direction
+        };
+        this.socket.emit('player:move', moveData);
+
+        // Buffer the input for reconciliation
+        this.inputBuffer.push({
+          seq,
+          direction: this.localPlayer.direction,
+          velocityX: this.localPlayer.velocityX,
+          velocityY: this.localPlayer.velocityY,
+          x: this.localPlayer.x,
+          y: this.localPlayer.y
         });
+        // Keep buffer within INPUT_BUFFER_SIZE
+        const bufferSize = this.constants.INPUT_BUFFER_SIZE || 20;
+        if (this.inputBuffer.length > bufferSize) {
+          this.inputBuffer.splice(0, this.inputBuffer.length - bufferSize);
+        }
       }
     }
 
@@ -1961,7 +1986,6 @@ class Game {
     // Load next level
     this.loadLevel(nextLevelId)
       .then(() => {
-        // Start game again
         this.startGame();
       })
       .catch((error) => {
@@ -2213,6 +2237,14 @@ class Game {
       }
     }
 
+    // Sync door lock states from server
+    if (gameState.doors) {
+      for (const doorData of gameState.doors) {
+        const door = this.state.doors.get(doorData.id);
+        if (door) door.locked = doorData.locked;
+      }
+    }
+
     // Sync projectiles — replace map with latest server snapshot
     if (gameState.projectiles) {
       const activeIds = new Set(gameState.projectiles.map((p) => p.id));
@@ -2263,7 +2295,6 @@ class Game {
    */
   handlePlayerRespawn(data) {
     if (data.playerId === this.playerId) {
-      // Update lives
       this.state.playerLives = data.lives;
 
       // Show notification
@@ -2310,6 +2341,10 @@ class Game {
    * @param {Object} data - Enemy defeat event data
    */
   handleEnemyDefeated(data) {
+    // Only add score if we hadn't already counted it via the local defeatEnemy() call.
+    // defeatEnemy() deletes from the map first, so if the enemy is gone it was already scored.
+    const wasStillTracked = this.state.enemies.has(data.enemyId);
+
     this.state.enemies.delete(data.enemyId);
 
     if (data.playerId === this.playerId) {

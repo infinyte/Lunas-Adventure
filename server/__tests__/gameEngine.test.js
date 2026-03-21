@@ -3,6 +3,7 @@ import GameEngine from '../services/gameEngine.js';
 describe('GameEngine', () => {
   test('emits enemy:defeated when enemy is removed', () => {
     const engine = new GameEngine();
+    engine.addEnemy('enemy-1', 400, 470, 'basic');
     const emitted = [];
 
     engine.on('enemy:defeated', (payload) => {
@@ -18,6 +19,9 @@ describe('GameEngine', () => {
   test('collectCollectible marks item and increments score', () => {
     const engine = new GameEngine();
     const player = engine.addPlayer('player-1');
+    engine.collectibles.push({
+      id: 'carrot-1', x: 300, y: 370, width: 30, height: 30, type: 'carrot', collected: false
+    });
 
     engine.collectCollectible('player-1', 'carrot-1');
 

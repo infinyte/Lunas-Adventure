@@ -11,21 +11,27 @@ class GameEngine extends EventEmitter {
     this.enemies = new Map();
     this.platforms = [];
     this.collectibles = [];
+    this.doors = [];
     this.gravity = 0.5;
     this.friction = 0.8;
     this.gameLoop = null;
     this.fps = 60;
     this.isRunning = false;
+    this.tickCount = 0;
+
+    // Server-side input validation constants
+    this.MAX_PLAYER_SPEED = 5;
+    this.MAX_WARP_PX = 64;
+    this.MIN_INPUT_INTERVAL_MS = 16; // ~1 frame at 60fps
 
     // Initialize game state
     this.initializeGame();
   }
 
   /**
-   * Initialize the game world and physics
+   * Initialize a minimal fallback game world (used before any level is loaded).
    */
   initializeGame() {
-    // Create base platforms for the first level
     this.platforms = [
       {
         id: 'platform-1', x: 0, y: 500, width: 800, height: 50, type: 'ground'
@@ -56,12 +62,42 @@ class GameEngine extends EventEmitter {
 
     // Create enemies
     this.enemies = new Map();
-    this.addEnemy('enemy-1', 400, 470, 'basic');
-    this.addEnemy('enemy-2', 600, 320, 'flying');
+    (levelData.enemies || []).forEach((e) => {
+      this.addEnemy(e.id, e.x, e.y, e.type, {
+        patrolStart: e.patrolStart,
+        patrolEnd: e.patrolEnd
+      });
+    });
 
-    // Projectiles (created by shooter enemies)
+    // Projectiles reset
     this.projectiles = [];
     this.projectileId = 0;
+
+    // Override gravity if specified
+    if (levelData.gravity !== undefined) {
+      this.gravity = levelData.gravity;
+    }
+
+    // Reposition all connected players to the spawn point
+    const spawn = levelData.spawnPoint || { x: 50, y: 400 };
+    for (const player of this.players.values()) {
+      player.x = spawn.x;
+      player.y = spawn.y;
+      player.velocityX = 0;
+      player.velocityY = 0;
+      player.health = 100;
+      player.invulnerableUntil = Date.now() + 1500;
+    }
+
+    console.log(
+      `Level loaded: ${levelData.id}`
+      + ` (${this.platforms.length} platforms,`
+      + ` ${this.collectibles.length} collectibles,`
+      + ` ${this.enemies.size} enemies,`
+      + ` ${this.doors.length} doors)`
+    );
+
+    this.emit('level:loaded', { levelId: levelData.id });
   }
 
   /**
@@ -75,7 +111,15 @@ class GameEngine extends EventEmitter {
 
     this.gameLoop = setInterval(() => {
       this.update();
-      this.emit('game:update', this.getGameState());
+      this.tickCount++;
+
+      // Emit lightweight tick every frame (positions only)
+      this.emit('game:tick', this.getTickState());
+
+      // Emit full state every 60 ticks (~1 second)
+      if (this.tickCount % 60 === 0) {
+        this.emit('game:update', this.getGameState());
+      }
     }, frameTime);
 
     console.log('Game loop started');
@@ -184,20 +228,28 @@ class GameEngine extends EventEmitter {
     // Check collectible collisions
     for (const collectible of this.collectibles) {
       if (!collectible.collected && this.isColliding(player, collectible)) {
-        collectible.collected = true;
-        player.score += 100;
-        this.emit('player:collect', { playerId: player.id, collectibleId: collectible.id });
+        this.collectCollectible(player.id, collectible.id);
       }
     }
 
     // Check enemy collisions
     for (const [id, enemy] of this.enemies.entries()) {
       if (this.isColliding(player, enemy)) {
-        // If player is above enemy, defeat enemy
+        // If player is above enemy, stomp it
         if (player.velocityY > 0 && player.y + player.height - player.velocityY <= enemy.y) {
-          this.defeatEnemy(id);
           player.velocityY = -10; // Bounce off enemy
-          player.score += 200;
+          if (enemy.type === 'boss') {
+            // Boss takes 25 HP per stomp; only fully defeated at 0 HP
+            enemy.health -= 25;
+            player.score += 50;
+            if (enemy.health <= 0) {
+              this.defeatEnemy(id);
+              player.score += 500; // Bonus for boss kill
+            }
+          } else {
+            this.defeatEnemy(id);
+            player.score += 200;
+          }
         } else {
           // Player takes damage
           this.playerDamage(player.id);
@@ -271,19 +323,23 @@ class GameEngine extends EventEmitter {
    * @param {string} type - Enemy type
    * @returns {Object} - New enemy object
    */
-  addEnemy(id, x, y, type) {
+  addEnemy(id, x, y, type, options = {}) {
+    const isBoss = type === 'boss';
     const newEnemy = {
       id,
       x,
       y,
-      width: 40,
-      height: 40,
+      width: isBoss ? 80 : 40,
+      height: isBoss ? 80 : 40,
       velocityX: type === 'flying' ? 2 : 1,
       velocityY: 0,
       type,
       direction: 'right',
-      health: 1,
-      attackCooldown: 0
+      health: isBoss ? 100 : 1,
+      maxHealth: isBoss ? 100 : 1,
+      attackCooldown: 0,
+      patrolStart: options.patrolStart,
+      patrolEnd: options.patrolEnd
     };
 
     this.enemies.set(id, newEnemy);
@@ -320,6 +376,16 @@ class GameEngine extends EventEmitter {
 
     collectible.collected = true;
     player.score += 100;
+
+    // If a key was collected, unlock the door it targets
+    if (collectible.type === 'key' && collectible.target) {
+      const door = this.doors.find((d) => d.id === collectible.target);
+      if (door && door.locked) {
+        door.locked = false;
+        this.emit('door:unlocked', { doorId: door.id, playerId });
+      }
+    }
+
     this.emit('collectible:collected', { playerId, collectibleId });
   }
 
@@ -329,13 +395,15 @@ class GameEngine extends EventEmitter {
    */
   updateEnemyAI(enemy) {
     if (enemy.type === 'basic') {
-      // Basic enemies patrol back and forth
+      // Basic enemies patrol between their level-defined bounds
+      const patrolEnd = enemy.patrolEnd !== undefined ? enemy.patrolEnd : 600;
+      const patrolStart = enemy.patrolStart !== undefined ? enemy.patrolStart : 300;
       if (enemy.direction === 'right') {
         enemy.velocityX = 1;
-        if (enemy.x > 600) enemy.direction = 'left';
+        if (enemy.x > patrolEnd) enemy.direction = 'left';
       } else {
         enemy.velocityX = -1;
-        if (enemy.x < 300) enemy.direction = 'right';
+        if (enemy.x < patrolStart) enemy.direction = 'right';
       }
     } else if (enemy.type === 'flying') {
       // Flying enemies move in a sine wave pattern
@@ -572,7 +640,7 @@ class GameEngine extends EventEmitter {
   }
 
   /**
-   * Update player position based on input
+   * Update player position based on input (with server-side validation)
    * @param {string} playerId - Player ID
    * @param {Object} data - Movement data
    */
@@ -581,11 +649,22 @@ class GameEngine extends EventEmitter {
     if (!player) return;
 
     if (data.direction === 'left') {
-      player.velocityX = -5;
+      player.velocityX = -this.MAX_PLAYER_SPEED;
       player.direction = 'left';
     } else if (data.direction === 'right') {
-      player.velocityX = 5;
+      player.velocityX = this.MAX_PLAYER_SPEED;
       player.direction = 'right';
+    }
+
+    // Issue 12: Clamp velocity to prevent speed hacks
+    player.velocityX = Math.max(
+      -this.MAX_PLAYER_SPEED,
+      Math.min(this.MAX_PLAYER_SPEED, player.velocityX)
+    );
+
+    // Issue 10: Echo last acknowledged input sequence back to client
+    if (data.seq !== undefined) {
+      player.lastAck = data.seq;
     }
   }
 
@@ -643,11 +722,12 @@ class GameEngine extends EventEmitter {
    */
   getGameState() {
     return {
-      players: Array.from(this.players.values()),
+      players: Array.from(this.players.values()).map((p) => ({ ...p, lastAck: p.lastAck })),
       enemies: Array.from(this.enemies.values()),
       platforms: this.platforms,
       collectibles: this.collectibles,
-      projectiles: this.projectiles
+      projectiles: this.projectiles,
+      doors: this.doors
     };
   }
 }

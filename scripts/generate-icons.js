@@ -30,12 +30,12 @@ async function generateIcons() {
 
   const svgBuffer = fs.readFileSync(svgPath);
 
-  for (const size of SIZES) {
+  await Promise.all(SIZES.map(async (size) => {
     const dest = path.join(outDir, `icon-${size}x${size}.png`);
     // eslint-disable-next-line no-await-in-loop
     await sharp(svgBuffer).resize(size, size).png().toFile(dest);
     console.log(`  icon-${size}x${size}.png`);
-  }
+  }));
 
   // Maskable icon with safe-zone padding
   const maskableDest = path.join(outDir, 'maskable-icon.png');

@@ -63,7 +63,7 @@ class AssetManager extends EventEmitter {
       const parsed = JSON.parse(raw);
       const key = parsed.id || path.parse(entry.name).name;
       cache.set(key, parsed);
-    }
+    }));
   }
 
   async getLevels() {

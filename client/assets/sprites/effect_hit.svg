@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" shape-rendering="geometricPrecision">
+  <defs>
+    <style>
+      .flash { fill:#FFFFFF; opacity:0.0; }
+      .impact { fill:#FFD24D; stroke:#FF9A2B; stroke-width:0.8; opacity:0.0; }
+      .impact-orange { fill:#FFB86A; stroke:#E06A1A; stroke-width:0.8; opacity:0.0; }
+    </style>
+  </defs>
+
+  <g transform="translate(20,20)">
+    <!-- central flash circle expands and fades over 0.3s -->
+    <circle class="flash" cx="0" cy="0" r="2">
+      <animate attributeName="r" values="2;18" dur="0.3s" begin="0s" fill="freeze"/>
+      <animate attributeName="opacity" values="1;0" dur="0.3s" begin="0s" fill="freeze"/>
+    </circle>
+
+    <!-- impact stars shooting outward -->
+    <!-- star top -->
+    <polygon class="impact" points="0,-3 1,-1 3,0 1,1 0,3 -1,1 -3,0 -1,-1"
+             transform="translate(0,-6) scale(0.9)">
+      <animate attributeName="opacity" values="1;0" dur="0.3s" begin="0s" fill="freeze"/>
+      <animateTransform attributeName="transform" type="translate" from="0 -6" to="0 -18" dur="0.3s" begin="0s" fill="freeze"/>
+      <animateTransform attributeName="transform" type="scale" from="0.9" to="1.6" dur="0.3s" begin="0s" additive="sum" fill="freeze"/>
+    </polygon>
+
+    <!-- star right -->
+    <polygon class="impact-orange" points="0,-3 1,-1 3,0 1,1 0,3 -1,1 -3,0 -1,-1"
+             transform="translate(6,0) scale(0.9)">
+      <animate attributeName="opacity" values="1;0" dur="0.3s" begin="0.02s" fill="freeze"/>
+      <animateTransform attributeName="transform" type="translate" from="6 0" to="18 0" dur="0.3s" begin="0.02s" fill="freeze"/>
+      <animateTransform attributeName="transform" type="scale" from="0.9" to="1.6" dur="0.3s" begin="0.02s" additive="sum" fill="freeze"/>
+    </polygon>
+
+    <!-- star bottom -->
+    <polygon class="impact" points="0,-3 1,-1 3,0 1,1 0,3 -1,1 -3,0 -1,-1"
+             transform="translate(0,6) scale(0.9)">
+      <animate attributeName="opacity" values="1;0" dur="0.3s" begin="0.04s" fill="freeze"/>
+      <animateTransform attributeName="transform" type="translate" from="0 6" to="0 18" dur="0.3s" begin="0.04s" fill="freeze"/>
+      <animateTransform attributeName="transform" type="scale" from="0.9" to="1.6" dur="0.3s" begin="0.04s" additive="sum" fill="freeze"/>
+    </polygon>
+
+    <!-- star left -->
+    <polygon class="impact-orange" points="0,-3 1,-1 3,0 1,1 0,3 -1,1 -3,0 -1,-1"
+             transform="translate(-6,0) scale(0.9)">
+      <animate attributeName="opacity" values="1;0" dur="0.3s" begin="0.06s" fill="freeze"/>
+      <animateTransform attributeName="transform" type="translate" from="-6 0" to="-18 0" dur="0.3s" begin="0.06s" fill="freeze"/>
+      <animateTransform attributeName="transform" type="scale" from="0.9" to="1.6" dur="0.3s" begin="0.06s" additive="sum" fill="freeze"/>
+    </polygon>
+
+    <!-- small secondary sparks -->
+    <circle cx="10" cy="-10" r="1.2" fill="#FFF9C9" opacity="0">
+      <animate attributeName="opacity" values="1;0" dur="0.25s" begin="0.02s" fill="freeze"/>
+      <animateTransform attributeName="transform" type="translate" from="0 0" to="6 -6" dur="0.25s" begin="0.02s" fill="freeze"/>
+    </circle>
+    <circle cx="-10" cy="8" r="1.2" fill="#FFF9C9" opacity="0">
+      <animate attributeName="opacity" values="1;0" dur="0.25s" begin="0.04s" fill="freeze"/>
+      <animateTransform attributeName="transform" type="translate" from="0 0" to="-6 6" dur="0.25s" begin="0.04s" fill="freeze"/>
+    </circle>
+  </g>
+</svg>

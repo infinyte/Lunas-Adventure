@@ -65,6 +65,9 @@ class InputHandler extends SimpleEmitter {
     this.enabled = false;
     this.boundHandleKeyDown = this.handleKeyDown.bind(this);
     this.boundHandleKeyUp = this.handleKeyUp.bind(this);
+
+    // Stored touch listeners for cleanup: [{ el, type, fn }, ...]
+    this.touchListeners = [];
   }
 
   /**
@@ -130,7 +133,8 @@ class InputHandler extends SimpleEmitter {
   }
 
   /**
-   * Setup touch controls for mobile devices
+   * Setup touch controls for mobile devices.
+   * Shows the on-screen d-pad and wires up all buttons.
    */
   setupTouchControls() {
     if (!this.isTouchDevice()) return;
@@ -191,10 +195,18 @@ class InputHandler extends SimpleEmitter {
   }
 
   /**
-   * Clean up touch controls
+   * Remove all registered touch listeners and reset touch key states.
    */
   cleanupTouchControls() {
-    // Implementation for touch controls cleanup...
+    for (const { el, type, fn } of this.touchListeners) {
+      el.removeEventListener(type, fn);
+    }
+    this.touchListeners = [];
+
+    // Reset any keys that may have been held when controls were removed
+    this.keys.left = false;
+    this.keys.right = false;
+    this.keys.jump = false;
   }
 
   /**

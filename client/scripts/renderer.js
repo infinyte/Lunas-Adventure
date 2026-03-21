@@ -439,6 +439,13 @@ class SVGRenderer {
       if (wings) {
         wings.setAttribute('transform', `rotate(${Math.sin(Date.now() / 200) * 15})`);
       }
+
+      hpGroup.setAttribute('transform', `translate(${enemy.x}, ${enemy.y - 14})`);
+      const pct = (enemy.maxHealth > 0 && enemy.health !== undefined)
+        ? enemy.health / enemy.maxHealth
+        : 1;
+      const hpBar = hpGroup.querySelector('.boss-hp-bar');
+      if (hpBar) hpBar.setAttribute('width', `${Math.max(0, pct * 80)}`);
     }
 
     // Add debug bounding box if debug mode is on

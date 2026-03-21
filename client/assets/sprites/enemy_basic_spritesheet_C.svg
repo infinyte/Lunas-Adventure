@@ -1,0 +1,443 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="680" height="40"
+     viewBox="0 0 680 40">
+  <!--
+    enemy_basic_spritesheet.svg — Basic Ground Enemy ("Purple Slug-Monster")
+    17 frames × 40×40px
+    States (left → right):
+      idle   : frames  0– 2  (x=  0,  40,  80)
+      move   : frames  3– 6  (x=120, 160, 200, 240)
+      attack : frames  7– 9  (x=280, 320, 360)
+      hit    : frames 10–11  (x=400, 440)
+      die    : frames 12–16  (x=480, 520, 560, 600, 640)
+  -->
+  <defs>
+    <!-- Body gradient: radial purple with top-left highlight -->
+    <radialGradient id="bG" cx="35%" cy="28%" r="68%"
+        gradientUnits="objectBoundingBox">
+      <stop offset="0%"   stop-color="#B57BFF"/>
+      <stop offset="55%"  stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#4C1D95"/>
+    </radialGradient>
+    <!-- Body gradient: pale lavender flash (hit state) -->
+    <radialGradient id="bGH" cx="35%" cy="28%" r="68%"
+        gradientUnits="objectBoundingBox">
+      <stop offset="0%"   stop-color="#FFFFFF"/>
+      <stop offset="55%"  stop-color="#E9D5FF"/>
+      <stop offset="100%" stop-color="#C084FC"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Frame 00: IDLE 0 (x=  0) -->
+  <g transform="translate(0,0)">
+    <ellipse cx="20" cy="38.5" rx="11" ry="1.5" fill="rgba(0,0,0,0.12)"/>
+    <ellipse cx="13" cy="33" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="27" cy="33" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="20" cy="20" rx="14" ry="11" fill="url(#bG)" stroke="#1E1B4B" stroke-width="2"/>
+    <ellipse cx="15.1" cy="15.6" rx="4.2" ry="2.6" fill="rgba(255,255,255,0.22)" transform="rotate(-25 15.1 15.6)"/>
+    <circle cx="14" cy="15" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="14.0" cy="16.0" r="2.3" fill="#DC2626"/>
+    <circle cx="14.7" cy="15.3" r="0.9" fill="#FCA5A5"/>
+    <circle cx="26" cy="15" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="26.0" cy="16.0" r="2.3" fill="#DC2626"/>
+    <circle cx="26.7" cy="15.3" r="0.9" fill="#FCA5A5"/>
+    <line x1="10" y1="11" x2="17" y2="14" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="23" y1="14" x2="30" y2="11" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 12,24 C 12,29 28,29 28,24 Z" fill="#1A0A35" stroke="#1E1B4B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="12.6" y="24.0" width="2.1" height="3.4" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="15.8" y="24.0" width="2.1" height="3.4" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="19.0" y="24.0" width="2.1" height="3.4" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="22.2" y="24.0" width="2.1" height="3.4" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+  </g>
+
+  <!-- Frame 01: IDLE 1 (x= 40) -->
+  <g transform="translate(40,0)">
+    <ellipse cx="20" cy="38.5" rx="10" ry="1.5" fill="rgba(0,0,0,0.12)"/>
+    <ellipse cx="13" cy="34" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="27" cy="34" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="20" cy="20" rx="13" ry="12.5" fill="url(#bG)" stroke="#1E1B4B" stroke-width="2"/>
+    <ellipse cx="15.4" cy="15.0" rx="3.9" ry="3.0" fill="rgba(255,255,255,0.22)" transform="rotate(-25 15.4 15.0)"/>
+    <circle cx="14" cy="15" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="12.5" cy="15.5" r="2.3" fill="#DC2626"/>
+    <circle cx="13.2" cy="14.8" r="0.9" fill="#FCA5A5"/>
+    <circle cx="26" cy="15" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="24.5" cy="15.5" r="2.3" fill="#DC2626"/>
+    <circle cx="25.2" cy="14.8" r="0.9" fill="#FCA5A5"/>
+    <line x1="10" y1="11" x2="17" y2="14" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="23" y1="14" x2="30" y2="11" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 12,25 C 12,29 28,29 28,25 Z" fill="#1A0A35" stroke="#1E1B4B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="12.6" y="25.0" width="2.1" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="15.8" y="25.0" width="2.1" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="19.0" y="25.0" width="2.1" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="22.2" y="25.0" width="2.1" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+  </g>
+
+  <!-- Frame 02: IDLE 2 (x= 80) -->
+  <g transform="translate(80,0)">
+    <ellipse cx="20" cy="38.5" rx="13" ry="1.5" fill="rgba(0,0,0,0.12)"/>
+    <ellipse cx="12" cy="34" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="28" cy="34" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="20" cy="21" rx="15.5" ry="10" fill="url(#bG)" stroke="#1E1B4B" stroke-width="2"/>
+    <ellipse cx="14.6" cy="17.0" rx="4.6" ry="2.4" fill="rgba(255,255,255,0.22)" transform="rotate(-25 14.6 17.0)"/>
+    <circle cx="14" cy="15" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="15.5" cy="15.5" r="2.3" fill="#DC2626"/>
+    <circle cx="16.2" cy="14.8" r="0.9" fill="#FCA5A5"/>
+    <circle cx="26" cy="15" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="27.5" cy="15.5" r="2.3" fill="#DC2626"/>
+    <circle cx="28.2" cy="14.8" r="0.9" fill="#FCA5A5"/>
+    <line x1="10" y1="11" x2="17" y2="14" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="23" y1="14" x2="30" y2="11" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 11,25 C 11,30 29,30 29,25 Z" fill="#1A0A35" stroke="#1E1B4B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="11.6" y="25.0" width="2.3" height="3.4" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="15.2" y="25.0" width="2.3" height="3.4" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="18.8" y="25.0" width="2.3" height="3.4" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="22.4" y="25.0" width="2.3" height="3.4" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+  </g>
+
+  <!-- Frame 03: MOVE 0 (x=120) -->
+  <g transform="translate(120,0)">
+    <ellipse cx="18" cy="38.5" rx="9" ry="1.5" fill="rgba(0,0,0,0.12)"/>
+    <ellipse cx="10" cy="35" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="24" cy="32" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="19" cy="21" rx="13" ry="11" fill="url(#bG)" stroke="#1E1B4B" stroke-width="2"/>
+    <ellipse cx="14.4" cy="16.6" rx="3.9" ry="2.6" fill="rgba(255,255,255,0.22)" transform="rotate(-25 14.4 16.6)"/>
+    <circle cx="13" cy="16" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="13.0" cy="17.0" r="2.3" fill="#DC2626"/>
+    <circle cx="13.7" cy="16.3" r="0.9" fill="#FCA5A5"/>
+    <circle cx="25" cy="16" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="25.0" cy="17.0" r="2.3" fill="#DC2626"/>
+    <circle cx="25.7" cy="16.3" r="0.9" fill="#FCA5A5"/>
+    <line x1="9" y1="12" x2="16" y2="15" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="22" y1="15" x2="29" y2="12" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 11,25 C 11,29 27,29 27,25 Z" fill="#1A0A35" stroke="#1E1B4B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="11.6" y="25.0" width="2.1" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="14.8" y="25.0" width="2.1" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="18.0" y="25.0" width="2.1" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="21.2" y="25.0" width="2.1" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+  </g>
+
+  <!-- Frame 04: MOVE 1 (x=160) -->
+  <g transform="translate(160,0)">
+    <ellipse cx="20" cy="38.5" rx="12" ry="1.5" fill="rgba(0,0,0,0.12)"/>
+    <ellipse cx="13" cy="34" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="27" cy="34" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="20" cy="22" rx="14" ry="10" fill="url(#bG)" stroke="#1E1B4B" stroke-width="2"/>
+    <ellipse cx="15.1" cy="18.0" rx="4.2" ry="2.4" fill="rgba(255,255,255,0.22)" transform="rotate(-25 15.1 18.0)"/>
+    <circle cx="14" cy="17" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="14.0" cy="18.0" r="2.3" fill="#DC2626"/>
+    <circle cx="14.7" cy="17.3" r="0.9" fill="#FCA5A5"/>
+    <circle cx="26" cy="17" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="26.0" cy="18.0" r="2.3" fill="#DC2626"/>
+    <circle cx="26.7" cy="17.3" r="0.9" fill="#FCA5A5"/>
+    <line x1="10" y1="13" x2="17" y2="16" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="23" y1="16" x2="30" y2="13" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 12,26 C 12,30 28,30 28,26 Z" fill="#1A0A35" stroke="#1E1B4B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="12.6" y="26.0" width="2.1" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="15.8" y="26.0" width="2.1" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="19.0" y="26.0" width="2.1" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="22.2" y="26.0" width="2.1" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+  </g>
+
+  <!-- Frame 05: MOVE 2 (x=200) -->
+  <g transform="translate(200,0)">
+    <ellipse cx="22" cy="38.5" rx="9" ry="1.5" fill="rgba(0,0,0,0.12)"/>
+    <ellipse cx="16" cy="32" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="30" cy="35" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="21" cy="21" rx="13" ry="11" fill="url(#bG)" stroke="#1E1B4B" stroke-width="2"/>
+    <ellipse cx="16.4" cy="16.6" rx="3.9" ry="2.6" fill="rgba(255,255,255,0.22)" transform="rotate(-25 16.4 16.6)"/>
+    <circle cx="15" cy="16" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="15.0" cy="17.0" r="2.3" fill="#DC2626"/>
+    <circle cx="15.7" cy="16.3" r="0.9" fill="#FCA5A5"/>
+    <circle cx="27" cy="16" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="27.0" cy="17.0" r="2.3" fill="#DC2626"/>
+    <circle cx="27.7" cy="16.3" r="0.9" fill="#FCA5A5"/>
+    <line x1="11" y1="12" x2="18" y2="15" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="24" y1="15" x2="31" y2="12" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 13,25 C 13,29 29,29 29,25 Z" fill="#1A0A35" stroke="#1E1B4B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="13.6" y="25.0" width="2.1" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="16.8" y="25.0" width="2.1" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="20.0" y="25.0" width="2.1" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="23.2" y="25.0" width="2.1" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+  </g>
+
+  <!-- Frame 06: MOVE 3 (x=240) -->
+  <g transform="translate(240,0)">
+    <ellipse cx="20" cy="38.5" rx="11" ry="1.5" fill="rgba(0,0,0,0.12)"/>
+    <ellipse cx="13" cy="35" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="27" cy="35" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="20" cy="18" rx="14" ry="12.5" fill="url(#bG)" stroke="#1E1B4B" stroke-width="2"/>
+    <ellipse cx="15.1" cy="13.0" rx="4.2" ry="3.0" fill="rgba(255,255,255,0.22)" transform="rotate(-25 15.1 13.0)"/>
+    <circle cx="14" cy="13" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="14.0" cy="14.0" r="2.3" fill="#DC2626"/>
+    <circle cx="14.7" cy="13.3" r="0.9" fill="#FCA5A5"/>
+    <circle cx="26" cy="13" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="26.0" cy="14.0" r="2.3" fill="#DC2626"/>
+    <circle cx="26.7" cy="13.3" r="0.9" fill="#FCA5A5"/>
+    <line x1="10" y1="9" x2="17" y2="12" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="23" y1="12" x2="30" y2="9" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 12,23 C 12,28 28,28 28,23 Z" fill="#1A0A35" stroke="#1E1B4B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="12.6" y="23.0" width="2.1" height="3.4" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="15.8" y="23.0" width="2.1" height="3.4" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="19.0" y="23.0" width="2.1" height="3.4" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="22.2" y="23.0" width="2.1" height="3.4" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+  </g>
+
+  <!-- Frame 07: ATTACK 0 (x=280) -->
+  <g transform="translate(280,0)">
+    <ellipse cx="18" cy="38.5" rx="9" ry="1.5" fill="rgba(0,0,0,0.12)"/>
+    <ellipse cx="10" cy="33" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="22" cy="33" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <line x1="31" y1="13" x2="38" y2="11" stroke="#1E1B4B" stroke-width="1.2" stroke-linecap="round" opacity="0.35"/>
+    <line x1="32" y1="19" x2="39" y2="18" stroke="#1E1B4B" stroke-width="1.2" stroke-linecap="round" opacity="0.35"/>
+    <line x1="31" y1="25" x2="37" y2="26" stroke="#1E1B4B" stroke-width="1.2" stroke-linecap="round" opacity="0.35"/>
+    <ellipse cx="18" cy="20" rx="13" ry="12" fill="url(#bG)" stroke="#1E1B4B" stroke-width="2"/>
+    <ellipse cx="13.4" cy="15.2" rx="3.9" ry="2.9" fill="rgba(255,255,255,0.22)" transform="rotate(-25 13.4 15.2)"/>
+    <circle cx="12" cy="15" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="11.0" cy="16.0" r="2.3" fill="#DC2626"/>
+    <circle cx="11.7" cy="15.3" r="0.9" fill="#FCA5A5"/>
+    <circle cx="24" cy="15" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="23.0" cy="16.0" r="2.3" fill="#DC2626"/>
+    <circle cx="23.7" cy="15.3" r="0.9" fill="#FCA5A5"/>
+    <line x1="8" y1="11" x2="15" y2="14" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="21" y1="14" x2="28" y2="11" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 10,24 C 10,28 24,28 24,24 Z" fill="#1A0A35" stroke="#1E1B4B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="10.5" y="24.0" width="1.8" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="13.3" y="24.0" width="1.8" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="16.1" y="24.0" width="1.8" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="18.9" y="24.0" width="1.8" height="2.7" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+  </g>
+
+  <!-- Frame 08: ATTACK 1 (x=320) -->
+  <g transform="translate(320,0)">
+    <ellipse cx="22" cy="38.5" rx="10" ry="1.5" fill="rgba(0,0,0,0.12)"/>
+    <ellipse cx="16" cy="35" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="30" cy="33" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="23" cy="20" rx="14" ry="11" fill="url(#bG)" stroke="#1E1B4B" stroke-width="2"/>
+    <ellipse cx="18.1" cy="15.6" rx="4.2" ry="2.6" fill="rgba(255,255,255,0.22)" transform="rotate(-25 18.1 15.6)"/>
+    <circle cx="17" cy="14" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="18.0" cy="15.0" r="2.3" fill="#DC2626"/>
+    <circle cx="18.7" cy="14.3" r="0.9" fill="#FCA5A5"/>
+    <circle cx="29" cy="14" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="30.0" cy="15.0" r="2.3" fill="#DC2626"/>
+    <circle cx="30.7" cy="14.3" r="0.9" fill="#FCA5A5"/>
+    <line x1="13" y1="10" x2="20" y2="13" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="26" y1="13" x2="33" y2="10" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 15,23 C 15,35 33,35 33,23 Z" fill="#1A0A35" stroke="#1E1B4B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="15.5" y="20.0" width="2.0" height="4.5" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="18.5" y="20.0" width="2.0" height="4.5" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="21.5" y="20.0" width="2.0" height="4.5" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="24.5" y="20.0" width="2.0" height="4.5" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="27.5" y="20.0" width="2.0" height="4.5" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="17.0" y="31.5" width="1.7" height="3.5" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.4"/>
+    <rect x="20.0" y="31.5" width="1.7" height="3.5" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.4"/>
+    <rect x="23.0" y="31.5" width="1.7" height="3.5" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.4"/>
+    <rect x="26.0" y="31.5" width="1.7" height="3.5" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.4"/>
+    <line x1="1" y1="13" x2="8" y2="14" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" opacity="0.65"/>
+    <line x1="1" y1="19" x2="8" y2="20" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" opacity="0.65"/>
+    <line x1="1" y1="25" x2="8" y2="26" stroke="#A78BFA" stroke-width="1.8" stroke-linecap="round" opacity="0.65"/>
+  </g>
+
+  <!-- Frame 09: ATTACK 2 (x=360) -->
+  <g transform="translate(360,0)">
+    <ellipse cx="21" cy="38.5" rx="11" ry="1.5" fill="rgba(0,0,0,0.12)"/>
+    <ellipse cx="14" cy="34" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="28" cy="34" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="21" cy="20" rx="14" ry="11" fill="url(#bG)" stroke="#1E1B4B" stroke-width="2"/>
+    <ellipse cx="16.1" cy="15.6" rx="4.2" ry="2.6" fill="rgba(255,255,255,0.22)" transform="rotate(-25 16.1 15.6)"/>
+    <circle cx="15" cy="15" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="15.0" cy="16.0" r="2.3" fill="#DC2626"/>
+    <circle cx="15.7" cy="15.3" r="0.9" fill="#FCA5A5"/>
+    <circle cx="27" cy="15" r="4.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="27.0" cy="16.0" r="2.3" fill="#DC2626"/>
+    <circle cx="27.7" cy="15.3" r="0.9" fill="#FCA5A5"/>
+    <line x1="11" y1="11" x2="18" y2="14" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="24" y1="14" x2="31" y2="11" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 13,23 C 13,34 29,34 29,23 Z" fill="#1A0A35" stroke="#1E1B4B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="13.6" y="20.0" width="2.1" height="4.5" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="16.8" y="20.0" width="2.1" height="4.5" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="20.0" y="20.0" width="2.1" height="4.5" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="23.2" y="20.0" width="2.1" height="4.5" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="15.2" y="30.5" width="1.9" height="3.5" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.4"/>
+    <rect x="18.4" y="30.5" width="1.9" height="3.5" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.4"/>
+    <rect x="21.6" y="30.5" width="1.9" height="3.5" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.4"/>
+  </g>
+
+  <!-- Frame 10: HIT 0 (x=400) -->
+  <g transform="translate(400,0)">
+    <ellipse cx="20" cy="38.5" rx="16" ry="1.5" fill="rgba(0,0,0,0.12)"/>
+    <ellipse cx="11" cy="32" rx="5" ry="3" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="29" cy="32" rx="5" ry="3" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="20" cy="24" rx="17" ry="7" fill="url(#bGH)" stroke="#1E1B4B" stroke-width="2"/>
+    <ellipse cx="11" cy="21" rx="3.0" ry="1.8" fill="rgba(255,255,255,0.28)" transform="rotate(-20 11 21)"/>
+    <circle cx="14" cy="22" r="4" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <line x1="11.7" y1="19.7" x2="16.3" y2="24.3" stroke="#1E1B4B" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="16.3" y1="19.7" x2="11.7" y2="24.3" stroke="#1E1B4B" stroke-width="2.0" stroke-linecap="round"/>
+    <circle cx="26" cy="22" r="4" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <line x1="23.7" y1="19.7" x2="28.3" y2="24.3" stroke="#1E1B4B" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="28.3" y1="19.7" x2="23.7" y2="24.3" stroke="#1E1B4B" stroke-width="2.0" stroke-linecap="round"/>
+    <path d="M 13,28 Q 20,30 27,28" fill="none" stroke="#1E1B4B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 34,5 L 35.2,7.6 L 38,7.6 L 36,9.7 L 36.8,12.8 L 34,11.2 L 31.2,12.8 L 32,9.7 L 30,7.6 L 32.8,7.6 Z" fill="#FDE68A" stroke="#1E1B4B" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="0" y="0" width="40" height="40" rx="0" fill="white" opacity="0.28"/>
+  </g>
+
+  <!-- Frame 11: HIT 1 (x=440) -->
+  <g transform="translate(440,0)">
+    <ellipse cx="20" cy="38.5" rx="10" ry="1.5" fill="rgba(0,0,0,0.12)"/>
+    <ellipse cx="14" cy="35" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="26" cy="35" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="20" cy="19" rx="12" ry="13.5" fill="url(#bGH)" stroke="#1E1B4B" stroke-width="2"/>
+    <ellipse cx="15.8" cy="13.6" rx="3.6" ry="3.2" fill="rgba(255,255,255,0.22)" transform="rotate(-25 15.8 13.6)"/>
+    <circle cx="14" cy="14" r="4" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <line x1="11.7" y1="11.7" x2="16.3" y2="16.3" stroke="#1E1B4B" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="16.3" y1="11.7" x2="11.7" y2="16.3" stroke="#1E1B4B" stroke-width="2.0" stroke-linecap="round"/>
+    <circle cx="26" cy="14" r="4" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <line x1="23.7" y1="11.7" x2="28.3" y2="16.3" stroke="#1E1B4B" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="28.3" y1="11.7" x2="23.7" y2="16.3" stroke="#1E1B4B" stroke-width="2.0" stroke-linecap="round"/>
+    <path d="M 14,26 C 14,30 26,30 26,26" fill="#1A0A35" stroke="#1E1B4B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="5" cy="9" r="2.0" fill="#FDE68A" stroke="#1E1B4B" stroke-width="0.6"/>
+    <circle cx="35" cy="7" r="1.8" fill="#FDE68A" stroke="#1E1B4B" stroke-width="0.5"/>
+    <circle cx="21" cy="4" r="1.5" fill="#FDE68A" stroke="#1E1B4B" stroke-width="0.5"/>
+  </g>
+
+  <!-- Frame 12: DIE 0 (x=480) -->
+  <g transform="translate(480,0)">
+    <ellipse cx="20" cy="38.5" rx="14" ry="1.5" fill="rgba(0,0,0,0.12)"/>
+    <ellipse cx="12" cy="35" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="28" cy="35" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="20" cy="19" rx="16" ry="13" fill="url(#bG)" stroke="#1E1B4B" stroke-width="2"/>
+    <ellipse cx="14.4" cy="13.8" rx="4.8" ry="3.1" fill="rgba(255,255,255,0.22)" transform="rotate(-25 14.4 13.8)"/>
+    <circle cx="13" cy="14" r="5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="13.0" cy="14.0" r="2.3" fill="#DC2626"/>
+    <circle cx="13.7" cy="13.3" r="0.9" fill="#FCA5A5"/>
+    <circle cx="27" cy="14" r="5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="27.0" cy="14.0" r="2.3" fill="#DC2626"/>
+    <circle cx="27.7" cy="13.3" r="0.9" fill="#FCA5A5"/>
+    <line x1="9" y1="11" x2="16" y2="8.5" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="24" y1="8.5" x2="31" y2="11" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 12,25 C 12,30 28,30 28,25 Z" fill="#1A0A35" stroke="#1E1B4B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="12.6" y="25.0" width="2.1" height="3.4" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="15.8" y="25.0" width="2.1" height="3.4" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="19.0" y="25.0" width="2.1" height="3.4" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <rect x="22.2" y="25.0" width="2.1" height="3.4" rx="0.5" fill="#FFFBEB" stroke="#1E1B4B" stroke-width="0.5"/>
+    <line x1="20" y1="3" x2="20" y2="6" stroke="#A78BFA" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="31" y1="6" x2="33.5" y2="4" stroke="#A78BFA" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="37" y1="17" x2="39.5" y2="16" stroke="#A78BFA" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="9" y1="6" x2="6.5" y2="4" stroke="#A78BFA" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="3" y1="17" x2="0.5" y2="16" stroke="#A78BFA" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+
+  <!-- Frame 13: DIE 1 (x=520) -->
+  <g transform="translate(520,0)">
+    <ellipse cx="20" cy="38.5" rx="16" ry="1.5" fill="rgba(0,0,0,0.12)"/>
+    <ellipse cx="11" cy="36" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="29" cy="36" rx="4.5" ry="3.5" fill="#5B21B6" stroke="#1E1B4B" stroke-width="1.5"/>
+    <ellipse cx="20" cy="19" rx="17.5" ry="14.5" fill="url(#bG)" stroke="#1E1B4B" stroke-width="2"/>
+    <ellipse cx="13.9" cy="13.2" rx="5.2" ry="3.5" fill="rgba(255,255,255,0.22)" transform="rotate(-25 13.9 13.2)"/>
+    <path d="M 11,15 L 13,18.5 L 11,22" fill="none" stroke="#4C1D95" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 29,13 L 27,17 L 30,20" fill="none" stroke="#4C1D95" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 17,6  L 20,10 L 23,6" fill="none" stroke="#4C1D95" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="12" cy="13" r="5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="12.0" cy="13.0" r="2.3" fill="#DC2626"/>
+    <circle cx="12.7" cy="12.3" r="0.9" fill="#FCA5A5"/>
+    <circle cx="28" cy="13" r="5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.5"/>
+    <circle cx="28.0" cy="13.0" r="2.3" fill="#DC2626"/>
+    <circle cx="28.7" cy="12.3" r="0.9" fill="#FCA5A5"/>
+    <line x1="8" y1="10" x2="15" y2="7.5" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="25" y1="7.5" x2="32" y2="10" stroke="#1E1B4B" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M 12,25 C 12,33 28,33 28,25 Z" fill="#1A0A35" stroke="#1E1B4B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="20" cy="29" r="2.5" fill="#4C1D95"/>
+  </g>
+
+  <!-- Frame 14: DIE 2 (x=560) -->
+  <g transform="translate(560,0)">
+    <ellipse cx="7" cy="7" rx="4.5" ry="3.5" fill="#7C3AED" stroke="#1E1B4B" stroke-width="1"/>
+    <ellipse cx="33" cy="6" rx="4.0" ry="3.0" fill="#7C3AED" stroke="#1E1B4B" stroke-width="1"/>
+    <ellipse cx="4" cy="19" rx="3.5" ry="2.5" fill="#7C3AED" stroke="#1E1B4B" stroke-width="1"/>
+    <ellipse cx="36" cy="22" rx="3.5" ry="3.0" fill="#7C3AED" stroke="#1E1B4B" stroke-width="1"/>
+    <ellipse cx="14" cy="4" rx="3.0" ry="2.5" fill="#7C3AED" stroke="#1E1B4B" stroke-width="1"/>
+    <ellipse cx="27" cy="5" rx="3.5" ry="2.5" fill="#7C3AED" stroke="#1E1B4B" stroke-width="1"/>
+    <ellipse cx="2" cy="12" rx="2.5" ry="2.0" fill="#7C3AED" stroke="#1E1B4B" stroke-width="1"/>
+    <ellipse cx="38" cy="13" rx="2.5" ry="2.0" fill="#7C3AED" stroke="#1E1B4B" stroke-width="1"/>
+    <ellipse cx="9" cy="32" rx="3.0" ry="2.5" fill="#7C3AED" stroke="#1E1B4B" stroke-width="1"/>
+    <ellipse cx="31" cy="33" rx="3.5" ry="2.5" fill="#7C3AED" stroke="#1E1B4B" stroke-width="1"/>
+    <ellipse cx="20" cy="2" rx="2.5" ry="2.0" fill="#7C3AED" stroke="#1E1B4B" stroke-width="1"/>
+    <line x1="26.0" y1="20.0" x2="36.0" y2="20.0" stroke="#A78BFA" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="24.2" y1="24.2" x2="31.3" y2="31.3" stroke="#A78BFA" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="20.0" y1="26.0" x2="20.0" y2="36.0" stroke="#A78BFA" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="15.8" y1="24.2" x2="8.7" y2="31.3" stroke="#A78BFA" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="14.0" y1="20.0" x2="4.0" y2="20.0" stroke="#A78BFA" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="15.8" y1="15.8" x2="8.7" y2="8.7" stroke="#A78BFA" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="20.0" y1="14.0" x2="20.0" y2="4.0" stroke="#A78BFA" stroke-width="2.0" stroke-linecap="round"/>
+    <line x1="24.2" y1="15.8" x2="31.3" y2="8.7" stroke="#A78BFA" stroke-width="2.0" stroke-linecap="round"/>
+    <circle cx="20" cy="20" r="5.5" fill="#FDE68A" stroke="#1E1B4B" stroke-width="1.0"/>
+    <path d="M 20,13 L 21.5,17 L 25.5,17 L 22.5,19.5 L 23.5,24 L 20,21.5 L 16.5,24 L 17.5,19.5 L 14.5,17 L 18.5,17 Z" fill="#FBBF24" stroke="#1E1B4B" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Frame 15: DIE 3 (x=600) -->
+  <g transform="translate(600,0)">
+    <ellipse cx="20" cy="38.5" rx="13" ry="1.5" fill="rgba(0,0,0,0.12)"/>
+    <path d="M 6,27 C 4,21 9,14 15,16 C 17,12 23,12 25,16 C 31,14 36,21 34,27 C 34,33 6,33 6,27 Z" fill="url(#bG)" stroke="#1E1B4B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="13" cy="20" rx="4" ry="2.5" fill="rgba(255,255,255,0.18)" transform="rotate(-22 13 20)"/>
+    <circle cx="15" cy="21" r="3.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.2"/>
+    <circle cx="15.5" cy="22" r="1.8" fill="#DC2626"/>
+    <circle cx="25" cy="21" r="3.5" fill="#F0F0F0" stroke="#1E1B4B" stroke-width="1.2"/>
+    <circle cx="25.5" cy="22" r="1.8" fill="#DC2626"/>
+    <path d="M 14,27 C 16,29.5 24,29.5 26,27" fill="none" stroke="#1E1B4B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M 20,13 C 22,8 18,5 21,1" fill="none" stroke="#C4B5FD" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" opacity="0.65"/>
+    <path d="M 30,15 C 33,11 31,7 34,4" fill="none" stroke="#C4B5FD" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+    <ellipse cx="5" cy="11" rx="2" ry="1.5" fill="#A78BFA" opacity="0.7"/>
+    <ellipse cx="35" cy="9" rx="2" ry="1.5" fill="#A78BFA" opacity="0.7"/>
+  </g>
+
+  <!-- Frame 16: DIE 4 (x=640) -->
+  <g transform="translate(640,0)">
+    <ellipse cx="20" cy="25" rx="12" ry="9" fill="#C4B5FD" opacity="0.4"/>
+    <circle cx="20" cy="29" r="8.0" fill="#C4B5FD" stroke="#1E1B4B" stroke-width="0.6" opacity="0.65"/>
+    <circle cx="13" cy="25" r="5.5" fill="#C4B5FD" stroke="#1E1B4B" stroke-width="0.6" opacity="0.65"/>
+    <circle cx="27" cy="25" r="5.5" fill="#C4B5FD" stroke="#1E1B4B" stroke-width="0.6" opacity="0.65"/>
+    <circle cx="20" cy="20" r="6.5" fill="#C4B5FD" stroke="#1E1B4B" stroke-width="0.6" opacity="0.65"/>
+    <circle cx="11" cy="21" r="4.0" fill="#C4B5FD" stroke="#1E1B4B" stroke-width="0.6" opacity="0.65"/>
+    <circle cx="29" cy="21" r="4.0" fill="#C4B5FD" stroke="#1E1B4B" stroke-width="0.6" opacity="0.65"/>
+    <circle cx="20" cy="15" r="3.5" fill="#C4B5FD" stroke="#1E1B4B" stroke-width="0.6" opacity="0.65"/>
+    <circle cx="8" cy="6" r="1.3" fill="#A78BFA" opacity="0.75"/>
+    <circle cx="32" cy="8" r="1.2" fill="#A78BFA" opacity="0.75"/>
+    <circle cx="5" cy="22" r="1.1" fill="#A78BFA" opacity="0.75"/>
+    <circle cx="35" cy="18" r="1.3" fill="#A78BFA" opacity="0.75"/>
+    <circle cx="20" cy="3" r="1.1" fill="#A78BFA" opacity="0.75"/>
+    <ellipse cx="20" cy="38" rx="4" ry="1" fill="#C4B5FD" opacity="0.3"/>
+  </g>
+
+  <!-- Frame boundary guidelines (debugging aid) -->
+  <line x1="40" y1="0" x2="40" y2="40"
+        stroke="#00000018" stroke-width="0.5"/>
+  <line x1="80" y1="0" x2="80" y2="40"
+        stroke="#00000018" stroke-width="0.5"/>
+  <line x1="120" y1="0" x2="120" y2="40"
+        stroke="#00000018" stroke-width="0.5"/>
+  <line x1="160" y1="0" x2="160" y2="40"
+        stroke="#00000018" stroke-width="0.5"/>
+  <line x1="200" y1="0" x2="200" y2="40"
+        stroke="#00000018" stroke-width="0.5"/>
+  <line x1="240" y1="0" x2="240" y2="40"
+        stroke="#00000018" stroke-width="0.5"/>
+  <line x1="280" y1="0" x2="280" y2="40"
+        stroke="#00000018" stroke-width="0.5"/>
+  <line x1="320" y1="0" x2="320" y2="40"
+        stroke="#00000018" stroke-width="0.5"/>
+  <line x1="360" y1="0" x2="360" y2="40"
+        stroke="#00000018" stroke-width="0.5"/>
+  <line x1="400" y1="0" x2="400" y2="40"
+        stroke="#00000018" stroke-width="0.5"/>
+  <line x1="440" y1="0" x2="440" y2="40"
+        stroke="#00000018" stroke-width="0.5"/>
+  <line x1="480" y1="0" x2="480" y2="40"
+        stroke="#00000018" stroke-width="0.5"/>
+  <line x1="520" y1="0" x2="520" y2="40"
+        stroke="#00000018" stroke-width="0.5"/>
+  <line x1="560" y1="0" x2="560" y2="40"
+        stroke="#00000018" stroke-width="0.5"/>
+  <line x1="600" y1="0" x2="600" y2="40"
+        stroke="#00000018" stroke-width="0.5"/>
+  <line x1="640" y1="0" x2="640" y2="40"
+        stroke="#00000018" stroke-width="0.5"/>
+</svg>

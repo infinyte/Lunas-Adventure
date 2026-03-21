@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="20" viewBox="0 0 64 20" shape-rendering="geometricPrecision">
+  <defs>
+    <style>
+      .outline { stroke:#000000; stroke-width:1.6; stroke-linejoin:round; stroke-linecap:round; }
+      .plate { fill:#4682B4; }        /* steel blue */
+      .plate-dark { fill:#3B6A8F; }   /* darker band */
+      .plate-light { fill:#6EA6D6; }  /* highlight */
+      .rivet { fill:#CFCFCF; stroke:#000; stroke-width:0.8; }
+      .arrow { fill:#2E5A78; stroke:#000; stroke-width:0.9; }
+      .grain { stroke:#3B6A8F; stroke-width:0.8; stroke-linecap:round; opacity:0.9; }
+      .edge { fill:none; stroke:#2B4A63; stroke-width:1.6; }
+    </style>
+  </defs>
+
+  <!-- Base plate (full width, tileable horizontally) -->
+  <rect class="plate outline" x="0.8" y="1" width="62.4" height="18" rx="4" ry="4"/>
+
+  <!-- Top highlight strip (subtle sheen) -->
+  <path class="plate-light" d="M0 1.8 C8 0.2 16 3 24 1.8 C32 0.6 40 3 48 1.8 C56 0.6 62 2.6 64 1.8 L64 6 L0 6 Z" />
+
+  <!-- Dark bottom band for depth -->
+  <rect class="plate-dark" x="0.8" y="12" width="62.4" height="6.8" rx="3" ry="3"/>
+
+  <!-- Rivets along top and bottom edges (repeat-friendly positions) -->
+  <g>
+    <circle class="rivet" cx="6" cy="4.5" r="1.8"/>
+    <circle class="rivet" cx="18" cy="4.5" r="1.8"/>
+    <circle class="rivet" cx="30" cy="4.5" r="1.8"/>
+    <circle class="rivet" cx="42" cy="4.5" r="1.8"/>
+    <circle class="rivet" cx="54" cy="4.5" r="1.8"/>
+    <circle class="rivet" cx="6" cy="15.5" r="1.8"/>
+    <circle class="rivet" cx="18" cy="15.5" r="1.8"/>
+    <circle class="rivet" cx="30" cy="15.5" r="1.8"/>
+    <circle class="rivet" cx="42" cy="15.5" r="1.8"/>
+    <circle class="rivet" cx="54" cy="15.5" r="1.8"/>
+  </g>
+
+  <!-- Directional arrows embossed on surface (centered, repeat-friendly) -->
+  <g transform="translate(0,0)">
+    <!-- left-pointing arrow (left half) -->
+    <g transform="translate(8,6)">
+      <path class="arrow" d="M0 4 L8 0 L8 3 L16 3 L16 5 L8 5 L8 8 Z"/>
+    </g>
+    <!-- right-pointing arrow (right half) -->
+    <g transform="translate(40,6)">
+      <path class="arrow" d="M16 4 L8 0 L8 3 L0 3 L0 5 L8 5 L8 8 Z"/>
+    </g>
+  </g>
+
+  <!-- Subtle mechanical grain lines to suggest panels -->
+  <path class="grain" d="M10 7 q8 -2 16 0 q8 2 16 0" fill="none" />
+  <path class="grain" d="M10 13 q8 2 16 0 q8 -2 16 0" fill="none" />
+
+  <!-- Strong edge lines to read well when tiled -->
+  <path class="edge" d="M0.8 4 L0.8 16" />
+  <path class="edge" d="M63.2 4 L63.2 16" />
+
+</svg>

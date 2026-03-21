@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="20" viewBox="0 0 256 20" shape-rendering="geometricPrecision">
+  <defs>
+    <style>
+      .outline { stroke:#000000; stroke-width:1.6; stroke-linejoin:round; stroke-linecap:round; }
+      .plank { fill:#A0522D; }
+      .highlight { fill:#C07A4A; }
+      .shadow { fill:#7A3F1F; }
+      .grain { stroke:#7A3F1F; stroke-width:0.9; stroke-linecap:round; opacity:0.95; fill:none; }
+      .knot { fill:#7A3F1F; stroke:#000; stroke-width:0.9; }
+      .crack { stroke:#2b1a12; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+      .chip { fill:#A0522D; stroke:#000; stroke-width:0.9; }
+      .dust { fill:#D9C6B0; opacity:0.9; stroke:#000; stroke-width:0.6; }
+      .splinter { stroke:#5A2A0D; stroke-width:1.2; stroke-linecap:round; opacity:0.95; }
+      .faint { stroke:#5A2A0D; stroke-width:0.9; opacity:0.45; fill:none; }
+    </style>
+  </defs>
+
+  <!-- Frame 0: Stable (identical to standard platform) -->
+  <g transform="translate(0,0)">
+    <rect class="plank outline" x="0.9" y="1" width="62.2" height="18" rx="2" ry="2"/>
+    <path class="highlight outline" d="M0 1.8 C6 0.2, 12 3, 18 1.8 C24 0.6, 30 3, 36 1.8 C42 0.6, 48 3, 54 1.8 C58 0.8, 62 2.6, 64 1.8 L64 6 L0 6 Z" />
+    <rect class="shadow" x="0.9" y="13.5" width="62.2" height="5.5" rx="1" ry="1"/>
+    <path class="grain" d="M6 5 q6 2 12 0 q6 -2 12 0 q6 2 12 0" />
+    <path class="grain" d="M4 8 q8 3 16 0 q8 -3 16 0" />
+    <path class="grain" d="M10 11 q6 -2 12 0 q6 2 12 0" />
+    <ellipse class="knot outline" cx="10" cy="10" rx="3.6" ry="2.6"/>
+    <ellipse class="knot outline" cx="30" cy="8" rx="2.8" ry="2.0"/>
+    <ellipse class="knot outline" cx="50" cy="11" rx="3.2" ry="2.2"/>
+  </g>
+
+  <!-- Frame 1: Cracking (hairline cracks, small chips) -->
+  <g transform="translate(64,0)">
+    <rect class="plank outline" x="0.9" y="1" width="62.2" height="18" rx="2" ry="2"/>
+    <path class="highlight outline" d="M0 1.8 C6 0.2, 12 3, 18 1.8 C24 0.6, 30 3, 36 1.8 C42 0.6, 48 3, 54 1.8 C58 0.8, 62 2.6, 64 1.8 L64 6 L0 6 Z" />
+    <rect class="shadow" x="0.9" y="13.5" width="62.2" height="5.5" rx="1" ry="1"/>
+    <path class="grain" d="M6 5 q6 2 12 0 q6 -2 12 0 q6 2 12 0" />
+    <!-- hairline cracks -->
+    <path class="crack" d="M14 6 q6 4 10 2 q4 -2 8 0" fill="none"/>
+    <path class="crack" d="M38 8 q4 3 8 1" fill="none"/>
+    <!-- small chips falling off edges -->
+    <polygon class="chip outline" points="2,16 6,18 4,14" />
+    <polygon class="chip outline" points="60,15 62,18 58,16" />
+    <!-- subtle knot and grain -->
+    <ellipse class="knot outline" cx="30" cy="8" rx="2.8" ry="2.0"/>
+    <ellipse class="knot outline" cx="50" cy="11" rx="3.2" ry="2.2"/>
+  </g>
+
+  <!-- Frame 2: Breaking (large fractures, splits, dust) -->
+  <g transform="translate(128,0)">
+    <!-- left segment -->
+    <path class="plank outline" d="M0.9 1 h30 a2 2 0 0 1 2 2 v8 q0 2 -2 2 h-30 z" />
+    <!-- right segment shifted slightly down -->
+    <path class="plank outline" d="M34.9 6 h28 a2 2 0 0 1 2 2 v6 q0 2 -2 2 h-28 z" />
+    <!-- deep fractures -->
+    <path class="crack" d="M30 4 q2 4 0 8 q-2 4 -6 6" fill="none"/>
+    <path class="crack" d="M34 8 q4 -2 8 0 q4 2 6 6" fill="none"/>
+    <!-- sawdust / dust puffs -->
+    <circle class="dust outline" cx="28" cy="16" r="2.2"/>
+    <circle class="dust outline" cx="36" cy="18" r="2.6"/>
+    <circle class="dust outline" cx="46" cy="17" r="1.8"/>
+    <!-- splinter lines on broken edges -->
+    <path class="splinter" d="M30 6 l-4 6 l-2 2" />
+    <path class="splinter" d="M34 10 l6 -4 l4 -2" />
+    <!-- a few chips -->
+    <polygon class="chip outline" points="26,18 28,19 25,16" />
+    <polygon class="chip outline" points="50,18 52,19 49,16" />
+  </g>
+
+  <!-- Frame 3: Broken (pieces mostly gone, faint splinter outlines) -->
+  <g transform="translate(192,0)">
+    <!-- faint splinter outlines where plank was -->
+    <path class="faint" d="M6 6 q8 -2 16 0" />
+    <path class="faint" d="M18 10 q8 -3 16 0" />
+    <path class="faint" d="M40 8 q6 2 12 0" />
+    <!-- scattered tiny splinters and dust -->
+    <path class="splinter" d="M10 14 l2 -2" />
+    <path class="splinter" d="M22 16 l3 -1" />
+    <path class="splinter" d="M48 15 l2 -2" />
+    <circle class="dust outline" cx="14" cy="17" r="1.2"/>
+    <circle class="dust outline" cx="36" cy="16" r="1.4"/>
+    <circle class="dust outline" cx="54" cy="17" r="1.0"/>
+  </g>
+
+</svg>

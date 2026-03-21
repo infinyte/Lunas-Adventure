@@ -1,1 +1,358 @@
-stub music asset for gameplay theme
+#!/usr/bin/env python3
+"""
+Generate a short medieval-style gameplay theme and export as gameplay_theme.ogg.
+
+Creates a ~16s stereo OGG Vorbis file with:
+ - plucked lute-like arpeggio motif
+ - sustained drone / organ pad
+ - simple modal melody (Dorian/Aeolian flavor)
+ - light hand-drum pulse and soft bells
+ - filtered noise ambience for reverb-like tail
+ - normalized so peak is at -3 dBFS
+
+Export order:
+ 1) soundfile (pysoundfile) -> OGG
+ 2) pydub (requires ffmpeg in PATH) -> OGG
+ 3) write WAV and call ffmpeg to convert to OGG
+
+On success prints absolute path and file size in bytes.
+"""
+from pathlib import Path
+import sys
+import subprocess
+import math
+
+# --- Helper to ensure packages are installed and importable ---
+def ensure_package(pkg_name):
+    try:
+        __import__(pkg_name)
+        return True
+    except Exception:
+        print(f"Installing {pkg_name}...", file=sys.stderr)
+        try:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", pkg_name], stdout=subprocess.DEVNULL)
+        except subprocess.CalledProcessError as e:
+            print(f"Failed to pip install {pkg_name}: {e}", file=sys.stderr)
+            return False
+        try:
+            __import__(pkg_name)
+            return True
+        except Exception as e:
+            print(f"Failed to import {pkg_name} after install: {e}", file=sys.stderr)
+            return False
+
+# --- Required dependency: numpy ---
+if not ensure_package("numpy"):
+    raise RuntimeError("numpy is required but could not be installed.")
+import numpy as np
+
+# Optional: soundfile (pysoundfile)
+have_soundfile = False
+if ensure_package("soundfile"):
+    try:
+        import soundfile as sf
+        have_soundfile = True
+    except Exception as e:
+        print(f"soundfile import failed: {e}", file=sys.stderr)
+        have_soundfile = False
+
+# Optional: pydub (may require ffmpeg). Import robustly.
+have_pydub = False
+if ensure_package("pydub"):
+    try:
+        from pydub import AudioSegment
+        have_pydub = True
+    except Exception as e:
+        print(f"Failed to import pydub after install: {e}", file=sys.stderr)
+        have_pydub = False
+
+# --- Synthesis parameters ---
+SR = 44100
+DUR = 16.0
+N = int(round(SR * DUR))
+t = np.linspace(0, DUR, N, endpoint=False)
+
+# --- Utility functions ---
+def normalize(arr, target_peak=1.0):
+    m = np.max(np.abs(arr))
+    if m < 1e-12:
+        return arr
+    return arr * (target_peak / m)
+
+def sine(freq, length):
+    L = int(round(length * SR))
+    n = np.arange(L)
+    return np.sin(2 * np.pi * freq * n / SR).astype(np.float32)
+
+def lowpass_fft(signal, cutoff_hz):
+    L = signal.size
+    f = np.fft.rfft(signal)
+    freqs = np.fft.rfftfreq(L, 1.0 / SR)
+    mask = 1.0 / (1.0 + (freqs / max(1.0, cutoff_hz))**4)
+    f *= mask
+    return np.fft.irfft(f, n=L).astype(np.float32)
+
+def make_pluck(freq, length=0.6):
+    L = int(round(length * SR))
+    if L <= 0:
+        return np.zeros(0, dtype=np.float32)
+    # filtered noise excitation
+    noise = np.random.normal(0.0, 1.0, L).astype(np.float32)
+    # bandpass around fundamental
+    f = np.fft.rfft(noise)
+    freqs = np.fft.rfftfreq(L, 1.0 / SR)
+    center = freq = freq = freq = freq  # placeholder to avoid lint; will set below
+    # build harmonic-rich pluck by summing sin partials with decays
+    n = np.arange(L)
+    env = np.exp(-n / (0.12 * SR))
+    # base sine + a couple of partials slightly detuned
+    wave = (0.95 * np.sin(2 * np.pi * freq * n / SR) +
+            0.35 * np.sin(2 * np.pi * (freq * 2.01) * n / SR) +
+            0.18 * np.sin(2 * np.pi * (freq * 3.98) * n / SR))
+    return (wave * env).astype(np.float32)
+
+# We'll implement a safer pluck generator that accepts freq parameter properly
+def pluck(freq, length=0.6):
+    L = int(round(length * SR))
+    if L <= 0:
+        return np.zeros(0, dtype=np.float32)
+    n = np.arange(L)
+    env = np.exp(-n / (0.12 * SR))
+    wave = (0.95 * np.sin(2 * np.pi * freq * n / SR) +
+            0.35 * np.sin(2 * np.pi * freq * 2.01 * n / SR) +
+            0.18 * np.sin(2 * np.pi * freq * 3.98 * n / SR))
+    # slight high-frequency shimmer via tiny FM
+    fm = 0.0015 * np.sin(2 * np.pi * 1200 * n / SR)
+    wave = np.sin(2 * np.pi * freq * n / SR + fm) * (wave / (np.max(np.abs(wave)) + 1e-12))
+    return (wave * env).astype(np.float32)
+
+def bell_like(freq, length=1.2):
+    L = int(round(length * SR))
+    if L <= 0:
+        return np.zeros(0, dtype=np.float32)
+    n = np.arange(L)
+    env = np.exp(-n / (0.9 * SR))
+    wave = (np.sin(2*np.pi*freq*n/SR) * 0.9 +
+            0.6*np.sin(2*np.pi*freq*2.01*n/SR) * 0.5 +
+            0.3*np.sin(2*np.pi*freq*3.97*n/SR) * 0.3)
+    return (wave * env * 0.6).astype(np.float32)
+
+def simple_drum(length=0.18):
+    L = int(round(length * SR))
+    if L <= 0:
+        return np.zeros(0, dtype=np.float32)
+    n = np.arange(L)
+    env = np.exp(-n / (0.03 * SR))
+    wave = np.sin(2 * np.pi * 80 * n / SR) * env
+    # add click
+    click = np.zeros(L, dtype=np.float32)
+    click[:3] = np.array([0.8, -0.4, 0.18], dtype=np.float32)
+    return (wave * 0.9 + click * 0.6).astype(np.float32)
+
+def filtered_noise_tail(length=3.0):
+    L = int(round(length * SR))
+    if L <= 0:
+        return np.zeros(0, dtype=np.float32)
+    noise = np.random.normal(0.0, 1.0, L).astype(np.float32)
+    f = np.fft.rfft(noise)
+    freqs = np.fft.rfftfreq(L, 1.0/SR)
+    attenuation = 1.0 / (1.0 + (freqs / 3000.0)**2)
+    f *= attenuation
+    s = np.fft.irfft(f, n=L)
+    env = np.exp(-np.linspace(0, 4.0, L))
+    return (s * env * 0.28).astype(np.float32)
+
+# --- Musical helpers (Dorian-ish on D) ---
+def freq_from_midi(m):
+    return 440.0 * (2.0 ** ((m - 69) / 12.0))
+
+# Dorian mode on D: D E F G A B C D -> MIDI notes for D4..D5
+D4 = 62
+dorian_intervals = [0, 2, 3, 5, 7, 9, 10, 12]
+scale_midi = [D4 + i for i in dorian_intervals]
+
+# Simple arpeggio pattern (pluck sequence)
+arp_pattern = [0, 2, 4, 7]  # indices into scale_midi for chord tones
+
+# Melody sequence (indices into scale_midi)
+melody_indices = [7, 5, 4, 2, 3, 4, 5, 7, 9 % len(scale_midi), 7, 5, 4]  # wrap safely
+
+# --- Build stereo buffer ---
+buf_l = np.zeros(N, dtype=np.float32)
+buf_r = np.zeros(N, dtype=np.float32)
+
+# Drone pad (sustained low organ)
+drone_freq = freq_from_midi(D4 - 12)  # one octave below D4
+drone = 0.35 * np.sin(2 * np.pi * drone_freq * np.arange(N) / SR).astype(np.float32)
+# gentle lowpass to make it warm
+drone = lowpass_fft(drone, cutoff_hz=800)
+buf_l += drone * 0.9
+buf_r += drone * 0.85
+
+# Arpeggiated plucks across the duration
+arp_note_length = 0.5  # seconds per pluck
+arp_total_notes = int(math.ceil(DUR / arp_note_length))
+for i in range(arp_total_notes):
+    note_idx = arp_pattern[i % len(arp_pattern)]
+    midi = scale_midi[note_idx % len(scale_midi)]
+    f = freq_from_midi(midi)
+    p = pluck(f, length=arp_note_length * 0.95)
+    start = int(round(i * arp_note_length * SR))
+    for j, v in enumerate(p):
+        idx = start + j
+        if 0 <= idx < N:
+            # alternate slight pan for movement
+            pan = 0.5 + 0.5 * math.sin(2 * math.pi * (i / max(1, arp_total_notes)))
+            buf_l[idx] += v * (0.9 * (1.0 - 0.15 * pan))
+            buf_r[idx] += v * (0.9 * (0.7 + 0.15 * pan))
+
+# Melody (sparser, bell-like)
+mel_note_len = 0.75
+mel_start_offset = 1.2
+for i, mi in enumerate(melody_indices):
+    midi = scale_midi[mi % len(scale_midi)]
+    f = freq_from_midi(midi + 12)  # one octave up for melody
+    bell = bell_like(f, length=1.2)
+    start = int(round((mel_start_offset + i * mel_note_len) * SR))
+    for j, v in enumerate(bell):
+        idx = start + j
+        if 0 <= idx < N:
+            # melody slightly to the right
+            buf_l[idx] += v * 0.6
+            buf_r[idx] += v * 0.9
+
+# Light hand-drum pulse every beat (tempo ~ 90 BPM -> 0.666s per beat)
+bpm = 90.0
+beat_len = 60.0 / bpm
+num_beats = int(math.ceil(DUR / beat_len))
+for b in range(num_beats):
+    d = simple_drum(length=0.18)
+    start = int(round(b * beat_len * SR))
+    for j, v in enumerate(d):
+        idx = start + j
+        if 0 <= idx < N:
+            # small stereo variation
+            buf_l[idx] += v * 0.7
+            buf_r[idx] += v * 0.6
+
+# Soft bell hits on phrase ends
+for phrase_start in [4.0, 8.0, 12.0]:
+    bell = bell_like(freq_from_midi(D4 + 7), length=1.6)
+    start = int(round(phrase_start * SR))
+    for j, v in enumerate(bell):
+        idx = start + j
+        if 0 <= idx < N:
+            buf_l[idx] += v * 0.5
+            buf_r[idx] += v * 0.5
+
+# Ambience tail (filtered noise) starting near the end to add space
+tail = filtered_noise_tail(length=4.0)
+tail_start = int(round((DUR - 4.0) * SR))
+for j, v in enumerate(tail):
+    idx = tail_start + j
+    if 0 <= idx < N:
+        # decorrelate channels slightly
+        buf_l[idx] += v * 0.6
+        buf_r[idx] += v * 0.45
+
+# Gentle stereo chorus: delayed, slightly detuned copy to right channel
+delay = int(round(0.012 * SR))
+detune = 0.999
+for i in range(N - delay):
+    buf_r[i + delay] += buf_l[i] * 0.08 * detune
+
+# Short fade-in and fade-out to avoid clicks
+fade_in = int(round(0.02 * SR))
+fade_out = int(round(0.5 * SR))
+if fade_in > 0:
+    ramp = np.linspace(0.0, 1.0, fade_in, dtype=np.float32)
+    buf_l[:fade_in] *= ramp
+    buf_r[:fade_in] *= ramp
+if fade_out > 0:
+    ramp = np.linspace(1.0, 0.0, fade_out, dtype=np.float32)
+    buf_l[-fade_out:] *= ramp
+    buf_r[-fade_out:] *= ramp
+
+# Mix and normalize to -3 dBFS
+stereo = np.vstack([buf_l, buf_r]).T  # shape (N, 2)
+peak = np.max(np.abs(stereo))
+if peak < 1e-9:
+    raise RuntimeError("Generated audio is silent.")
+target_peak = 10 ** (-3.0 / 20.0)  # -3 dBFS
+stereo = stereo * (target_peak / peak)
+stereo = stereo.astype(np.float32)
+
+# Output filename
+out_name = "gameplay_theme.ogg"
+out_path = Path.cwd() / out_name
+
+# --- Export methods ---
+def try_soundfile_write(path, data, sr):
+    try:
+        sf.write(str(path), data, sr, format="OGG", subtype="VORBIS")
+        return True
+    except Exception as e:
+        print(f"soundfile write failed: {e}", file=sys.stderr)
+        return False
+
+def try_pydub_write(path, data, sr):
+    try:
+        int16 = np.clip(data * 32767.0, -32768, 32767).astype(np.int16)
+        raw = int16.tobytes()
+        seg = AudioSegment(
+            data=raw,
+            sample_width=2,
+            frame_rate=sr,
+            channels=2
+        )
+        seg.export(str(path), format="ogg")
+        return True
+    except Exception as e:
+        print(f"pydub export failed: {e}", file=sys.stderr)
+        return False
+
+def try_ffmpeg_convert(path, data, sr):
+    wav_tmp = Path.cwd() / (path.stem + ".tmp.wav")
+    try:
+        if have_soundfile:
+            sf.write(str(wav_tmp), data, sr, format="WAV", subtype="PCM_16")
+        else:
+            import wave
+            int16 = np.clip(data * 32767.0, -32768, 32767).astype(np.int16)
+            with wave.open(str(wav_tmp), "wb") as wf:
+                wf.setnchannels(2)
+                wf.setsampwidth(2)
+                wf.setframerate(sr)
+                wf.writeframes(int16.tobytes())
+        cmd = ["ffmpeg", "-y", "-loglevel", "error", "-i", str(wav_tmp), str(path)]
+        subprocess.check_call(cmd)
+        try:
+            wav_tmp.unlink()
+        except Exception:
+            pass
+        return True
+    except Exception as e:
+        print(f"ffmpeg conversion failed: {e}", file=sys.stderr)
+        try:
+            wav_tmp.unlink()
+        except Exception:
+            pass
+        return False
+
+# Attempt exports in order
+success = False
+if have_soundfile:
+    success = try_soundfile_write(out_path, stereo, SR)
+if not success and have_pydub:
+    success = try_pydub_write(out_path, stereo, SR)
+if not success:
+    success = try_ffmpeg_convert(out_path, stereo, SR)
+
+if not success or not out_path.exists():
+    raise RuntimeError("All export methods failed. Ensure ffmpeg is installed or soundfile/pydub are available and directory is writable.")
+
+# Print absolute path and file size
+abs_path = str(out_path.resolve())
+size = out_path.stat().st_size
+print(abs_path)
+print(size)

@@ -28,9 +28,6 @@ const PRECACHE_RESOURCES = [
   '/assets/sprites/luna_idle.svg',
   '/assets/sprites/luna_run.svg',
   '/assets/sprites/luna_jump.svg',
-  '/assets/sounds/effects/jump.ogg',
-  '/assets/sounds/effects/collect_carrot.ogg',
-  '/assets/sounds/effects/player_damage.ogg',
   '/assets/music/tracks/gameplay_theme.ogg',
   '/assets/favicon.svg'
 ];
@@ -150,12 +147,14 @@ self.addEventListener('sync', (event) => {
   } else if (event.tag === 'sync-savedgame') {
     event.waitUntil(syncSavedGame());
   }
+  /* eslint-enable no-use-before-define */
 });
 
 /**
  * Sync high scores to server when online
  * @returns {Promise} - Promise that resolves when sync completes
  */
+/* eslint-disable no-use-before-define */
 async function syncHighScores() {
   try {
     // Open IndexedDB
@@ -227,6 +226,8 @@ async function syncSavedGame() {
     throw error; // Rethrow to keep sync registration active
   }
 }
+
+/* eslint-enable no-use-before-define */
 
 /**
  * Open the IndexedDB database
