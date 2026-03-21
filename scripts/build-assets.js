@@ -8,9 +8,10 @@ const requiredDirs = ['sprites', 'levels', 'sounds', 'music', 'configs', 'icons'
 
 await fs.mkdir(assetsRoot, { recursive: true });
 
-await Promise.all(
-  requiredDirs.map((dir) => fs.mkdir(path.join(assetsRoot, dir), { recursive: true }))
-);
+for (const dir of requiredDirs) {
+  // eslint-disable-next-line no-await-in-loop
+  await fs.mkdir(path.join(assetsRoot, dir), { recursive: true });
+}
 
 console.log('Asset directories verified under:', assetsRoot);
 

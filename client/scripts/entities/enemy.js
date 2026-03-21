@@ -167,7 +167,7 @@ class Enemy {
      * Default patrol behavior
      * @param {number} deltaTime - Time since last update
      */
-  patrol() {
+  patrol(_deltaTime) {
     // Different movement patterns based on enemy type
     switch (this.type) {
       case 'flying':
@@ -328,7 +328,7 @@ class Enemy {
      * @param {number} deltaTime - Time since last update
      * @returns {boolean} - True if attack was performed
      */
-  attack(player) {
+  attack(player, _deltaTime) {
     // Check if attack is on cooldown
     if (this.attackCooldown > 0) {
       return false;

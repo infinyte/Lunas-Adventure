@@ -67,7 +67,8 @@ describe('Server integration: API and socket flows', () => {
       }
     });
 
-    await serverContext.start(0);
+    const assignedPort = await serverContext.start(0);
+    console.log(`Test server started on port ${assignedPort}`);
   });
 
   afterAll(async () => {

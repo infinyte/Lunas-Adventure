@@ -1,4 +1,5 @@
 // client/service-worker.js
+/* eslint-disable no-restricted-globals, no-use-before-define */
 
 /**
  * Luna's Adventure Service Worker
@@ -141,7 +142,6 @@ self.addEventListener('message', (event) => {
 
 // Background sync for high scores and saved games
 self.addEventListener('sync', (event) => {
-  /* eslint-disable no-use-before-define */
   if (event.tag === 'sync-highscores') {
     event.waitUntil(syncHighScores());
   } else if (event.tag === 'sync-savedgame') {
@@ -377,13 +377,13 @@ function markSavedGameAsSynced(db, id) {
         resolve();
       };
 
-      updateRequest.onerror = (updateErr) => {
-        reject(new Error(`Failed to mark saved game as synced: ${updateErr.target.error}`));
+      updateRequest.onerror = (updateEvent) => {
+        reject(new Error(`Failed to mark saved game as synced: ${updateEvent.target.error}`));
       };
     };
 
-    request.onerror = (reqErr) => {
-      reject(new Error(`Failed to get saved game: ${reqErr.target.error}`));
+    request.onerror = (event) => {
+      reject(new Error(`Failed to get saved game: ${event.target.error}`));
     };
   });
 }

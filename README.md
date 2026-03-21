@@ -42,12 +42,12 @@ Lunas-Adventure/
 │   ├── shared/
 │   │   └── constants.js       # Shared constants (physics, entity sizes, events)
 │   └── assets/
-│       ├── levels/            # level-1.json through level-4.json
+│       ├── levels/            # level-1.json (levels 2-4 pending)
 │       ├── sprites/           # luna_idle.svg, luna_run.svg, luna_jump.svg
-│       ├── sounds/effects/
-│       └── music/tracks/
+│       ├── sounds/           # SFX files (pending — see task A-1)
+│       └── music/            # Background tracks (pending — see task A-1)
 ├── graphics/                  # SVG sprite source files and spritesheets
-├── docs/                      # Architecture, install guide, and CLAUDE.md
+├── docs/                      # Architecture, install guide, project plan
 ├── .github/workflows/ci.yml   # GitHub Actions CI (build + test + validate)
 ├── babel.config.cjs           # Babel config for Jest (ESM → CJS)
 ├── server/jest.config.cjs
@@ -68,6 +68,8 @@ Lunas-Adventure/
 ## Quick Start
 
 ```bash
+git clone https://github.com/infinyte/Lunas-Adventure.git
+cd Lunas-Adventure
 HUSKY=0 npm install    # HUSKY=0 needed because .git is in the parent directory
 npm run dev            # Starts server (port 3000) + client dev server (port 8080)
 ```
@@ -92,8 +94,13 @@ See [docs/INSTALL.md](docs/INSTALL.md) for full setup instructions.
 - [x] Test suite (Jest + Babel, 10 suites, 32 tests)
 - [x] PWA support (service worker, manifest)
 - [x] CI pipeline (GitHub Actions)
-- [x] Four playable levels (level-1 through level-4)
-- [ ] Online leaderboards
+- [x] Level 1 — Garden Adventure
+- [ ] Levels 2–4 (content not yet authored — see [PROJECT_PLAN.md](docs/PROJECT_PLAN.md) task G-1/G-2)
+- [ ] Online leaderboards (see task N-1)
+- [ ] Audio assets (see task A-1)
+- [ ] Mobile controls (see task V-2)
+
+See [docs/PROJECT_PLAN.md](docs/PROJECT_PLAN.md) for the full prioritised task list.
 
 ## License
 

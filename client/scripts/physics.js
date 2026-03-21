@@ -30,7 +30,7 @@ class Physics {
    * @param {Object} entity - Entity to update
    * @param {number} deltaTime - Time since last update
    */
-  updateEntity(entity) {
+  updateEntity(entity, _deltaTime) {
     // Skip if entity doesn't have physics properties
     if (!entity) return;
 

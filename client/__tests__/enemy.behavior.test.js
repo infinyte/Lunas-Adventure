@@ -1,4 +1,4 @@
-import Enemy from '../scripts/entities/enemy';
+import { Enemy } from '../scripts/entities/enemy';
 
 describe('Enemy shooter projectile behavior', () => {
   test('shooter attack returns projectile payload aimed at player', () => {

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-underscore-dangle */
 
 import fs from 'fs/promises';
 import path from 'path';
@@ -117,7 +118,10 @@ async function setupProject() {
       path.join(rootDir, 'scripts') // For utility scripts
     ];
 
-    await Promise.all(directories.map((dir) => ensureDir(dir)));
+    for (const dir of directories) {
+      // eslint-disable-next-line no-await-in-loop
+      await ensureDir(dir);
+    }
 
     // Create client/shared/constants.js if it doesn't exist
     const constantsPath = path.join(rootDir, 'client/shared/constants.js');
@@ -323,9 +327,10 @@ ENABLE_MULTIPLAYER=true
       path.join(rootDir, 'client/assets/music/.gitkeep')
     ];
 
-    await Promise.all(gitkeepPaths.map(
-      (p) => ensureFile(p, '# This file exists to ensure Git tracks this empty directory')
-    ));
+    for (const gitkeepPath of gitkeepPaths) {
+      // eslint-disable-next-line no-await-in-loop
+      await ensureFile(gitkeepPath, '# This file exists to ensure Git tracks this empty directory');
+    }
 
     log(`${colors.bright}Luna's Adventure setup completed successfully!${colors.reset}`, 'success');
 

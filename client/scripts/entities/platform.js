@@ -168,6 +168,9 @@ class Platform {
       case 'bouncy':
         this.updateBouncyPlatform(deltaTime);
         break;
+
+      default:
+        break;
     }
   }
 

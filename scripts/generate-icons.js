@@ -2,7 +2,8 @@
 // Generates all PWA icon PNG assets from client/assets/favicon.svg using sharp.
 // Run via: npm run build:icons
 
-// eslint-disable-next-line import/no-extraneous-dependencies, import/no-unresolved
+/* eslint-disable no-underscore-dangle */
+// eslint-disable-next-line import/no-unresolved
 import sharp from 'sharp';
 import fs from 'fs';
 import path from 'path';
@@ -31,6 +32,7 @@ async function generateIcons() {
 
   await Promise.all(SIZES.map(async (size) => {
     const dest = path.join(outDir, `icon-${size}x${size}.png`);
+    // eslint-disable-next-line no-await-in-loop
     await sharp(svgBuffer).resize(size, size).png().toFile(dest);
     console.log(`  icon-${size}x${size}.png`);
   }));

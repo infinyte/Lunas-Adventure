@@ -133,17 +133,6 @@ class InputHandler extends SimpleEmitter {
   }
 
   /**
-   * Register a touch listener and store it for later cleanup.
-   * @param {Element} el
-   * @param {string} type - e.g. 'touchstart'
-   * @param {Function} fn
-   */
-  _addTouchListener(el, type, fn) {
-    el.addEventListener(type, fn, { passive: false });
-    this.touchListeners.push({ el, type, fn });
-  }
-
-  /**
    * Setup touch controls for mobile devices.
    * Shows the on-screen d-pad and wires up all buttons.
    */
@@ -151,67 +140,57 @@ class InputHandler extends SimpleEmitter {
     if (!this.isTouchDevice()) return;
 
     const mobileControls = document.getElementById('mobile-controls');
-    if (!mobileControls) return;
+    if (mobileControls) {
+      mobileControls.style.display = 'block';
 
-    mobileControls.style.display = 'block';
+      // Left button
+      const leftBtn = document.getElementById('btn-left');
+      if (leftBtn) {
+        leftBtn.addEventListener('touchstart', () => {
+          this.keys.left = true;
+          this.emit('move', 'left');
+        });
 
-    // ── Left button ──────────────────────────────────────────────
-    const leftBtn = document.getElementById('btn-left');
-    if (leftBtn) {
-      this._addTouchListener(leftBtn, 'touchstart', (e) => {
-        e.preventDefault();
-        this.keys.left = true;
-        this.emit('left', true);
-      });
-      const stopLeft = (e) => {
-        e.preventDefault();
-        this.keys.left = false;
-        this.emit('left', false);
-      };
-      this._addTouchListener(leftBtn, 'touchend', stopLeft);
-      this._addTouchListener(leftBtn, 'touchcancel', stopLeft);
-    }
+        leftBtn.addEventListener('touchend', () => {
+          this.keys.left = false;
+          this.emit('move', 'stop');
+        });
+      }
 
-    // ── Right button ─────────────────────────────────────────────
-    const rightBtn = document.getElementById('btn-right');
-    if (rightBtn) {
-      this._addTouchListener(rightBtn, 'touchstart', (e) => {
-        e.preventDefault();
-        this.keys.right = true;
-        this.emit('right', true);
-      });
-      const stopRight = (e) => {
-        e.preventDefault();
-        this.keys.right = false;
-        this.emit('right', false);
-      };
-      this._addTouchListener(rightBtn, 'touchend', stopRight);
-      this._addTouchListener(rightBtn, 'touchcancel', stopRight);
-    }
+      // Right button
+      const rightBtn = document.getElementById('btn-right');
+      if (rightBtn) {
+        rightBtn.addEventListener('touchstart', () => {
+          this.keys.right = true;
+          this.emit('move', 'right');
+        });
 
-    // ── Jump button ──────────────────────────────────────────────
-    const jumpBtn = document.getElementById('btn-jump');
-    if (jumpBtn) {
-      this._addTouchListener(jumpBtn, 'touchstart', (e) => {
-        e.preventDefault();
-        this.keys.jump = true;
-        this.emit('jump');
-      });
-      const stopJump = (e) => {
-        e.preventDefault();
-        this.keys.jump = false;
-      };
-      this._addTouchListener(jumpBtn, 'touchend', stopJump);
-      this._addTouchListener(jumpBtn, 'touchcancel', stopJump);
-    }
+        rightBtn.addEventListener('touchend', () => {
+          this.keys.right = false;
+          this.emit('move', 'stop');
+        });
+      }
 
-    // ── Pause button ─────────────────────────────────────────────
-    const pauseBtn = document.getElementById('btn-pause');
-    if (pauseBtn) {
-      this._addTouchListener(pauseBtn, 'touchstart', (e) => {
-        e.preventDefault();
-        this.emit('pause');
-      });
+      // Jump button
+      const jumpBtn = document.getElementById('btn-jump');
+      if (jumpBtn) {
+        jumpBtn.addEventListener('touchstart', () => {
+          this.keys.jump = true;
+          this.emit('jump');
+        });
+
+        jumpBtn.addEventListener('touchend', () => {
+          this.keys.jump = false;
+        });
+      }
+
+      // Pause button
+      const pauseBtn = document.getElementById('btn-pause');
+      if (pauseBtn) {
+        pauseBtn.addEventListener('touchstart', () => {
+          this.emit('pause');
+        });
+      }
     }
   }
 

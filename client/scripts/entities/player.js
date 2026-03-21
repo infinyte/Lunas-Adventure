@@ -171,6 +171,10 @@ class Player {
       case 'extraLife':
         this.lives++;
         break;
+
+      default:
+        console.warn(`Unknown power-up type: ${type}`);
+        break;
     }
 
     // If temporary power-up, set timeout to remove it

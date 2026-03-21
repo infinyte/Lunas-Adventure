@@ -257,6 +257,9 @@ class Collectible {
           value: this.value
         });
         break;
+
+      default:
+        break;
     }
 
     console.log(`Collectible ${this.id} of type ${this.type} collected by player ${player.id}`);

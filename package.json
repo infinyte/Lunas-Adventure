@@ -39,7 +39,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/yourusername/lunas-adventure.git"
+        "url": "git+https://github.com/infinyte/Lunas-Adventure.git"
     },
     "keywords": [
         "game",
@@ -56,9 +56,9 @@
     "author": "Kurt Mitchell",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/yourusername/lunas-adventure/issues"
+        "url": "https://github.com/infinyte/Lunas-Adventure/issues"
     },
-    "homepage": "https://github.com/yourusername/lunas-adventure#readme",
+    "homepage": "https://github.com/infinyte/Lunas-Adventure#readme",
     "dependencies": {
         "body-parser": "^1.20.2",
         "compression": "^1.7.4",
@@ -151,10 +151,14 @@
         "extends": [
             "airbnb-base"
         ],
+        "parserOptions": {
+            "ecmaVersion": 2022
+        },
         "env": {
             "browser": true,
             "node": true,
-            "jest": true
+            "jest": true,
+            "es2022": true
         },
         "parserOptions": {
             "ecmaVersion": 2022,
@@ -181,16 +185,13 @@
             ],
             "no-console": "off",
             "no-param-reassign": "off",
+            "no-plusplus": "off",
             "no-restricted-syntax": "off",
             "class-methods-use-this": "off",
-            "no-plusplus": "off",
-            "import/prefer-default-export": "off",
-            "import/extensions": "off",
-            "import/no-named-as-default": "off",
-            "import/no-named-as-default-member": "off",
-            "no-underscore-dangle": "off",
             "max-classes-per-file": "off",
-            "default-case": "off"
+            "import/extensions": "off",
+            "import/prefer-default-export": "off",
+            "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
         }
     }
 }

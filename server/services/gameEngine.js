@@ -35,40 +35,32 @@ class GameEngine extends EventEmitter {
     this.platforms = [
       {
         id: 'platform-1', x: 0, y: 500, width: 800, height: 50, type: 'ground'
+      },
+      {
+        id: 'platform-2', x: 200, y: 400, width: 200, height: 20, type: 'platform'
+      },
+      {
+        id: 'platform-3', x: 500, y: 350, width: 200, height: 20, type: 'platform'
+      },
+      {
+        id: 'platform-4', x: 700, y: 250, width: 200, height: 20, type: 'platform'
       }
     ];
-    this.collectibles = [];
-    this.doors = [];
-    this.enemies = new Map();
-    this.projectiles = [];
-    this.projectileId = 0;
-    this.currentLevelId = null;
-  }
 
-  /**
-   * Load a level from JSON data, replacing all current world state.
-   * Repositions existing players to the level's spawn point.
-   * Only reloads if the level ID differs from the currently loaded level.
-   * @param {Object} levelData - Level JSON object
-   */
-  loadLevel(levelData) {
-    if (!levelData || levelData.id === this.currentLevelId) return;
+    // Create collectibles (carrots for Luna)
+    this.collectibles = [
+      {
+        id: 'carrot-1', x: 300, y: 370, width: 30, height: 30, type: 'carrot', collected: false
+      },
+      {
+        id: 'carrot-2', x: 600, y: 320, width: 30, height: 30, type: 'carrot', collected: false
+      },
+      {
+        id: 'carrot-3', x: 800, y: 220, width: 30, height: 30, type: 'carrot', collected: false
+      }
+    ];
 
-    this.currentLevelId = levelData.id;
-
-    // Platforms — shallow-copy each object so the engine can mutate state fields
-    this.platforms = (levelData.platforms || []).map((p) => ({ ...p }));
-
-    // Collectibles — always start uncollected
-    this.collectibles = (levelData.collectibles || []).map((c) => ({
-      ...c,
-      collected: false
-    }));
-
-    // Doors — copy locked state from JSON
-    this.doors = (levelData.doors || []).map((d) => ({ ...d }));
-
-    // Enemies — add via addEnemy() so boss sizing and patrol bounds are applied
+    // Create enemies
     this.enemies = new Map();
     (levelData.enemies || []).forEach((e) => {
       this.addEnemy(e.id, e.x, e.y, e.type, {
@@ -152,13 +144,13 @@ class GameEngine extends EventEmitter {
     this.updatePlatforms();
 
     // Update all players
-    for (const player of this.players.values()) {
+    for (const [, player] of this.players.entries()) {
       this.updatePlayerPhysics(player);
       this.checkCollisions(player);
     }
 
     // Update all enemies
-    for (const enemy of this.enemies.values()) {
+    for (const [, enemy] of this.enemies.entries()) {
       this.updateEnemyAI(enemy);
       this.updateEnemyPhysics(enemy);
     }
@@ -200,7 +192,10 @@ class GameEngine extends EventEmitter {
     // Check platform collisions
     for (const platform of this.platforms) {
       // Skip non-solid (broken) platforms
-      if (platform.solid !== false && this.isColliding(player, platform)) {
+      // eslint-disable-next-line no-continue
+      if (platform.solid === false) continue;
+
+      if (this.isColliding(player, platform)) {
         // Only collide from above (basic platformer physics)
         if (player.velocityY > 0 && player.y + player.height - player.velocityY <= platform.y) {
           player.y = platform.y - player.height;
@@ -230,8 +225,7 @@ class GameEngine extends EventEmitter {
       }
     }
 
-    // Check collectible collisions — route through collectCollectible() so that
-    // key→door unlock logic runs and the forwarded collectible:collected event fires.
+    // Check collectible collisions
     for (const collectible of this.collectibles) {
       if (!collectible.collected && this.isColliding(player, collectible)) {
         this.collectCollectible(player.id, collectible.id);
@@ -462,81 +456,12 @@ class GameEngine extends EventEmitter {
           enemy.attackCooldown -= 1 / this.fps;
         }
       } else if (enemy.direction === 'right') {
-        // No player in range — patrol right within level-defined bounds
+        // No player in range — slow patrol
         enemy.velocityX = 0.5;
-        const shooterEnd = enemy.patrolEnd !== undefined ? enemy.patrolEnd : 600;
-        if (enemy.x > shooterEnd) enemy.direction = 'left';
+        if (enemy.x > 600) enemy.direction = 'left';
       } else {
-        // No player in range — patrol left within level-defined bounds
         enemy.velocityX = -0.5;
-        const shooterStart = enemy.patrolStart !== undefined ? enemy.patrolStart : 300;
-        if (enemy.x < shooterStart) enemy.direction = 'right';
-      }
-    } else if (enemy.type === 'boss') {
-      const phase2 = enemy.health <= enemy.maxHealth / 2;
-
-      // Find nearest player
-      let nearestPlayer = null;
-      let nearestDist = Infinity;
-      for (const [, player] of this.players.entries()) {
-        const dx = player.x - enemy.x;
-        const dy = player.y - enemy.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < nearestDist) {
-          nearestDist = dist;
-          nearestPlayer = player;
-        }
-      }
-
-      if (nearestPlayer) {
-        const dx = nearestPlayer.x - enemy.x;
-        enemy.direction = dx > 0 ? 'right' : 'left';
-
-        if (phase2) {
-          // Phase 2: fast charge toward player
-          enemy.velocityX = dx > 0 ? 3 : -3;
-
-          if (enemy.attackCooldown <= 0) {
-            // 3-spread projectiles
-            const cx = enemy.x + enemy.width / 2;
-            const cy = enemy.y + enemy.height / 2;
-            const tx = nearestPlayer.x + nearestPlayer.width / 2;
-            const ty = nearestPlayer.y + nearestPlayer.height / 2;
-            const baseAngle = Math.atan2(ty - cy, tx - cx);
-            [-20, 0, 20].forEach((offset) => {
-              const rad = baseAngle + (offset * Math.PI) / 180;
-              this.fireProjectile(enemy, cx + Math.cos(rad) * 300, cy + Math.sin(rad) * 300);
-            });
-            enemy.attackCooldown = 2.0;
-          } else {
-            enemy.attackCooldown -= 1 / this.fps;
-          }
-        } else {
-          // Phase 1: slow chase + single shot
-          enemy.velocityX = dx > 0 ? 1.5 : -1.5;
-
-          if (enemy.attackCooldown <= 0) {
-            this.fireProjectile(
-              enemy,
-              nearestPlayer.x + nearestPlayer.width / 2,
-              nearestPlayer.y + nearestPlayer.height / 2
-            );
-            enemy.attackCooldown = 3.0;
-          } else {
-            enemy.attackCooldown -= 1 / this.fps;
-          }
-        }
-      } else {
-        // No player — patrol between bounds
-        const patrolStart = enemy.patrolStart !== undefined ? enemy.patrolStart : 300;
-        const patrolEnd = enemy.patrolEnd !== undefined ? enemy.patrolEnd : 600;
-        if (enemy.direction === 'right') {
-          enemy.velocityX = 1;
-          if (enemy.x >= patrolEnd) enemy.direction = 'left';
-        } else {
-          enemy.velocityX = -1;
-          if (enemy.x <= patrolStart) enemy.direction = 'right';
-        }
+        if (enemy.x < 300) enemy.direction = 'right';
       }
     }
   }
@@ -723,27 +648,6 @@ class GameEngine extends EventEmitter {
     const player = this.players.get(playerId);
     if (!player) return;
 
-    // Issue 12: Rate limiting — drop inputs arriving faster than one frame
-    const now = Date.now();
-    if (player.lastInputTime && now - player.lastInputTime < this.MIN_INPUT_INTERVAL_MS) {
-      return;
-    }
-    player.lastInputTime = now;
-
-    // Issue 12: Validate direction whitelist
-    if (data.direction !== 'left' && data.direction !== 'right' && data.direction !== undefined) {
-      return;
-    }
-
-    // Issue 12: Anti-teleport — reject if claimed position deviates too far from server position
-    if (data.x !== undefined && data.y !== undefined) {
-      const dx = Math.abs(data.x - player.x);
-      const dy = Math.abs(data.y - player.y);
-      if (dx > this.MAX_WARP_PX || dy > this.MAX_WARP_PX) {
-        // Silently ignore the claimed position; still process direction
-      }
-    }
-
     if (data.direction === 'left') {
       player.velocityX = -this.MAX_PLAYER_SPEED;
       player.direction = 'left';
@@ -810,41 +714,6 @@ class GameEngine extends EventEmitter {
       player.invulnerableUntil = Date.now() + 1500; // spawn grace period
       this.emit('player:respawn', { playerId, lives: player.lives });
     }
-  }
-
-  /**
-   * Get lightweight tick state (positions only) for frequent delta broadcasts.
-   * @returns {Object}
-   */
-  getTickState() {
-    return {
-      players: Array.from(this.players.values()).map((p) => ({
-        id: p.id,
-        x: p.x,
-        y: p.y,
-        velocityX: p.velocityX,
-        velocityY: p.velocityY,
-        direction: p.direction,
-        isGrounded: p.isGrounded,
-        isJumping: p.isJumping,
-        lastAck: p.lastAck
-      })),
-      enemies: Array.from(this.enemies.values()).map((e) => ({
-        id: e.id,
-        x: e.x,
-        y: e.y,
-        velocityX: e.velocityX,
-        velocityY: e.velocityY,
-        direction: e.direction,
-        health: e.health,
-        maxHealth: e.maxHealth
-      })),
-      projectiles: this.projectiles.map((p) => ({
-        id: p.id,
-        x: p.x,
-        y: p.y
-      }))
-    };
   }
 
   /**

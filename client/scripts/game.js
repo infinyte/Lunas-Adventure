@@ -13,7 +13,7 @@
 import SVGRenderer from './renderer.js';
 import InputHandler from './inputHandler.js';
 import Physics from './physics.js';
-import SoundManager from './soundManager.js';
+import { SoundManager } from './soundManager.js';
 import { Player } from './entities/player.js';
 import { Enemy } from './entities/enemy.js';
 import { Platform } from './entities/platform.js';
@@ -84,10 +84,6 @@ class Game {
     this.playerId = null;
     this.localPlayer = null;
 
-    // Issue 10: Client-side prediction state
-    this.inputSeq = 0;
-    this.inputBuffer = []; // stores { seq, direction, velocityX, velocityY, x, y }
-
     // Animation frame request ID (for cancellation)
     this.animationFrameId = null;
 
@@ -95,168 +91,9 @@ class Game {
     this.gameLoop = this.gameLoop.bind(this);
     this.handleResize = this.handleResize.bind(this);
     this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
-    this.handleFullscreenChange = this.handleFullscreenChange.bind(this);
 
     // Initialize game
     this.initialize();
-  }
-
-  getDefaultSettings() {
-    return {
-      debug: false,
-      sound: true,
-      music: true,
-      fullscreen: false
-    };
-  }
-
-  getStorage() {
-    if (typeof window === 'undefined' || !window.localStorage) {
-      return null;
-    }
-
-    return window.localStorage;
-  }
-
-  loadSettings() {
-    const defaults = this.getDefaultSettings();
-    const storage = this.getStorage();
-
-    if (!storage) {
-      return defaults;
-    }
-
-    try {
-      const rawSettings = storage.getItem(SETTINGS_STORAGE_KEY);
-      if (!rawSettings) {
-        return defaults;
-      }
-
-      const parsedSettings = JSON.parse(rawSettings);
-      return {
-        ...defaults,
-        ...parsedSettings
-      };
-    } catch (error) {
-      console.warn('Failed to load persisted settings:', error);
-      return defaults;
-    }
-  }
-
-  persistSettings() {
-    const storage = this.getStorage();
-
-    if (!storage) {
-      return false;
-    }
-
-    try {
-      storage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(this.settings));
-      return true;
-    } catch (error) {
-      console.warn('Failed to persist settings:', error);
-      return false;
-    }
-  }
-
-  updateSettings(nextSettings = {}, options = {}) {
-    this.settings = {
-      ...this.settings,
-      ...nextSettings
-    };
-
-    if (options.persist !== false) {
-      this.persistSettings();
-    }
-
-    this.applySettings({
-      source: options.source || 'system'
-    });
-
-    return this.settings;
-  }
-
-  applySettings(options = {}) {
-    if (this.soundManager && typeof this.soundManager.setSettings === 'function') {
-      this.soundManager.setSettings(this.settings);
-    }
-
-    if (this.renderer && typeof this.renderer.setDebugMode === 'function') {
-      this.renderer.setDebugMode(this.settings.debug);
-    }
-
-    if (this.physics && typeof this.physics.setDebugMode === 'function') {
-      this.physics.setDebugMode(this.settings.debug);
-    }
-
-    const debugOverlay = document.getElementById('debug-overlay');
-    if (debugOverlay) {
-      debugOverlay.style.display = this.settings.debug ? 'block' : 'none';
-    }
-
-    this.applyFullscreenSetting(options.source || 'system');
-  }
-
-  getFullscreenElement() {
-    return document.fullscreenElement
-      || document.webkitFullscreenElement
-      || null;
-  }
-
-  async applyFullscreenSetting(source = 'system') {
-    const fullscreenElement = this.getFullscreenElement();
-    const wantsFullscreen = this.settings.fullscreen;
-
-    if (wantsFullscreen) {
-      if (fullscreenElement || source !== 'user') {
-        return !!fullscreenElement;
-      }
-
-      const target = this.container || document.documentElement;
-      const requestFullscreen = target.requestFullscreen || target.webkitRequestFullscreen;
-
-      if (typeof requestFullscreen !== 'function') {
-        return false;
-      }
-
-      try {
-        await requestFullscreen.call(target);
-        return true;
-      } catch (error) {
-        console.warn('Failed to enter fullscreen mode:', error);
-        return false;
-      }
-    }
-
-    if (!fullscreenElement) {
-      return true;
-    }
-
-    const exitFullscreen = document.exitFullscreen || document.webkitExitFullscreen;
-    if (typeof exitFullscreen !== 'function') {
-      return false;
-    }
-
-    try {
-      await exitFullscreen.call(document);
-      return true;
-    } catch (error) {
-      console.warn('Failed to exit fullscreen mode:', error);
-      return false;
-    }
-  }
-
-  handleFullscreenChange() {
-    const isFullscreen = Boolean(this.getFullscreenElement());
-    if (this.settings.fullscreen === isFullscreen) {
-      return;
-    }
-
-    this.settings = {
-      ...this.settings,
-      fullscreen: isFullscreen
-    };
-    this.persistSettings();
   }
 
   /**
@@ -291,7 +128,6 @@ class Game {
         musicEnabled: this.settings.music,
         basePath: 'assets'
       });
-      this.applySettings();
 
       // Connect to server
       await this.connectToServer();
@@ -305,15 +141,6 @@ class Game {
       // Hide loading screen and show start screen
       this.hideLoadingScreen();
       this.showStartScreen();
-
-      // Handle PWA shortcut actions from URL query params
-      // e.g. /?action=start  /?action=highscores
-      const urlAction = new URLSearchParams(window.location.search).get('action');
-      if (urlAction === 'start') {
-        this.startGame();
-      } else if (urlAction === 'highscores') {
-        this.showHighScoresScreen();
-      }
 
       console.log('Game initialization complete!');
     } catch (error) {
@@ -364,21 +191,12 @@ class Game {
         const currentPort = window.location.port;
         const isLocalHost = host === 'localhost' || host === '127.0.0.1';
         // If served by the old light-server on 8080 in dev, point at the Express server on 3000.
-        const socketPort = currentPort === '8080' && isLocalHost ? '3000' : currentPort;
+ort        const socketPort = currentPort === '8080' && isLocalHost ? '3000' : currentPort;
         const portSegment = socketPort ? `:${socketPort}` : '';
-        const serverUrl = `${httpProtocol}//${host}${portSegment}`;
-
-        console.log(`Connecting to Socket.IO server at ${serverUrl}`);
+        const serverUrl = `${protocol}//${host}${portSegment}`;
 
         // Connect to socket.io server
         this.socket = window.io(serverUrl);
-
-        // Overall connection timeout — prevents infinite hang if connect_error never fires
-        const connectionTimeout = setTimeout(() => {
-          reject(new Error(`Socket.IO connection timed out after 15 s (tried ${serverUrl})`));
-        }, 15000);
-
-        const cleanup = () => clearTimeout(connectionTimeout);
 
         // Socket connection event
         this.socket.on('connect', () => {
@@ -401,18 +219,15 @@ class Game {
           this.handleDisconnect(reason);
         });
 
-        // Game state update from server (full, ~1/sec)
+        // Game state update from server
         this.socket.on('game:state', (gameState) => {
           this.updateGameState(gameState);
         });
 
-        // Lightweight tick update (positions only, every frame)
-        this.socket.on('game:tick', (tickState) => {
-          this.updateTickState(tickState);
+        // Level data from server
+        this.socket.on('level:data', (levelData) => {
+          this.processLevelData(levelData);
         });
-
-        // NOTE: level:data is NOT registered here — loadLevel() registers a one-time
-        // listener so that processLevelData is only called once per request, not twice.
 
         // Player join event
         this.socket.on('player:join', (playerData) => {
@@ -448,12 +263,6 @@ class Game {
         this.socket.on('enemy:defeated', (data) => {
           this.handleEnemyDefeated(data);
         });
-
-        // Door unlocked event
-        this.socket.on('door:unlocked', (data) => {
-          const door = this.state.doors.get(data.doorId);
-          if (door) door.locked = false;
-        });
       } catch (error) {
         console.error('Failed to connect to server:', error);
         reject(error);
@@ -470,7 +279,6 @@ class Game {
 
     // Tab visibility change (pause game when tab is not active)
     document.addEventListener('visibilitychange', this.handleVisibilityChange);
-    document.addEventListener('fullscreenchange', this.handleFullscreenChange);
 
     // Game restart event (from UI)
     document.addEventListener('game:restart', () => {
@@ -509,8 +317,8 @@ class Game {
     const containerHeight = this.container.clientHeight;
     const aspectRatio = this.width / this.height;
 
-    let newWidth; let
-      newHeight;
+    let newWidth;
+    let newHeight;
 
     if (containerWidth / containerHeight > aspectRatio) {
       // Container is wider than needed
@@ -545,7 +353,7 @@ class Game {
    * Handle server disconnection
    * @param {string} reason - Disconnection reason
    */
-  handleDisconnect() {
+  handleDisconnect(_reason) {
     if (this.state.isRunning) {
       this.pause();
       this.showNotification('Disconnected from server. Attempting to reconnect...', 'error');
@@ -780,74 +588,20 @@ class Game {
 
     startScreen.appendChild(buttonGroup);
 
-    // High Scores button
-    const hsButtonGroup = document.createElementNS(svgNS, 'g');
-    hsButtonGroup.setAttribute('id', 'hs-button');
-    hsButtonGroup.setAttribute('transform', `translate(${this.width / 2 - 100}, 320)`);
-    hsButtonGroup.style.cursor = 'pointer';
-
-    const hsButtonBg = document.createElementNS(svgNS, 'rect');
-    hsButtonBg.setAttribute('width', '200');
-    hsButtonBg.setAttribute('height', '50');
-    hsButtonBg.setAttribute('fill', '#2196F3');
-    hsButtonBg.setAttribute('rx', '10');
-    hsButtonBg.setAttribute('ry', '10');
-    hsButtonGroup.appendChild(hsButtonBg);
-
-    const hsButtonText = document.createElementNS(svgNS, 'text');
-    hsButtonText.setAttribute('x', '100');
-    hsButtonText.setAttribute('y', '32');
-    hsButtonText.setAttribute('font-family', 'Arial, sans-serif');
-    hsButtonText.setAttribute('font-size', '22px');
-    hsButtonText.setAttribute('font-weight', 'bold');
-    hsButtonText.setAttribute('fill', '#FFFFFF');
-    hsButtonText.setAttribute('text-anchor', 'middle');
-    hsButtonText.textContent = 'High Scores';
-    hsButtonGroup.appendChild(hsButtonText);
-    hsButtonGroup.addEventListener('click', () => { this.showHighScoresScreen(); });
-    startScreen.appendChild(hsButtonGroup);
-
-    // Settings button
-    const settingsButtonGroup = document.createElementNS(svgNS, 'g');
-    settingsButtonGroup.setAttribute('id', 'settings-button');
-    settingsButtonGroup.setAttribute('transform', `translate(${this.width / 2 - 100}, 385)`);
-    settingsButtonGroup.style.cursor = 'pointer';
-
-    const settingsButtonBg = document.createElementNS(svgNS, 'rect');
-    settingsButtonBg.setAttribute('width', '200');
-    settingsButtonBg.setAttribute('height', '50');
-    settingsButtonBg.setAttribute('fill', '#9C27B0');
-    settingsButtonBg.setAttribute('rx', '10');
-    settingsButtonBg.setAttribute('ry', '10');
-    settingsButtonGroup.appendChild(settingsButtonBg);
-
-    const settingsButtonText = document.createElementNS(svgNS, 'text');
-    settingsButtonText.setAttribute('x', '100');
-    settingsButtonText.setAttribute('y', '32');
-    settingsButtonText.setAttribute('font-family', 'Arial, sans-serif');
-    settingsButtonText.setAttribute('font-size', '22px');
-    settingsButtonText.setAttribute('font-weight', 'bold');
-    settingsButtonText.setAttribute('fill', '#FFFFFF');
-    settingsButtonText.setAttribute('text-anchor', 'middle');
-    settingsButtonText.textContent = 'Settings';
-    settingsButtonGroup.appendChild(settingsButtonText);
-    settingsButtonGroup.addEventListener('click', () => { this.showSettingsScreen(); });
-    startScreen.appendChild(settingsButtonGroup);
-
     // Instructions
     const instructions = document.createElementNS(svgNS, 'text');
     instructions.setAttribute('x', this.width / 2);
-    instructions.setAttribute('y', 475);
+    instructions.setAttribute('y', 350);
     instructions.setAttribute('font-family', 'Arial, sans-serif');
-    instructions.setAttribute('font-size', '16px');
-    instructions.setAttribute('fill', '#CCCCCC');
+    instructions.setAttribute('font-size', '18px');
+    instructions.setAttribute('fill', '#FFFFFF');
     instructions.setAttribute('text-anchor', 'middle');
     instructions.textContent = 'Controls: Arrow keys to move, Spacebar to jump, P to pause';
     startScreen.appendChild(instructions);
 
     // Add Luna character
     const luna = document.createElementNS(svgNS, 'g');
-    luna.setAttribute('transform', `translate(${this.width / 2 - 30}, 510)`);
+    luna.setAttribute('transform', `translate(${this.width / 2 - 30}, 400)`);
 
     // Create Luna's body (simplified version)
     const body = document.createElementNS(svgNS, 'ellipse');
@@ -898,8 +652,8 @@ class Game {
     const animateY = document.createElementNS(svgNS, 'animateTransform');
     animateY.setAttribute('attributeName', 'transform');
     animateY.setAttribute('type', 'translate');
-    animateY.setAttribute('from', `${this.width / 2 - 30} 510`);
-    animateY.setAttribute('to', `${this.width / 2 - 30} 500`);
+    animateY.setAttribute('from', `${this.width / 2 - 30} 400`);
+    animateY.setAttribute('to', `${this.width / 2 - 30} 390`);
     animateY.setAttribute('dur', '1s');
     animateY.setAttribute('repeatCount', 'indefinite');
     animateY.setAttribute('additive', 'replace');
@@ -1208,58 +962,6 @@ class Game {
 
     pauseScreen.appendChild(menuButtonGroup);
 
-    // High Scores button
-    const hsGroup = document.createElementNS(svgNS, 'g');
-    hsGroup.setAttribute('transform', `translate(${this.width / 2 - 100}, ${this.height / 2 + 140})`);
-    hsGroup.style.cursor = 'pointer';
-
-    const hsBg = document.createElementNS(svgNS, 'rect');
-    hsBg.setAttribute('width', '200');
-    hsBg.setAttribute('height', '50');
-    hsBg.setAttribute('fill', '#2196F3');
-    hsBg.setAttribute('rx', '10');
-    hsBg.setAttribute('ry', '10');
-    hsGroup.appendChild(hsBg);
-
-    const hsText = document.createElementNS(svgNS, 'text');
-    hsText.setAttribute('x', '100');
-    hsText.setAttribute('y', '32');
-    hsText.setAttribute('font-family', 'Arial, sans-serif');
-    hsText.setAttribute('font-size', '22px');
-    hsText.setAttribute('font-weight', 'bold');
-    hsText.setAttribute('fill', '#FFFFFF');
-    hsText.setAttribute('text-anchor', 'middle');
-    hsText.textContent = 'High Scores';
-    hsGroup.appendChild(hsText);
-    hsGroup.addEventListener('click', () => { this.showHighScoresScreen(); });
-    pauseScreen.appendChild(hsGroup);
-
-    // Settings button
-    const settingsGroup = document.createElementNS(svgNS, 'g');
-    settingsGroup.setAttribute('transform', `translate(${this.width / 2 - 100}, ${this.height / 2 + 210})`);
-    settingsGroup.style.cursor = 'pointer';
-
-    const settingsBg = document.createElementNS(svgNS, 'rect');
-    settingsBg.setAttribute('width', '200');
-    settingsBg.setAttribute('height', '50');
-    settingsBg.setAttribute('fill', '#9C27B0');
-    settingsBg.setAttribute('rx', '10');
-    settingsBg.setAttribute('ry', '10');
-    settingsGroup.appendChild(settingsBg);
-
-    const settingsText = document.createElementNS(svgNS, 'text');
-    settingsText.setAttribute('x', '100');
-    settingsText.setAttribute('y', '32');
-    settingsText.setAttribute('font-family', 'Arial, sans-serif');
-    settingsText.setAttribute('font-size', '22px');
-    settingsText.setAttribute('font-weight', 'bold');
-    settingsText.setAttribute('fill', '#FFFFFF');
-    settingsText.setAttribute('text-anchor', 'middle');
-    settingsText.textContent = 'Settings';
-    settingsGroup.appendChild(settingsText);
-    settingsGroup.addEventListener('click', () => { this.showSettingsScreen(); });
-    pauseScreen.appendChild(settingsGroup);
-
     // Add to UI layer
     const uiLayer = document.getElementById('layer-ui');
     if (uiLayer) {
@@ -1373,16 +1075,13 @@ class Game {
       // Jumping is handled via the 'jump' keydown event → handlePlayerJump()
 
       // Update player state
-      // Will be set to true during collision detection if on ground
-      this.localPlayer.isGrounded = false;
+      this.localPlayer.isGrounded = false; // Will be set true during collision detection
 
-      // Issue 10: Send input to server with sequence number
-      const isMoving = Math.abs(this.localPlayer.velocityX) > 0.1
-        || Math.abs(this.localPlayer.velocityY) > 0.1;
-      if (this.socket && isMoving) {
-        const seq = ++this.inputSeq;
-        const moveData = {
-          seq,
+      // Send updated position to server
+      const vx = Math.abs(this.localPlayer.velocityX);
+      const vy = Math.abs(this.localPlayer.velocityY);
+      if (this.socket && (vx > 0.1 || vy > 0.1)) {
+        this.socket.emit('player:move', {
           x: this.localPlayer.x,
           y: this.localPlayer.y,
           velocityX: this.localPlayer.velocityX,
@@ -1423,8 +1122,8 @@ class Game {
             enemy.direction = 'right';
           }
         }
+      // Flying enemy AI - sine wave movement
       } else if (enemy.type === 'flying') {
-        // Flying enemy AI - sine wave movement
         if (enemy.direction === 'right') {
           enemy.velocityX = this.constants.ENEMY_SPEED * 1.5;
           if (enemy.x > enemy.patrolEnd) {
@@ -1537,11 +1236,6 @@ class Game {
     // Render platforms
     for (const platform of this.state.platforms.values()) {
       this.renderer.renderPlatform(platform);
-    }
-
-    // Render doors
-    for (const door of this.state.doors.values()) {
-      this.renderer.renderDoor(door);
     }
 
     // Render collectibles
@@ -1742,7 +1436,6 @@ class Game {
     this.state.platforms.clear();
     this.state.collectibles.clear();
     this.state.enemies.clear();
-    this.state.doors.clear();
 
     // Create platforms
     for (const platformData of levelData.platforms) {
@@ -1799,20 +1492,6 @@ class Game {
       enemy.startY = enemyData.startY || enemyData.y;
 
       this.state.enemies.set(enemy.id, enemy);
-    }
-
-    // Load doors
-    if (levelData.doors) {
-      for (const doorData of levelData.doors) {
-        this.state.doors.set(doorData.id, {
-          id: doorData.id,
-          x: doorData.x,
-          y: doorData.y,
-          width: doorData.width || 60,
-          height: doorData.height || 80,
-          locked: doorData.locked !== false
-        });
-      }
     }
 
     // Set spawn point
@@ -2047,11 +1726,6 @@ class Game {
   collectCarrot(carrotId) {
     console.log('Collected carrot:', carrotId);
 
-    // Mark collected locally before emitting so the server echo's wasCollected
-    // check in handleCollectibleCollected skips the duplicate score increment.
-    const localCollectible = this.state.collectibles.get(carrotId);
-    if (localCollectible) localCollectible.collected = true;
-
     // Update state
     this.state.carrotsCollected++;
     this.state.score += 100;
@@ -2083,12 +1757,8 @@ class Game {
   defeatEnemy(enemyId) {
     console.log('Defeated enemy:', enemyId);
 
-    // Remove enemy from game state and DOM
+    // Remove enemy from game
     this.state.enemies.delete(enemyId);
-    const enemyEl = document.getElementById(`entity-${enemyId}`);
-    if (enemyEl) enemyEl.remove();
-    const bossHpEl = document.getElementById(`boss-hp-${enemyId}`);
-    if (bossHpEl) bossHpEl.remove();
 
     // Update score
     this.state.score += 200;
@@ -2309,23 +1979,24 @@ class Game {
   continueToNextLevel() {
     console.log('Continuing to next level...');
 
+    // Get next level id
     const currentLevelNum = parseInt(this.state.currentLevel.split('-')[1], 10);
-
-    // Explicit guard: show victory when the last level is completed
-    if (currentLevelNum >= this.constants.TOTAL_LEVELS) {
-      this.showVictoryScreen();
-      return;
-    }
-
     const nextLevelId = `level-${currentLevelNum + 1}`;
 
+    // Load next level
     this.loadLevel(nextLevelId)
       .then(() => {
         this.startGame();
       })
       .catch((error) => {
         console.error('Error loading next level:', error);
-        this.showErrorScreen('Failed to load next level. Please try again.');
+
+        // Check if it's just because we've finished all levels
+        if (error.message.includes('not found') || error.message.includes('timed out')) {
+          this.showVictoryScreen();
+        } else {
+          this.showErrorScreen('Failed to load next level. Please try again.');
+        }
       });
   }
 
@@ -2486,93 +2157,6 @@ class Game {
   }
 
   /**
-   * Issue 11: Apply a lightweight tick update (positions only).
-   * Handles local player reconciliation and remote entity positions.
-   * @param {Object} tickState - { players, enemies, projectiles }
-   */
-  updateTickState(tickState) {
-    if (!tickState) return;
-
-    // Reconcile local player (Issue 10)
-    if (tickState.players && this.localPlayer) {
-      const serverPlayer = tickState.players.find((p) => p.id === this.playerId);
-      if (serverPlayer && serverPlayer.lastAck !== undefined) {
-        // Trim acknowledged inputs from buffer
-        this.inputBuffer = this.inputBuffer.filter((i) => i.seq > serverPlayer.lastAck);
-
-        // Check divergence between server position and our predicted position
-        const dx = Math.abs(serverPlayer.x - this.localPlayer.x);
-        const dy = Math.abs(serverPlayer.y - this.localPlayer.y);
-        const reconcileThreshold = 5;
-
-        const diverged = dx > reconcileThreshold || dy > reconcileThreshold;
-        if (diverged && this.constants.SERVER_RECONCILIATION) {
-          // Snap to server position
-          this.localPlayer.x = serverPlayer.x;
-          this.localPlayer.y = serverPlayer.y;
-          this.localPlayer.velocityX = serverPlayer.velocityX;
-          this.localPlayer.velocityY = serverPlayer.velocityY;
-
-          // Re-apply buffered (unacknowledged) inputs
-          for (const input of this.inputBuffer) {
-            if (input.direction === 'left') {
-              this.localPlayer.velocityX = -this.constants.PLAYER_SPEED;
-            } else if (input.direction === 'right') {
-              this.localPlayer.velocityX = this.constants.PLAYER_SPEED;
-            }
-            // Advance position by one frame
-            this.localPlayer.x += this.localPlayer.velocityX;
-            this.localPlayer.y += this.localPlayer.velocityY;
-          }
-        }
-      }
-    }
-
-    // Update remote players (not local)
-    if (tickState.players) {
-      tickState.players
-        .filter((pd) => pd.id !== this.playerId)
-        .forEach((pd) => {
-          const player = this.state.players.get(pd.id);
-          if (player) {
-            player.x = pd.x;
-            player.y = pd.y;
-            player.velocityX = pd.velocityX;
-            player.velocityY = pd.velocityY;
-            player.direction = pd.direction;
-            player.isGrounded = pd.isGrounded;
-            player.isJumping = pd.isJumping;
-          }
-        });
-    }
-
-    // Update enemy positions
-    if (tickState.enemies) {
-      for (const ed of tickState.enemies) {
-        const enemy = this.state.enemies.get(ed.id);
-        if (enemy) {
-          enemy.x = ed.x;
-          enemy.y = ed.y;
-          enemy.velocityX = ed.velocityX;
-          enemy.velocityY = ed.velocityY;
-          enemy.direction = ed.direction;
-        }
-      }
-    }
-
-    // Update projectile positions
-    if (tickState.projectiles) {
-      for (const pd of tickState.projectiles) {
-        const proj = this.state.projectiles.get(pd.id);
-        if (proj) {
-          proj.x = pd.x;
-          proj.y = pd.y;
-        }
-      }
-    }
-  }
-
-  /**
    * Update game state from server data
    * @param {Object} gameState - Game state from server
    */
@@ -2612,51 +2196,32 @@ class Game {
       }
     }
 
-    // Update enemies in-place — avoid clearing the map so client-side animation
-    // state and patrol bounds are preserved across the ~1-second full-state sync.
+    // Update enemies
     if (gameState.enemies) {
-      const serverIds = new Set(gameState.enemies.map((e) => e.id));
+      // Clear old enemies
+      this.state.enemies.clear();
 
-      // Remove enemies the server has dropped
-      for (const [id] of this.state.enemies) {
-        if (!serverIds.has(id)) {
-          this.state.enemies.delete(id);
-          const el = document.getElementById(`entity-${id}`);
-          if (el) el.remove();
-          const hp = document.getElementById(`boss-hp-${id}`);
-          if (hp) hp.remove();
-        }
-      }
-
-      // Update existing or create new enemy objects
+      // Add new enemies
       for (const enemyData of gameState.enemies) {
-        let enemy = this.state.enemies.get(enemyData.id);
-        if (!enemy) {
-          enemy = new Enemy(
-            enemyData.id,
-            enemyData.x,
-            enemyData.y,
-            enemyData.width || 40,
-            enemyData.height || 40,
-            enemyData.type
-          );
-          // Set patrol bounds only on first creation
-          enemy.patrolStart = enemyData.patrolStart !== undefined
-            ? enemyData.patrolStart : enemyData.x - 100;
-          enemy.patrolEnd = enemyData.patrolEnd !== undefined
-            ? enemyData.patrolEnd : enemyData.x + 100;
-          enemy.startY = enemyData.startY !== undefined ? enemyData.startY : enemyData.y;
-          this.state.enemies.set(enemy.id, enemy);
-        }
+        const enemy = new Enemy(
+          enemyData.id,
+          enemyData.x,
+          enemyData.y,
+          enemyData.width || 40,
+          enemyData.height || 40,
+          enemyData.type
+        );
 
-        // Always sync authoritative position and velocity from server
-        enemy.x = enemyData.x;
-        enemy.y = enemyData.y;
         enemy.velocityX = enemyData.velocityX || 0;
         enemy.velocityY = enemyData.velocityY || 0;
         enemy.direction = enemyData.direction || 'right';
-        if (enemyData.health !== undefined) enemy.health = enemyData.health;
-        if (enemyData.maxHealth !== undefined) enemy.maxHealth = enemyData.maxHealth;
+
+        // Add patrol information for AI
+        enemy.patrolStart = enemyData.patrolStart || enemyData.x - 100;
+        enemy.patrolEnd = enemyData.patrolEnd || enemyData.x + 100;
+        enemy.startY = enemyData.startY || enemyData.y;
+
+        this.state.enemies.set(enemy.id, enemy);
       }
     }
 
@@ -2732,15 +2297,7 @@ class Game {
     if (data.playerId === this.playerId) {
       this.state.playerLives = data.lives;
 
-      // Snap local player back to the level spawn point
-      if (this.localPlayer) {
-        const spawn = this.spawnPoint || { x: 50, y: 400 };
-        this.localPlayer.x = spawn.x;
-        this.localPlayer.y = spawn.y;
-        this.localPlayer.velocityX = 0;
-        this.localPlayer.velocityY = 0;
-      }
-
+      // Show notification
       this.showNotification(`Life lost! Lives remaining: ${data.lives}`, 'warning');
     }
   }
@@ -2770,14 +2327,8 @@ class Game {
         this.state.carrotsCollected++;
       }
 
-      // Key: unlock the door it targets
-      if (!wasCollected && collectible.type === 'key' && collectible.target) {
-        const door = this.state.doors.get(collectible.target);
-        if (door) door.locked = false;
-      }
-
-      // Only add score if the collectible wasn't already counted locally by collectCarrot()
-      if (!wasCollected && data.playerId === this.playerId) {
+      if (data.playerId === this.playerId) {
+        // Update local state
         this.state.score += 100;
       }
 
@@ -2795,12 +2346,9 @@ class Game {
     const wasStillTracked = this.state.enemies.has(data.enemyId);
 
     this.state.enemies.delete(data.enemyId);
-    const enemyEl = document.getElementById(`entity-${data.enemyId}`);
-    if (enemyEl) enemyEl.remove();
-    const bossHpEl = document.getElementById(`boss-hp-${data.enemyId}`);
-    if (bossHpEl) bossHpEl.remove();
 
-    if (wasStillTracked && data.playerId === this.playerId) {
+    if (data.playerId === this.playerId) {
+      // Update score
       this.state.score += 200;
     }
 
@@ -2811,258 +2359,24 @@ class Game {
    * Toggle debug mode
    */
   toggleDebugMode() {
-    const nextDebugState = !this.settings.debug;
-    this.updateSettings({ debug: nextDebugState });
-    console.log(`Debug mode: ${nextDebugState ? 'enabled' : 'disabled'}`);
-  }
+    this.settings.debug = !this.settings.debug;
+    console.log(`Debug mode: ${this.settings.debug ? 'enabled' : 'disabled'}`);
 
-  /**
-   * Show high scores screen (fetches /api/highscores and renders leaderboard)
-   */
-  showHighScoresScreen() {
-    const svgNS = 'http://www.w3.org/2000/svg';
-    const screen = document.createElementNS(svgNS, 'g');
-    screen.setAttribute('id', 'highscores-screen');
+    // Update renderer debug mode
+    if (this.renderer) {
+      this.renderer.setDebugMode(this.settings.debug);
+    }
 
-    const bg = document.createElementNS(svgNS, 'rect');
-    bg.setAttribute('x', '0');
-    bg.setAttribute('y', '0');
-    bg.setAttribute('width', this.width);
-    bg.setAttribute('height', this.height);
-    bg.setAttribute('fill', 'rgba(0, 0, 0, 0.85)');
-    screen.appendChild(bg);
+    // Update physics debug mode
+    if (this.physics) {
+      this.physics.setDebugMode(this.settings.debug);
+    }
 
-    const title = document.createElementNS(svgNS, 'text');
-    title.setAttribute('x', this.width / 2);
-    title.setAttribute('y', '80');
-    title.setAttribute('font-family', 'Arial, sans-serif');
-    title.setAttribute('font-size', '40px');
-    title.setAttribute('font-weight', 'bold');
-    title.setAttribute('fill', '#FFC107');
-    title.setAttribute('text-anchor', 'middle');
-    title.textContent = 'High Scores';
-    screen.appendChild(title);
-
-    // Loading placeholder
-    const loading = document.createElementNS(svgNS, 'text');
-    loading.setAttribute('id', 'hs-loading');
-    loading.setAttribute('x', this.width / 2);
-    loading.setAttribute('y', '200');
-    loading.setAttribute('font-family', 'Arial, sans-serif');
-    loading.setAttribute('font-size', '20px');
-    loading.setAttribute('fill', '#FFFFFF');
-    loading.setAttribute('text-anchor', 'middle');
-    loading.textContent = 'Loading...';
-    screen.appendChild(loading);
-
-    // Back button
-    const backGroup = document.createElementNS(svgNS, 'g');
-    backGroup.setAttribute('transform', `translate(${this.width / 2 - 100}, 500)`);
-    backGroup.style.cursor = 'pointer';
-
-    const backBg = document.createElementNS(svgNS, 'rect');
-    backBg.setAttribute('width', '200');
-    backBg.setAttribute('height', '50');
-    backBg.setAttribute('fill', '#607D8B');
-    backBg.setAttribute('rx', '10');
-    backBg.setAttribute('ry', '10');
-    backGroup.appendChild(backBg);
-
-    const backText = document.createElementNS(svgNS, 'text');
-    backText.setAttribute('x', '100');
-    backText.setAttribute('y', '32');
-    backText.setAttribute('font-family', 'Arial, sans-serif');
-    backText.setAttribute('font-size', '24px');
-    backText.setAttribute('font-weight', 'bold');
-    backText.setAttribute('fill', '#FFFFFF');
-    backText.setAttribute('text-anchor', 'middle');
-    backText.textContent = 'Back';
-    backGroup.appendChild(backText);
-
-    backGroup.addEventListener('click', () => {
-      const el = document.getElementById('highscores-screen');
-      if (el) el.remove();
-    });
-
-    screen.appendChild(backGroup);
-
-    const uiLayer = document.getElementById('layer-ui');
-    if (uiLayer) uiLayer.appendChild(screen);
-
-    // Fetch and render scores
-    fetch('/api/highscores')
-      .then((res) => res.json())
-      .then((scores) => {
-        const loadingEl = document.getElementById('hs-loading');
-        if (loadingEl) loadingEl.remove();
-
-        if (!scores || scores.length === 0) {
-          const empty = document.createElementNS(svgNS, 'text');
-          empty.setAttribute('x', this.width / 2);
-          empty.setAttribute('y', '200');
-          empty.setAttribute('font-family', 'Arial, sans-serif');
-          empty.setAttribute('font-size', '20px');
-          empty.setAttribute('fill', '#AAAAAA');
-          empty.setAttribute('text-anchor', 'middle');
-          empty.textContent = 'No scores yet. Be the first!';
-          screen.insertBefore(empty, backGroup);
-          return;
-        }
-
-        scores.slice(0, 8).forEach((entry, idx) => {
-          const y = 140 + idx * 45;
-          const rank = document.createElementNS(svgNS, 'text');
-          rank.setAttribute('x', this.width / 2 - 200);
-          rank.setAttribute('y', y);
-          rank.setAttribute('font-family', 'Arial, sans-serif');
-          rank.setAttribute('font-size', '20px');
-          rank.setAttribute('fill', idx === 0 ? '#FFD700' : '#FFFFFF');
-          rank.textContent = `${idx + 1}. ${entry.playerName || 'Unknown'}`;
-          screen.insertBefore(rank, backGroup);
-
-          const scoreVal = document.createElementNS(svgNS, 'text');
-          scoreVal.setAttribute('x', this.width / 2 + 200);
-          scoreVal.setAttribute('y', y);
-          scoreVal.setAttribute('font-family', 'Arial, sans-serif');
-          scoreVal.setAttribute('font-size', '20px');
-          scoreVal.setAttribute('fill', idx === 0 ? '#FFD700' : '#FFFFFF');
-          scoreVal.setAttribute('text-anchor', 'end');
-          scoreVal.textContent = entry.score.toLocaleString();
-          screen.insertBefore(scoreVal, backGroup);
-        });
-      })
-      .catch(() => {
-        const loadingEl = document.getElementById('hs-loading');
-        if (loadingEl) {
-          loadingEl.setAttribute('fill', '#FF5555');
-          loadingEl.textContent = 'Failed to load scores.';
-        }
-      });
-  }
-
-  /**
-   * Show settings screen with sound and music toggles
-   */
-  showSettingsScreen() {
-    const svgNS = 'http://www.w3.org/2000/svg';
-    const screen = document.createElementNS(svgNS, 'g');
-    screen.setAttribute('id', 'settings-screen');
-
-    const bg = document.createElementNS(svgNS, 'rect');
-    bg.setAttribute('x', '0');
-    bg.setAttribute('y', '0');
-    bg.setAttribute('width', this.width);
-    bg.setAttribute('height', this.height);
-    bg.setAttribute('fill', 'rgba(0, 0, 0, 0.85)');
-    screen.appendChild(bg);
-
-    const title = document.createElementNS(svgNS, 'text');
-    title.setAttribute('x', this.width / 2);
-    title.setAttribute('y', '100');
-    title.setAttribute('font-family', 'Arial, sans-serif');
-    title.setAttribute('font-size', '40px');
-    title.setAttribute('font-weight', 'bold');
-    title.setAttribute('fill', '#FFC107');
-    title.setAttribute('text-anchor', 'middle');
-    title.textContent = 'Settings';
-    screen.appendChild(title);
-
-    const makeToggle = (label, settingKey, yPos) => {
-      const group = document.createElementNS(svgNS, 'g');
-      group.setAttribute('transform', `translate(${this.width / 2 - 150}, ${yPos})`);
-      group.style.cursor = 'pointer';
-
-      const rowBg = document.createElementNS(svgNS, 'rect');
-      rowBg.setAttribute('x', '0');
-      rowBg.setAttribute('y', '0');
-      rowBg.setAttribute('width', '300');
-      rowBg.setAttribute('height', '50');
-      rowBg.setAttribute('fill', 'rgba(255,255,255,0.05)');
-      rowBg.setAttribute('rx', '8');
-      rowBg.setAttribute('ry', '8');
-      group.appendChild(rowBg);
-
-      const labelEl = document.createElementNS(svgNS, 'text');
-      labelEl.setAttribute('x', '20');
-      labelEl.setAttribute('y', '32');
-      labelEl.setAttribute('font-family', 'Arial, sans-serif');
-      labelEl.setAttribute('font-size', '22px');
-      labelEl.setAttribute('fill', '#FFFFFF');
-      labelEl.textContent = label;
-      group.appendChild(labelEl);
-
-      const knobBg = document.createElementNS(svgNS, 'rect');
-      knobBg.setAttribute('class', `toggle-bg-${settingKey}`);
-      knobBg.setAttribute('x', '220');
-      knobBg.setAttribute('y', '12');
-      knobBg.setAttribute('width', '50');
-      knobBg.setAttribute('height', '26');
-      knobBg.setAttribute('rx', '13');
-      knobBg.setAttribute('ry', '13');
-      knobBg.setAttribute('fill', this.settings[settingKey] ? '#4CAF50' : '#888888');
-      group.appendChild(knobBg);
-
-      const knob = document.createElementNS(svgNS, 'circle');
-      knob.setAttribute('class', `toggle-knob-${settingKey}`);
-      knob.setAttribute('cx', this.settings[settingKey] ? '257' : '233');
-      knob.setAttribute('cy', '25');
-      knob.setAttribute('r', '11');
-      knob.setAttribute('fill', '#FFFFFF');
-      group.appendChild(knob);
-
-      group.addEventListener('click', () => {
-        this.settings[settingKey] = !this.settings[settingKey];
-        if (this.soundManager) {
-          this.soundManager.setSettings({
-            sound: this.settings.sound,
-            music: this.settings.music
-          });
-        }
-        const bg2 = screen.querySelector(`.toggle-bg-${settingKey}`);
-        const k = screen.querySelector(`.toggle-knob-${settingKey}`);
-        if (bg2) bg2.setAttribute('fill', this.settings[settingKey] ? '#4CAF50' : '#888888');
-        if (k) k.setAttribute('cx', this.settings[settingKey] ? '257' : '233');
-      });
-
-      return group;
-    };
-
-    screen.appendChild(makeToggle('Sound Effects', 'sound', 200));
-    screen.appendChild(makeToggle('Music', 'music', 280));
-
-    // Back button
-    const backGroup = document.createElementNS(svgNS, 'g');
-    backGroup.setAttribute('transform', `translate(${this.width / 2 - 100}, 400)`);
-    backGroup.style.cursor = 'pointer';
-
-    const backBg = document.createElementNS(svgNS, 'rect');
-    backBg.setAttribute('width', '200');
-    backBg.setAttribute('height', '50');
-    backBg.setAttribute('fill', '#607D8B');
-    backBg.setAttribute('rx', '10');
-    backBg.setAttribute('ry', '10');
-    backGroup.appendChild(backBg);
-
-    const backText = document.createElementNS(svgNS, 'text');
-    backText.setAttribute('x', '100');
-    backText.setAttribute('y', '32');
-    backText.setAttribute('font-family', 'Arial, sans-serif');
-    backText.setAttribute('font-size', '24px');
-    backText.setAttribute('font-weight', 'bold');
-    backText.setAttribute('fill', '#FFFFFF');
-    backText.setAttribute('text-anchor', 'middle');
-    backText.textContent = 'Back';
-    backGroup.appendChild(backText);
-
-    backGroup.addEventListener('click', () => {
-      const el = document.getElementById('settings-screen');
-      if (el) el.remove();
-    });
-
-    screen.appendChild(backGroup);
-
-    const uiLayer = document.getElementById('layer-ui');
-    if (uiLayer) uiLayer.appendChild(screen);
+    // Show/hide debug overlay
+    const debugOverlay = document.getElementById('debug-overlay');
+    if (debugOverlay) {
+      debugOverlay.style.display = this.settings.debug ? 'block' : 'none';
+    }
   }
 }
 

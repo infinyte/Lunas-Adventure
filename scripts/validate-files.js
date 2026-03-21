@@ -13,9 +13,18 @@ const requiredFiles = [
   'client/shared/constants.js'
 ];
 
-const checkExists = (f) => fs.access(path.resolve(f)).then(() => true).catch(() => false);
-const existsResults = await Promise.all(requiredFiles.map(checkExists));
-const missing = requiredFiles.filter((_, i) => !existsResults[i]);
+const missing = [];
+for (const file of requiredFiles) {
+  // eslint-disable-next-line no-await-in-loop
+  const exists = await fs
+    .access(path.resolve(file))
+    .then(() => true)
+    .catch(() => false);
+
+  if (!exists) {
+    missing.push(file);
+  }
+}
 
 if (missing.length > 0) {
   console.error('Missing required files:');
